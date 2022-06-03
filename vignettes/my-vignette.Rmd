@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 # 1. Introduction:
 
-
+`Coxtp` is an R package for fitting penalized Newton's method for the time-varying effects model using mAIC, TIC, GIC as information criteria, in particular we span the parameter using basis functions. Utilities for carrying out post-fitting visualization, summarization, and inference are also provided.
 
 
 # 2. Installation:
