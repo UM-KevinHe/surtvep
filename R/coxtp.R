@@ -1,4 +1,34 @@
 
+#' Title
+#'
+#' @param event 
+#' @param z 
+#' @param time 
+#' @param spline 
+#' @param nsplines 
+#' @param ties 
+#' @param tol 
+#' @param iter.max 
+#' @param method 
+#' @param lambda 
+#' @param btr 
+#' @param tau 
+#' @param stop 
+#' @param parallel 
+#' @param threads 
+#' @param degree 
+#' @param TIC 
+#' @param TIC_prox 
+#' @param lambda_spline 
+#' @param ord 
+#' @param fixedstep 
+#' @param ICLastOnly 
+#' @param penalizestop 
+#'
+#' @return
+#' @export
+#'
+#' @examples 
 coxtp <- function(event , z , time , spline="Smooth-spline", nsplines=8, ties="Breslow",
                     tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
                     btr="static", tau=0.5,

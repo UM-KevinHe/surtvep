@@ -1,5 +1,15 @@
 
 
+#' Title
+#'
+#' @param fit 
+#' @param IC 
+#' @param coef 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 coxtp.plot <- function(fit, IC="AIC", coef){
   # if (missing(fit)) stop ("Argument fit is required!")
   # if (class(fit)!="surtvep") stop("Object fit is not of class 'surtvep'!")
