@@ -78,6 +78,7 @@ To get the estimated time-varying effect of a specific coeffcient, we could use 
 ```{r}
 coxtp.plot(fit,coef="V1")
 ```
+
 The plot shows the result of the time-varying effect of Variable "V1".
 
 ### 4.1.2 Detailed calculations and theories.
@@ -90,17 +91,23 @@ First, Let's look at the `fit` result
 summary(fit)
 ```
 There are 5 results saved under the fit result. 
-* `model_result` save the detailed model results which we will explain in a minute.
-* `lambda.selected` saved the best lambda chosen based on different criteria which will not be used for the non-penalized model.
-* `p` refers to the number of covariates used in the model
-* `z_names` records the covariates names.
+
+* `model_result` save the detailed model results which we will explain in a minute. 
+
+* `lambda.selected` saved the best lambda chosen based on different criteria which will not be used for the non-penalized model. 
+
+* `p` refers to the number of covariates used in the model 
+
+* `z_names` records the covariates names. 
+
 
 The detailed model result was saved in `model_result`, which can be called by `fit$model_result`. Now, let's explore the result a little bit:
 
 ```{r}
 summary(fit$model_result)
 ```
-Here we noticed that there are 18 items in the model results list. Following is an explaination of each item:
+Here we noticed that there are 18 items in the model results list. Following is an explaination of each item: 
+
 * theta: 
 * logplkd:  
 * theta_all: 
