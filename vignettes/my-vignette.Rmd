@@ -1,0 +1,253 @@
+---
+title: "my-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# 1. Introduction:
+
+
+
+
+# 2. Installation:
+
+```{r setup,include=TRUE}
+library(surtvep)
+```
+
+
+# 3. Dataset preperation:
+
+
+For the purpose of demonstration, we will use the simulated dataset "simulN5kOP2" in the our package. 
+
+```{r}
+sim_data=sim_data
+```
+
+
+Let’s check the data first:
+
+```{r}
+head(sim_data)
+```
+Then, let's extract the time and event as vector, and get the remaining information in the dataset as matrix
+
+```{r}
+library(dplyr)
+library(ggplot2)
+event=sim_data[,"event"]
+time=sim_data[,"time"]
+data=sim_data[,!colnames(sim_data) %in% c("event","time")]
+
+
+# stratum=rep(1, length(sim_data[,"time"]))
+# data_NR <- data.frame(sim_data, strata=stratum, stringsAsFactors=F)
+# #Z.char <- paste0("X", 1:p)
+# Z.char <- colnames(sim_data)[!colnames(sim_data) %in% c("event","time")]
+# fmla <- formula(paste0("Surv(time, event)~",
+#                        paste(c(paste0("tv(", Z.char, ")"), "strata(strata)"), collapse="+")))
+```
+
+# 4. Model fitting
+
+## 4.1 Newton Method without penalization:
+
+### 4.1.1 Simple fitting:
+
+Let's fit the model. Here, the default method is Newton Method without penalization, with smooth-spline. Term `lambda_spline` refers to the smoothing parameter lambda(Detail could be found under both "Model parameter(Add link)" section or our paper here(add link). Default value is 0, which refers to no penalization. 
+
+```{r}
+##model fitting:
+# models<-coxtp(fmla, data_NR)
+fit <- coxtp(event = event, z = data, time = time)
+
+```
+To get the estimated time-varying effect of a specific coeffcient, we could use the following plot function in our package:
+
+```{r}
+coxtp.plot(fit,coef="V1")
+```
+The plot shows the result of the time-varying effect of Variable "V1".
+
+### 4.1.2 Detailed calculations and theories.
+
+#### 4.1.2.1 Model results meanings:
+
+First, Let's look at the `fit` result
+
+```{r}
+summary(fit)
+```
+There are 5 results saved under the fit result. 
+* `model_result` save the detailed model results which we will explain in a minute.
+* `lambda.selected` saved the best lambda chosen based on different criteria which will not be used for the non-penalized model.
+* `p` refers to the number of covariates used in the model
+* `z_names` records the covariates names.
+
+The detailed model result was saved in `model_result`, which can be called by `fit$model_result`. Now, let's explore the result a little bit:
+
+```{r}
+summary(fit$model_result)
+```
+Here we noticed that there are 18 items in the model results list. Following is an explaination of each item:
+* theta: 
+* logplkd:  
+* theta_all: 
+* theta_list: 
+* AIC_all: 
+* TIC_all: 
+* TIC2_all: 
+* GIC_all: 
+* AIC_trace: 
+* TIC_trace: 
+* TIC2_trace: 
+* GIC_trace: 
+* logplkd_vec: 
+* SplineType: 
+* VarianceMatrix: 
+* uniqfailtimes: 
+* bases: 
+* knots: 
+
+#### 4.1.2.2: How to get the effect of a specific time point?
+
+We are more interested in estimating time-varying effect of the covariates. Following is an simple tutorial of how to do that. First, a little background about the time-varying effect in cox model(You could also check this part at our paper which have more detailed explanation.(insert link))
+
+If we Let $X_i=(X_{i1},X_{i2},...X_{ip})^T$ refers to the $i_{th}$ individuals in the dataset with p covariates(which could also be understand as the $i_{th}$ row in the data we extract above). Let $\lambda(t|X_i)$ denote the hazard of having the event at time t for the $i_{th}$ individual, $\lambda_0(t)$ denote the hazard of having the event at time 0. When we considering the covarites having time fixed effect, we have the following formula for $\lambda(t|X_i)$:
+
+$\lambda(t|X_i)=\lambda_0(t)exp(X_i^T\beta)$
+
+Where $\beta$ refers to the coefficients where $\beta=(\beta_1,\beta_2,...\beta_p)$, which in this example, is (V1, V2). Which have similar format as the GLM model.
+For time-varying effect model, we are simply replace $\beta$ with a set of $\beta(t)$. Thus, the time varying equations could be transferred as following:
+
+$\lambda(t|X_i)=\lambda_0(t)exp(X_i^T\beta(t))$
+
+Similar, $\beta(t)=(\beta_1(t),\beta_2(t),...\beta_p(t))$ where $\beta(.)$ refers to a set of cubic B-spline(Details for B-spline refers to here : insert link). Where, the single $\beta_p(t)$ could be estimated using the following formula:
+
+$\beta_p(t)=\theta_p^TB(t)=\sum_{k=1}^K\theta_{pk}B_k(t)$
+
+Here, K refers to the given number of knots.
+
+Thus, to calculate the time varying effect of coefficient p, we just need to get both estimated B spline and the $\theta$ matrix. The B-spline was saved in `model_result$bases` and $\theta$ matrix was saved in the last item in  `model_result$theta_list` Following is the code for calculation:
+
+```{r}
+model_result  = fit$model_result
+B.spline      = as.matrix(model_result$bases)
+theta         = model_result$theta_list[[length(model_result$theta_list)]]
+
+beta          = B.spline %*% t(theta)
+
+dim(beta)
+head(beta)
+
+
+```
+
+As a result, $\beta$ is a 2487*2 matrix(we are using the "Breslow" ties, thus there are 2487 rows instead of 5000, detail about ties and Breslow ties could refers to here(insert link)). We could also get the 95%CI for the estimation, which is calculates as below:
+
+```{r}
+B.spline <- as.matrix(model_result$bases)  
+theta_plot  <- model_result$theta_list[[length(model_result$theta_list)]]
+
+beta     <- B.spline%*%t(theta_plot)
+var      <-  model_result$VarianceMatrix
+
+colnames(beta)=fit$z_names
+p        <- fit$p
+knot     <- dim(B.spline)[2]
+list     <- 1:dim(B.spline)[1]
+beta_low <- matrix(0,dim(B.spline)[1],p)
+beta_up  <- matrix(0,dim(B.spline)[1],p)
+for(i in 1:p){
+  beta_t_1   <- beta[,i]
+  var2       <- var[((i-1)*knot+1):((i-1)*knot+knot),((i-1)*knot+1):((i-1)*knot+knot)]
+  temp       <- 1.96*sqrt(vapply(list, function(x) matrix(B.spline[x,],1,knot)%*%var2%*%t(matrix(B.spline[x,],1,knot)),FUN.VALUE=numeric(1)))
+  low        <- beta_t_1-temp
+  up         <- beta_t_1+temp
+  
+  beta_low[,i] <- low
+  beta_up[,i]  <- up
+}
+
+colnames(beta_low) <- paste0(fit$z_names,"_low")
+colnames(beta_up) <- paste0(fit$z_names,"_up")
+
+head(beta_low)
+head(beta_up)
+```
+
+matrix `beta_low` records all the lower bound of beta and `beta_up` records all the upper bound of beta.
+
+As a result, we could plot the effect by ourself:
+
+```{r}
+beta              <- as.data.frame(beta)
+beta              <- cbind(beta, beta_low, beta_up)
+y=beta$V1
+ymin=beta$V1_low
+ymax=beta$V1_up
+time=model_result$uniqfailtimes
+
+
+ggplot(data=beta, aes(x=time)) + 
+  geom_line(aes(y= y),size = 0.9,color = 'red') + 
+  geom_ribbon(aes(ymin = ymin, ymax = ymax), fill="red", alpha = 0.2) + 
+  scale_y_continuous(name='Hazard Ratio (log-scale)') +
+  theme_bw() +  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank()) +
+  theme(text= element_text(size=14)) + theme(axis.text= element_text(size=14)) +
+  theme(axis.title.y = element_text(margin= margin(t=0, r=10, b=0, l=0))) +labs(x="Time") + 
+  ggtitle(paste0("Effect of V1 When holding other covariates constant"))
+```
+
+
+
+## 4.2 Newton Method with penalization:
+
+We use the smooth spline here for penalization(default). You could also use `spline="P-spline"`. For `lambda_spline`, you could either enter an numeric number(must be integer) or a vector of numbers. If a vector of numbers were entered, the best lambda was selected based on different criteria(AIC, TIC or GIC). If `lambda_spline` was entered as a single number, the model result format was kind of similar as the 4.1, the model result could be called by `model_result`. 
+
+Here we are using the `lambda_spline` following is a model fit with the `lambda_spline` as a vector for different illustration purpose:
+
+```{r}
+time=sim_data[,"time"]
+lambda_spline_all=c(1,10,100,500,1000)
+fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline_all)
+
+```
+The optimal lambda was saved in the model term `lambda.selected`
+
+```{r}
+best_lambda=fit_penalized$lambda.selected
+best_lambda
+```
+From the result above, we noticed that with different selection criteria, the best lambda selected is quite different. Here, we use the AIC criteria which set `lambda=1000`. The result for this model was saved in related criteria model and could be called as below:
+
+```{r}
+AIC_model  = fit_penalized$model.AIC
+
+
+summary(AIC_model)
+```
+We could also directly draw the plot using the following command:
+
+```{r}
+coxtp.plot(fit_penalized,IC="AIC",coef="V1")
+```
+
+Compare with the plot1, we could see that the effect of "V1" was shrink to roughly linear here. 
+
+The detail calculation of B-spline matrix, $\theta$ matrix and $\beta$ matrix was similar as that illustrate as 4.1.2.2.
+
+
+

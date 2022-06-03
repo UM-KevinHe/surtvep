@@ -1,0 +1,5 @@
+export(surtvep)
+export(coxtp)
+export(coxtp.plot)
+importFrom(Rcpp,evalCpp)
+useDynLib(surtvep)
