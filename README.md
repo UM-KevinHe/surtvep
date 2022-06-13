@@ -1,47 +1,48 @@
 
-# BWslection
+# surtvep
+Cox Non-PH model with penalization
+
 ## Overview
-BWselection is a function to do the backward selection in R based on AIC and F-test P-values. For the linear regression, the function use `lm` to call linear regression. For Logistic regression, the function use `glm` with `family="Binomial"` to call logistic regression. Currently, the function support the linear regression and the logistic regression. Just call the function by `BWselection()` with the arguments. For more resource of how to use the package, please refer to the help page and vignettes.
+Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature.  However, traditional methods of modeling time-varying survival models typically rely on expanding the original data in a repeated measurement format, which, even with moderate sample size, usually leads to an intractably large working dataset. Consequently, the computational burden increases dramatically as the sample size grows, precluding the evaluation of time-varying effects in large-scale studies.  
+
+Thus, propose a computationally efficient Kronecker product-based proximal algorithm, which enables us to extend existing methods of estimating time-varying effects for time-to-event data to a large-scale context. Detailed information about our method could be found under (Insert Link) Also, by allowing paralle computing, our packages could handle the moderate and large sample size quite well compared to current packages and methods which we would compare at the end of this file.
+
 
 ## Installation
 
 ```{r }
 #Install the package, need to install the devtools packages:
 install.packages("devtools")
-devtools::install_github("xuetao666/BWselection")
+devtools::install_github("UM-KevinHe/surtvep")
 
 #To install with Vignettes:
 install.packages("devtools")
-devtools::install_github("xuetao666/BWselection",build_vignettes =T)
+devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)
 
 ```
 ## Usage:
 
-Here, we are using the NHANES data as example:
+Here, we are using the Simulation study included in our packages as an example
 
 ```{r }
-library(BWselection)
+library(surtvep)
 
-#Load NHANES DATA
-library(NHANES)
-data("NHANES")
-data=NHANES
+#Load Simulation study
+sim_data=sim_data
+#Clean and create label and covariate matrix for the package:
+event=sim_data[,"event"]
+time=sim_data[,"time"]
+data=sim_data[,!colnames(sim_data) %in% c("event","time")]
 
-#Created variable lists for the model selection
-qvarlist<-c("BPSysAve","SleepHrsNight","TotChol")
-lvarlist<-c("Age","BPDiaAve","Weight","Height")
-spvarlist<-c("Pulse","DirectChol")
-spclist<-c(70,1.2)
-catvarlist<-c("Depressed","Marijuana","Gender")
+#Fit the model(Time varying model without penalty)
 
-BWselection(data=NHANES,qvarlist=qvarlist,lvarlist=lvarlist,spvarlist=spvarlist,
-                     spclist=spclist,catvarlist=catvarlist,outcome="BMI",type="lm",sig=0.05,complete_case=TRUE)
+fit <- coxtp(event = event, z = data, time = time)
+coxtp.plot(fit,coef="V1")
 
 ```
-## Improvement compared to step function in R
+## Improvement compared to previous Time-varying packages:
 
-* 1. In the long-term list of variables needed to be selected from, this version only need to input the variable list instead of the formalized formula. For example, in the step version, one need to fit the model first, then do the selection, in the model fit step, formulas like "A~B+C+D+E+..." needed to be writened down carefully, including the split terms. If one wants to change the orginal model, it is hard to modifiy and could higher chances to make mistakes. However, in our model, you only need to specify the variable type and list in the function, the function will generate the formula for you.
-* 2. This version handles quandratic terms better. The "step" function might remove the linear term of quandratic form and leave the quandratic term in which is not correct
+
 
 ## Getting Help:
 If you encounter any problems or bugs, please contact me at xuetao@umich.edu
