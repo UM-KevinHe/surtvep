@@ -40,8 +40,9 @@ fit <- coxtp(event = event, z = data, time = time)
 coxtp.plot(fit,coef="V1")
 
 ```
+<a href="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe"><img src="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
 
-![alt text](https://drive.google.com/file/d/1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe/view?usp=sharing)
+  
 ## Improvement compared to previous Time-varying packages:
 
 
