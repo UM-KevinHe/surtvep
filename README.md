@@ -43,6 +43,10 @@ coxtp.plot(fit,coef="V1")
 ## Improvement compared to previous Time-varying packages:
 
 
+## Detailed tutorial
+
+For detailed tutorial and model paramter explaination, please go to (Insert published like here)
+
 
 ## Getting Help:
 If you encounter any problems or bugs, please contact me at xuetao@umich.edu
