@@ -52,5 +52,5 @@ For detailed tutorial and model paramter explaination, please go to (Insert publ
 
 
 ## Getting Help:
-If you encounter any problems or bugs, please contact me at xuetao@umich.edu
+If you encounter any problems or bugs, please contact me at:  xuetao@umich.edu
 
