@@ -1,18 +1,4 @@
----
-output: md_document
----
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
 
-
-```
-<!-- badges: start -->
-[![CRAN Version](https://img.shields.io/cran/v/bama?style=flat-square&color=blue&label=CRAN)](https://cran.r-project.org/package=bama)
 
 # Bayesian Mediation Analysis
 
