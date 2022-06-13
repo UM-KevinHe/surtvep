@@ -48,7 +48,9 @@ coxtp.plot(fit,coef="V1")
 
 ## Detailed tutorial
 
-For detailed tutorial and model paramter explaination, please go to (Insert published like here)
+  
+<a href="https://www.google.com/" target="_blank">Google</a>
+For detailed tutorial and model paramter explaination, please go to here(https://sites.google.com/umich.edu/coxtp/simple-start)
 
 
 ## Getting Help:
