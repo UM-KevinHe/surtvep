@@ -50,7 +50,7 @@ coxtp.plot(fit,coef="V1")
 
   
 
-For detailed tutorial and model paramter explaination, please go to <a href="https://sites.google.com/umich.edu/coxtp/simple-start" target="_blank">here</a>
+For detailed tutorial and model paramter explaination, please go to <a href="https://sites.google.com/umich.edu/coxtp/simple-start#h.d4gu4nlfijxd" target="_blank">here</a>
 
 ## Getting Help:
 If you encounter any problems or bugs, please contact me at:  xuetao@umich.edu
