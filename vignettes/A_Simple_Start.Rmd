@@ -1,8 +1,8 @@
 ---
-title: "my-vignette"
+title: "A Simple Start"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{my-vignette}
+  %\VignetteIndexEntry{A_Simple_Start}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 # 1. Introduction:
 
-`Coxtp` is an R package for fitting penalized Newton's method for the time-varying effects model using mAIC, TIC, GIC as information criteria, in particular we span the parameter using basis functions. Utilities for carrying out post-fitting visualization, summarization, and inference are also provided.
+`Coxtp` is an R package for fitting penalized Newton's method for the time-varying effects model using mAIC, TIC, GIC as information criteria, in particular we span the parameter using basis functions. Utilities for carrying out post-fitting visualization, summarize, and inference are also provided.
 
 
 # 2. Installation:
@@ -29,7 +29,7 @@ library(surtvep)
 # 3. Dataset preperation:
 
 
-For the purpose of demonstration, we will use the simulated dataset "simulN5kOP2" in the our package. 
+For the purpose of demonstration, we will use the simulated dataset "sim_data" in the our package. 
 
 ```{r}
 sim_data=sim_data
@@ -44,19 +44,12 @@ head(sim_data)
 Then, let's extract the time and event as vector, and get the remaining information in the dataset as matrix
 
 ```{r}
-library(dplyr)
-library(ggplot2)
+
 event=sim_data[,"event"]
 time=sim_data[,"time"]
 data=sim_data[,!colnames(sim_data) %in% c("event","time")]
 
 
-# stratum=rep(1, length(sim_data[,"time"]))
-# data_NR <- data.frame(sim_data, strata=stratum, stringsAsFactors=F)
-# #Z.char <- paste0("X", 1:p)
-# Z.char <- colnames(sim_data)[!colnames(sim_data) %in% c("event","time")]
-# fmla <- formula(paste0("Surv(time, event)~",
-#                        paste(c(paste0("tv(", Z.char, ")"), "strata(strata)"), collapse="+")))
 ```
 
 # 4. Model fitting
@@ -68,12 +61,11 @@ data=sim_data[,!colnames(sim_data) %in% c("event","time")]
 Let's fit the model. Here, the default method is Newton Method without penalization, with smooth-spline. Term `lambda_spline` refers to the smoothing parameter lambda(Detail could be found under both "Model parameter(Add link)" section or our paper here(add link). Default value is 0, which refers to no penalization. 
 
 ```{r}
-##model fitting:
-# models<-coxtp(fmla, data_NR)
+
 fit <- coxtp(event = event, z = data, time = time)
 
 ```
-To get the estimated time-varying effect of a specific coeffcient, we could use the following plot function in our package:
+To get the estimated time-varying effect of a specific coefficient, we could use the following plot function in our package:
 
 ```{r}
 coxtp.plot(fit,coef="V1")
@@ -90,7 +82,7 @@ First, Let's look at the `fit` result
 ```{r}
 summary(fit)
 ```
-There are 5 results saved under the fit result. 
+There are 4 results saved under the fit result. 
 
 * `model_result` save the detailed model results which we will explain in a minute. 
 
@@ -106,26 +98,26 @@ The detailed model result was saved in `model_result`, which can be called by `f
 ```{r}
 summary(fit$model_result)
 ```
-Here we noticed that there are 18 items in the model results list. Following is an explaination of each item: 
+Here we noticed that there are 18 items in the model results list. Following is an explanation of each item: 
 
-* theta: 
-* logplkd:  
-* theta_all: 
-* theta_list: 
-* AIC_all: 
-* TIC_all: 
-* TIC2_all: 
-* GIC_all: 
-* AIC_trace: 
-* TIC_trace: 
-* TIC2_trace: 
-* GIC_trace: 
-* logplkd_vec: 
-* SplineType: 
-* VarianceMatrix: 
-* uniqfailtimes: 
-* bases: 
-* knots: 
+* `theta`: Estimation matrix of $\theta$
+* `logplkd`: log-partial likelihood 
+* `theta_all`: Internal validation use
+* `theta_list`: The estimation matrix at each Newton's update
+* `AIC_all`: Akakia information criterion
+* `TIC_all`: Takeuchi information criterion
+* `TIC2_all`: Internal validation use
+* `GIC_all`: Generalized information criterion
+* `AIC_trace`: Internal validation use
+* `TIC_trace`: Internal validation use
+* `TIC2_trace`: Internal validation use
+* `GIC_trace`: Internal validation use
+* `logplkd_vec`: log-partial likelihood at each iteration
+* `SplineType`: spline used for fitting the model
+* `VarianceMatrix`: Variance Matrix
+* `uniqfailtimes`: The input unique event times if `ties="Breslow"`, input time points if `ties="None"` (Add link)
+* `bases`: The basis function used for estimating time-varying effects
+* `knots`: Number of basis functions used for estimating time-varying effects
 
 #### 4.1.2.2: How to get the effect of a specific time point?
 
@@ -196,7 +188,7 @@ head(beta_up)
 
 matrix `beta_low` records all the lower bound of beta and `beta_up` records all the upper bound of beta.
 
-As a result, we could plot the effect by ourself:
+As a result, we could plot the effect by ourselves:
 
 ```{r}
 beta              <- as.data.frame(beta)

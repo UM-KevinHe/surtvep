@@ -7,11 +7,11 @@
 coxtp.plot(fit, IC = "AIC", coef)
 }
 \arguments{
-\item{fit}{}
+\item{fit}{Model get from coxtp}
 
-\item{IC}{}
+\item{IC}{The Creteria selected for the plotting}
 
-\item{coef}{}
+\item{coef}{The variable that needed to be plotted}
 }
 \value{
 

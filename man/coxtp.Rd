@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{Title}
+\title{Cox Non-proportional Hazards model with penalization}
 \usage{
 coxtp(
   event,
@@ -31,49 +31,52 @@ coxtp(
 )
 }
 \arguments{
-\item{event}{}
+\item{event}{vent vector, should be a vector containing 0 or 1}
 
-\item{z}{}
+\item{z}{Covariate matrix}
 
-\item{time}{}
+\item{time}{Time vector, should be a vector with non-negative numeric value}
 
-\item{spline}{}
+\item{spline}{The spline term for Penalized Newton's Method(Add section
+Number related to the paper). Default setting is \strong{\code{spline="Smooth-spline"}}}
 
-\item{nsplines}{}
+\item{nsplines}{Number of base functions in the B-splines, default is 8.}
 
-\item{ties}{}
+\item{ties}{Ways to deal with ties, default is \strong{\code{ties="Breslow"}}:}
 
-\item{tol}{}
+\item{tol}{Convergence threshold. The default threshold is set as \strong{\code{tol=1e-6}}}
 
-\item{iter.max}{}
+\item{iter.max}{Maximum Iteration number, default is \strong{\code{iter.max=20L}}}
 
-\item{method}{}
+\item{method}{Selecting Method used, default is \strong{\code{method="Newton"}}}
 
-\item{lambda}{}
+\item{lambda}{Parameter for Proximal Newton's Method. Default is \strong{\code{lambda=1e8}}}
 
-\item{btr}{}
+\item{btr}{Backtracking line search approach, default is \code{btr="static"}:}
 
-\item{tau}{}
+\item{tau}{(Alpha or beta?) in the Newton's Method, Default is \strong{\code{tau=0.5}}. Used to control for step size.}
 
-\item{stop}{}
+\item{stop}{Stopping rule, default is \strong{\code{stop="ratch"}}:}
 
-\item{parallel}{}
+\item{parallel}{Parallel computation, Default is \strong{\code{parallel=FALSE}}}
 
-\item{threads}{}
+\item{threads}{Parallel computation parameter(number of cores)Default is \strong{\code{threads=1L}}}
 
-\item{degree}{}
+\item{degree}{Degree of smoothing spline. Default setting is \strong{\code{degree=3L}}.}
 
 \item{TIC}{}
 
-\item{TIC_prox}{}
+\item{TIC_prox}{When calculating information criteria, there might be numerical issue(second order derivative,
+Hessian matrix approximate is singular), thus we proposed to add a small term to the diagonal. Default \strong{\code{TIC_prox = FALSE}}}
 
-\item{lambda_spline}{}
+\item{lambda_spline}{Smoothing parameter lambda. Default is \strong{\code{lambda_spline = 0}} which refers to Newton's Method without penalization.}
 
-\item{ord}{}
+\item{ord}{Specify which derivative to penalize. Default setting is \strong{\code{ord=4}}.}
 
-\item{fixedstep}{}
+\item{fixedstep}{There might be times when the stopping criteria not working, thus,
+the number of steps could be set manually. Default value is \strong{\code{fixedstep = FALSE}}, if it is true, will stop by \code{iter.max}}
 
-\item{ICLastOnly}{}
+\item{ICLastOnly}{Only calculate the last information criteria if is TRUE. Default is \strong{\code{ICLastOnly=FALSE}}}
 
 \item{penalizestop}{}
 }
@@ -81,5 +84,5 @@ coxtp(
 
 }
 \description{
-Title
+Cox Non-proportional Hazards model with penalization
 }

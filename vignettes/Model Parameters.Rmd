@@ -1,0 +1,88 @@
+---
+title: "Model Parameters"
+output: html_document
+date: '2022-05-23'
+---
+```{r, include=FALSE}
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+
+
+### 1. `coxtp`:
+
+`coxtp(formula,data,spline="P-spline", nsplines=8, ties="Breslow",tol=1e-9, iter.max=20L, method="Newton",`
+`lambda=1e8,factor=10, btr="dynamic", sigma=1e-2, tau=0.6,stop="incre", parallel=FALSE, threads=1L,`
+`degree=3L, TIC = FALSE, TIC_prox = FALSE, lambda_spline = 0, ord = 4, fixedstep = FALSE, effectsize = 0,`
+`difflambda = FALSE,addsecond = FALSE, penalizestop = FALSE, ICLastOnly = FALSE)`
+
+The main function in our package is `coxtp` which refers to the "Cox Non-proportional Hazards model with penalization". 
+
+
+
+#### 1.1 Common Parameters
+
+`coxtp` function have two required input, which is `formula` and `data`.
+
+* **` formula`**: The coxtp() function requires similar inputs to the familiar coxph() from the package survival.An example could be `formula=Surv(time, event) ~ tv(X1) + tv(X2) + strata(strata)`
+
+* **`data`**: The dataset for cox model, should contain all the variables listed in the formula above
+* **`event`**: Event vector, should be a vector containing 0 or 1
+* **`z`**: Covariate matrix
+* **`time`**: Time vector, should be a vector with non-negative numeric value
+
+#### 1.2 Method related Parameters:
+
+Here we offered both model estimation with penalization and without penalization. Detail method could be found in our paper(add link here). Following parameters defines the model settings:
+
+* **`spline`**: The spline term for Penalized Newton's Method(Add section Number related to the paper). Default setting is **`spline="Smooth-spline"`**
+  * **`"P-spline"`**: The P-splines are low rank smoother using a B-spline basis. Detail information about P-spline could be found in (Add section number and link)
+  * **`"Smooth-spline"`** : (Add section number and link)
+* **`nsplines`** : Number of base functions in the B-splines, default is 8.
+
+* **`method`** : Selecting Method used, default is **`method="Newton"`**
+  * **`"Newton"`**: Usual Newton’s Approach.
+  * **`"ProxN"`** : Proximal Newton–Raphson Method proposed in our paper(get link here).
+* **`lambda`** : Parameter for Proximal Newton's Method. Default is **`lambda=1e8`**
+* **`tau`** : (Alpha or beta?) in the Newton's Method, Default is **`tau=0.5`**. Used to control for step size.
+* **`lambda_spline`** :  Smoothing parameter lambda. Default is **`lambda_spline = 0`** which refers to Newton's Method without penalization.
+
+* **`degree`**: Degree of smoothing spline. Default setting is **`degree=3L`**.
+  * **`degree=2L`** refers to Smoothing quadratic spline.
+  * **`degree=3L`** refers to Smoothing cubic spline.
+  
+* **`ord`** : Specify which derivative to penalize. Default setting is **`ord=4`**.
+  * **`ord=4`**: Penalized second order derivative, suggest to use this when using the smoothing cubic spline.
+  * **`ord=3`**: Penalized first order derivative, suggest to use this when using the smoothing quadratic spline.
+  
+* `penalizestop`: could delete
+  
+#### 1.3 Stopping creteria related Parameters:
+
+* **`tol`**: Convergence threshold. The default threshold is set as **`tol=1e-6`**
+* **`iter.max`**: Maximum Iteration number, default is **`iter.max=20L`**
+* **`stop`**: Stopping rule, default is **`stop="ratch"`**:
+  * **`incre`**: We define $(l^{(m)}-l^{(m-1)})/(l^{(m)}-l^{(0)})$ as the relative change of the log-partial likelihood, where m denotes the mth step of the algorithm. When it’s smaller than a certain threshold, we stop the algorithm. tol is the variable determining the convergence threshold. 
+  * **`relch`**: We define the relative change of the log-partial likelihood as $(l^{(m)}-l^{(m-1)})/(l^{(m)})$, which makes it easier to converge. 
+  * **`incre`**: This method would stop the algorithm when the half of the Newton increment is less than the threshold(`tol` defined in the previous argument?? correct??).
+
+* **`fixedstep`**: There might be times when the stopping criteria not working, thus, the number of steps could be set manually. Default value is **`fixedstep = FALSE`**, if it is true, will stop by `iter.max`
+
+#### 1.4 Other Parameters:
+
+* **`ties`**: Ways to deal with ties, default is **`ties="Breslow"`**:
+  * **`"Breslow"`**: Breslow approximation. Detailed information could be found here(add link)
+  * **`"none`**: Don't deal with ties
+  
+* **`btr`**: Backtracking line search approach, default is `btr="static"`:
+  * **`"none"`**: Don't do Backtracking Linesearch.
+  * **`"static"`** : When binary predictors with extremely low frequency are present, calculation of the second order derivative has some issues. In that case, the Newton increment presents extreme values, leading to huge bias. We provided a way of limiting the step size in such cases. Instead of using the Newton increment, we use a fixed value of 1. This method is referred as “static” in our function. Since it moves slower, usually it can not achieve maximum likelihood estimator, leading to biased estimation.
+  * **`"dynamic"`** : Backtracking Linesearch with Newton Increment. Detail information could be found at(Add link) 
+
+* **`parallel`**: Parallel computation, Default is **`parallel=FALSE`**
+* **`threads`** : Parallel computation parameter(number of cores)Default is **`threads=1L`**
+* **`TIC_prox`** : When calculating information criteria, there might be numerical issue(second order derivative, Hessian matrix approximate is singular), thus we proposed to add a small term to the diagonal. Default **`TIC_prox = FALSE`**
+* **`ICLastOnly`** : Only calculate the last information criteria if is TRUE. Default is **`ICLastOnly=FALSE`**
+
+
+

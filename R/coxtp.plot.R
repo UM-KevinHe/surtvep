@@ -2,9 +2,9 @@
 
 #' Title
 #'
-#' @param fit 
-#' @param IC 
-#' @param coef 
+#' @param fit Model get from coxtp
+#' @param IC The Creteria selected for the plotting
+#' @param coef The variable that needed to be plotted
 #'
 #' @return
 #' @export
