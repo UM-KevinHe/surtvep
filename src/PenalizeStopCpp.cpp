@@ -1230,7 +1230,7 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
     // VarianceMatrix2.push_back(VarianceMatrix_tmp2);
     // VarianceMatrix_I.push_back(info_lambda_inv);
     // VarianceMatrix_J.push_back(inv(J_p));
-    cout<<"current lambda done: "<< i <<endl;
+    printf("current lambda done: %4.0f \n",lambda_spline(i));
   }
 
   List grad_list            = SplineUdpate["grad_list"]; 
@@ -1779,8 +1779,8 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
     theta_all.slice(i)    = theta_ilambda;
     logplkd_vec.push_back(logplkd);
     VarianceMatrix = VarianceMatrix_tmp;
-
-    cout<<"current lambda done: "<< i <<endl;
+    
+    printf("current lambda done: %4.0f \n",lambda_spline(i));
 
   }
 
@@ -2594,7 +2594,7 @@ List surtiver_fixtra_fit_penalizestop_lambdafromlarge(const arma::vec &event, co
     // VarianceMatrix2.push_back(VarianceMatrix_tmp2);
     // VarianceMatrix_I.push_back(info_lambda_inv);
     // VarianceMatrix_J.push_back(inv(J_p));
-    cout<<"current lambda done: "<< i <<endl;
+    printf("current lambda done: %4.0f \n",lambda_spline(i));
   }
 
   return List::create(_["theta"]=theta,
