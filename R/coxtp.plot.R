@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-coxtp.plot <- function(fit, IC="AIC", coef){
+coxtp.plot <- function(fit, IC="AIC", coef,xlab="Time",ylab="Hazard Ratio (log-scale)"){
   # if (missing(fit)) stop ("Argument fit is required!")
   # if (class(fit)!="surtvep") stop("Object fit is not of class 'surtvep'!")
 
@@ -69,11 +69,11 @@ coxtp.plot <- function(fit, IC="AIC", coef){
   plot<-ggplot(data=beta, aes(x=time)) +
     geom_line(aes(y= y),size = 0.9,color = 'red') +
     geom_ribbon(aes(ymin = ymin, ymax = ymax), fill="red", alpha = 0.2) +
-    scale_y_continuous(name='Hazard Ratio (log-scale)') +
+    scale_y_continuous(name=ylab) +
     theme_bw() +  theme(plot.title = element_text(hjust = 0.5)) +
     theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank()) +
     theme(text= element_text(size=14)) + theme(axis.text= element_text(size=14)) +
-    theme(axis.title.y = element_text(margin= margin(t=0, r=10, b=0, l=0))) +labs(x="Time") +
+    theme(axis.title.y = element_text(margin= margin(t=0, r=10, b=0, l=0))) +labs(x=xlab) +
     ggtitle(paste0("Effect of ",coef, " When holding other covariates constant"))
   plot
   return(plot)
