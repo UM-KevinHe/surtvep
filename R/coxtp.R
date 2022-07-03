@@ -5,6 +5,7 @@
 #' @param event vent vector, should be a vector containing 0 or 1
 #' @param z Covariate matrix
 #' @param time Time vector, should be a vector with non-negative numeric value
+#' @param strata stratification group defined in the data. If there exist stratification group, please enter as vector.
 #' @param spline The spline term for Penalized Newton's Method(Add section 
 #' Number related to the paper). Default setting is **`spline="Smooth-spline"`**
 #' @param nsplines Number of base functions in the B-splines, default is 8.
@@ -33,14 +34,20 @@
 #' @export
 #'
 #' @examples 
-coxtp <- function(event , z , time , spline="Smooth-spline", nsplines=8, ties="Breslow",
+coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines=8, ties="Breslow",
                     tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
                     btr="static", tau=0.5,
                     stop="ratch", parallel=FALSE, threads=1L, degree=3L, TIC = FALSE, TIC_prox = FALSE,
                     lambda_spline = 0, ord = 4, fixedstep = FALSE,
                     ICLastOnly = TRUE,penalizestop = FALSE){
-
+  
+  if(length(strata)==0){
+    stratum=rep(1, length(time))
+  } else {
+    stratum=strata
+  }
   stratum=rep(1, length(time))
+  
   data_NR <- data.frame(event=event, time=time, z, strata=stratum, stringsAsFactors=F)
   #Z.char <- paste0("X", 1:p)
   Z.char <- colnames(data_NR)[c(3:(ncol(data_NR)-1))]
