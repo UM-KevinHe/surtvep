@@ -200,6 +200,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Lambda_estimate_ties2
+List Lambda_estimate_ties2(int knot, arma::colvec& delta, arma::mat& z, arma::mat& b_spline, arma::mat& theta, arma::vec& tieseq);
+RcppExport SEXP _surtvep_Lambda_estimate_ties2(SEXP knotSEXP, SEXP deltaSEXP, SEXP zSEXP, SEXP b_splineSEXP, SEXP thetaSEXP, SEXP tieseqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type knot(knotSEXP);
+    Rcpp::traits::input_parameter< arma::colvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type b_spline(b_splineSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type tieseq(tieseqSEXP);
+    rcpp_result_gen = Rcpp::wrap(Lambda_estimate_ties2(knot, delta, z, b_spline, theta, tieseq));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_surtvep_stra_sampling_cpp", (DL_FUNC) &_surtvep_stra_sampling_cpp, 2},
@@ -209,6 +225,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_surtvep_VarianceMatrixCalculate", (DL_FUNC) &_surtvep_VarianceMatrixCalculate, 12},
     {"_surtvep_VarianceMatrixCalculate_bresties", (DL_FUNC) &_surtvep_VarianceMatrixCalculate_bresties, 13},
     {"_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge, 27},
+    {"_surtvep_Lambda_estimate_ties2", (DL_FUNC) &_surtvep_Lambda_estimate_ties2, 6},
     {NULL, NULL, 0}
 };
 

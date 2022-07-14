@@ -29,3 +29,7 @@ surtiver_fixtra_fit_penalizestop_lambdafromlarge <- function(event, count_strata
     .Call('_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge', PACKAGE = 'surtvep', event, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType, method, lambda, factor, parallel, threads, tol, iter_max, s, t, btr, stop, TIC_prox, fixedstep, difflambda, penalizestop, ICLastOnly)
 }
 
+Lambda_estimate_ties2 <- function(knot, delta, z, b_spline, theta, tieseq) {
+    .Call('_surtvep_Lambda_estimate_ties2', PACKAGE = 'surtvep', knot, delta, z, b_spline, theta, tieseq)
+}
+

@@ -2612,3 +2612,60 @@ List surtiver_fixtra_fit_penalizestop_lambdafromlarge(const arma::vec &event, co
                       _["iter_NR_all"]=iter_NR_all,
                       _["VarianceMatrix"]=VarianceMatrix);
 }
+
+
+// main version (ignore above)
+// [[Rcpp::export]]    
+List Lambda_estimate_ties2(int knot,
+                           arma::colvec &delta,
+                           arma::mat &z,
+                           arma::mat &b_spline, 
+                           arma::mat &theta, 
+                           arma::vec &tieseq){
+  
+  int n          = delta.n_elem;
+  int ntie       = tieseq.n_elem;
+  //int p          = theta.n_rows;
+  
+  arma::vec S0         = arma::zeros<arma::vec>(ntie);
+  arma::vec lambda     = arma::zeros<arma::vec>(ntie);
+  
+  arma::mat z_temp;
+  arma::mat zbeta_mat;
+  
+  arma::vec cumtie     = cumsum(tieseq);
+  arma::vec delta_temp;
+  
+  int       index;
+  for (int i = 0; i < ntie; ++i)
+  {
+    if(i == 0){
+      index = i;
+    }
+    else{
+      index = cumtie(i-1);
+    }
+    //cout << "index: " <<index <<endl;
+    z_temp     = z.rows(index, n-1);
+    zbeta_mat  = exp(z_temp * theta * b_spline.row(i).t());
+    S0(i)      = accu(zbeta_mat);
+    delta_temp = delta.subvec(index,cumtie(i)-1);
+    lambda(i)  = accu(delta_temp)/S0(i);
+  }
+  
+  
+  
+  List result;
+  result["S0"]        = S0;
+  result["lambda"]    = lambda;
+  result["z_temp"]    = z_temp;
+  result["zbeta_mat"] = zbeta_mat;
+  result["delta_temp"]= delta_temp;
+  result["cumtie"]    = cumtie;
+  result["ntie"]      = ntie;
+  result["index"]     = index;
+  return result;
+}
+
+
+

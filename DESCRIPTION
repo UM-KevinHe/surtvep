@@ -24,10 +24,12 @@ Imports:
     splines,
     survival,
     ggplot2,
-    ggrepel
+    ggrepel,
+    splines2
 Depends:
     R (>= 3.5),
-    ggplot2
+    ggplot2,
+    splines2
 Suggests:
     knitr,
     rmarkdown
