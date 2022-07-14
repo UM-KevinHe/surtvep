@@ -42,6 +42,7 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   # #Add time:
   # time  <-data[,idx.str]
   
+  
   if (is.null(idx.tv)) stop("No variable specified with time-variant effect!")
   term.ti <- terms[setdiff(1:length(terms), c(idx.r, idx.o, idx.str, idx.tv))]
   term.time <- gsub(".*\\(([^,]*),\\s+([^,]*)\\)", "\\1", terms[idx.r])
@@ -148,7 +149,7 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
       bases <- splines::bs(uniqfailtimes.str, degree=degree, intercept=T, 
                            knots=knots, Boundary.knots=range(times))
       p_diffm   <- 1
-      
+      time      <-data[,term.time]
       x_seq     <- as.vector(c(min(time), knots, max(time)))
       h_j       <- diff(x_seq)
       #step 1:
@@ -218,7 +219,7 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
         splines::bs(data[,term.time], degree=degree, intercept=T, 
                     knots=knots, Boundary.knots=range(times))
       p_diffm   <- 1
-      
+      time      <-data[,term.time]
       x_seq     <- as.vector(c(min(time), knots, max(time)))
       h_j       <- diff(x_seq)
       #step 1:
@@ -429,6 +430,7 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
       bases <- splines::bs(uniqfailtimes.str, degree=degree, intercept=T, 
                            knots=knots, Boundary.knots=range(times))
       p_diffm   <- 1
+      time      <-data[,term.time]
       x_seq     <- as.vector(c(min(time), knots, max(time)))
       h_j       <- diff(x_seq)
       #step 1:
