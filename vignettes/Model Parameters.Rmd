@@ -2,7 +2,7 @@
 title: "Model Parameters"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{A_Simple_Start}
+  %\VignetteIndexEntry{Model_Parameters}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
