@@ -1,8 +1,8 @@
 
-#' Cox Non-proportional Hazards model with penalization
+#' Cox Non-proportional Hazards model with penalization: Main function
 #' 
 #'
-#' @param event vent vector, should be a vector containing 0 or 1
+#' @param event event vector, should be a vector containing 0 or 1
 #' @param z Covariate matrix
 #' @param time Time vector, should be a vector with non-negative numeric value
 #' @param strata stratification group defined in the data. If there exist stratification group, please enter as vector.

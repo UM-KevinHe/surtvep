@@ -1,6 +1,6 @@
 
 
-#' Title
+#' Plotting result from coxtp() function
 #'
 #' @param fit Model get from coxtp
 #' @param IC The Creteria selected for the plotting

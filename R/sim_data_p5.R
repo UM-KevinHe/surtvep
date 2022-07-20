@@ -1,4 +1,4 @@
-#' Example data for surtvep
+#' Example data for surtvep with 5000 observations of 7 variables:
 #'
 #' @format A data.frame with 5000 observations of 7 variables:
 #' \describe{
@@ -10,4 +10,4 @@
 #'   \item{event}{Simulated event variable, Binary varible with 0, 1 }
 #'   \item{time}{Simulated time variable, Continous variable with non-negative value}
 #' }
-"sim_data"
+"sim_data_p5"

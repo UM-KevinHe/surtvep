@@ -2,9 +2,15 @@
 % Please edit documentation in R/coxtp.plot.R
 \name{coxtp.plot}
 \alias{coxtp.plot}
-\title{Title}
+\title{Plotting result from coxtp() function}
 \usage{
-coxtp.plot(fit, IC = "AIC", coef)
+coxtp.plot(
+  fit,
+  IC = "AIC",
+  coef,
+  xlab = "Time",
+  ylab = "Hazard Ratio (log-scale)"
+)
 }
 \arguments{
 \item{fit}{Model get from coxtp}
@@ -17,5 +23,5 @@ coxtp.plot(fit, IC = "AIC", coef)
 
 }
 \description{
-Title
+Plotting result from coxtp() function
 }

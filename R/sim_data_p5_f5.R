@@ -1,6 +1,6 @@
-#' Example data for surtvep
+#' Example data for surtvep with 5000 observations of 8 variables(With strata):
 #'
-#' @format A data.frame with 5000 observations of 7 variables:
+#' @format A data.frame 
 #' \describe{
 #'   \item{V1}{Simulated covariate V1, Binary variable with 0, 1. True time-dependent function is b(t)=1}
 #'   \item{V2}{Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=sin(3*pi*t/4)}
@@ -11,4 +11,4 @@
 #'   \item{time}{Simulated time variable, Continous variable with non-negative value}
 #'   \item{facility}{Simulated stratification variable. Have 5 levels}
 #' }
-"sim_data"
+"sim_data_p5_f5"

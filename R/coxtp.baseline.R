@@ -1,3 +1,15 @@
+#' Calculating Baseline hazard using the result from coxtp()
+#'
+#' @param fit Model get from coxtp
+#' @param delta event vector, should be a vector containing 0 or 1
+#' @param z Covariate matrix
+#' @param time Time vector, should be a vector with non-negative numeric value
+#' @param strata stratification group defined in the data. If there exist stratification group, please enter as vector.
+#'
+#' @return
+#' @export
+#'
+#' @examples
 coxtp.baseline <- function(fit, delta,z,time,strata=c()){
   
 

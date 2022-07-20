@@ -2,12 +2,13 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{Cox Non-proportional Hazards model with penalization}
+\title{Cox Non-proportional Hazards model with penalization: Main function}
 \usage{
 coxtp(
   event,
   z,
   time,
+  strata = c(),
   spline = "Smooth-spline",
   nsplines = 8,
   ties = "Breslow",
@@ -31,11 +32,13 @@ coxtp(
 )
 }
 \arguments{
-\item{event}{vent vector, should be a vector containing 0 or 1}
+\item{event}{event vector, should be a vector containing 0 or 1}
 
 \item{z}{Covariate matrix}
 
 \item{time}{Time vector, should be a vector with non-negative numeric value}
+
+\item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.}
 
 \item{spline}{The spline term for Penalized Newton's Method(Add section
 Number related to the paper). Default setting is \strong{\code{spline="Smooth-spline"}}}
@@ -84,5 +87,5 @@ the number of steps could be set manually. Default value is \strong{\code{fixeds
 
 }
 \description{
-Cox Non-proportional Hazards model with penalization
+Cox Non-proportional Hazards model with penalization: Main function
 }
