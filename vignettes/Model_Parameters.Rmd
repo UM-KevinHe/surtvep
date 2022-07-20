@@ -1,5 +1,5 @@
 ---
-title: "Model Parameters"
+title: "Model_Parameters"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Model_Parameters}
@@ -13,7 +13,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-
 
 
 ### 1. `coxtp`:
