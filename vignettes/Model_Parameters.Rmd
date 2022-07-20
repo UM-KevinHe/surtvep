@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 ### 1. `coxtp`:
 
-`coxtp(formula,data,spline="P-spline", nsplines=8, ties="Breslow",tol=1e-9, iter.max=20L, method="Newton",`
+`coxtp(event,z,time,strata=c(),spline="P-spline", nsplines=8, ties="Breslow",tol=1e-9, iter.max=20L, method="Newton",`
 `lambda=1e8,factor=10, btr="dynamic", sigma=1e-2, tau=0.6,stop="incre", parallel=FALSE, threads=1L,`
 `degree=3L, TIC = FALSE, TIC_prox = FALSE, lambda_spline = 0, ord = 4, fixedstep = FALSE, effectsize = 0,`
 `difflambda = FALSE,addsecond = FALSE, penalizestop = FALSE, ICLastOnly = FALSE)`
@@ -30,12 +30,11 @@ The main function in our package is `coxtp` which refers to the "Cox Non-proport
 
 `coxtp` function have two required input, which is `formula` and `data`.
 
-* **` formula`**: The coxtp() function requires similar inputs to the familiar coxph() from the package survival.An example could be `formula=Surv(time, event) ~ tv(X1) + tv(X2) + strata(strata)`
-
-* **`data`**: The dataset for cox model, should contain all the variables listed in the formula above
 * **`event`**: Event vector, should be a vector containing 0 or 1
 * **`z`**: Covariate matrix
-* **`time`**: Time vector, should be a vector with non-negative numeric value
+* **`time`**: Time vector, should be a vector with non-negative numeric value 
+* **`strata`**: stratification group defined in the data. If there exist stratification group, please enter as vector.
+
 
 #### 1.2 Method related Parameters:
 
@@ -91,4 +90,28 @@ Here we offered both model estimation with penalization and without penalization
 * **`ICLastOnly`** : Only calculate the last information criteria if is TRUE. Default is **`ICLastOnly=FALSE`**
 
 
+### 2. coxtp.plot
+
+`coxtp.plot(fit,IC="AIC",coef,xlab="Time",ylab="Hazard Ratio (log-scale)")`
+
+Function `coxtp.plot` was created to generate related hazard ratio plot from the result generated from `coxtp`
+
+* **`fit`**: Model fitted from coxtp
+* **`IC`** :The Criteria selected for the plotting. Default is IC="AIC".
+  * **`IC`**="TIC":  Takeuchi information criterion (Insert link here)
+  * **`IC`**="GIC":  Generalized information criterion (Insert link here)
+  * **`IC`**="AIC": Akakia information criterion (Insert link here)
+* **`coef`**: The variable that needed to be plotted
+* **`xlab`**: X axis label, default is xlab="Time"
+* **`ylab`**: X axis label, default is ylab="Hazard Ratio (log-scale)"
+
+### 3. coxtp.baseline
+
+`coxtp.baseline(fit, delta,z,time,strata=c())`
+
+* **`fit`**: Model fitted from coxtp
+* **`delta`**:  Event vector, should be a vector containing 0 or 1
+* **`z`**:  Covariate matrix
+* **`time`**:  Time vector, should be a vector with non-negative numeric value.
+* **`strata`**: stratification group defined in the data. If there exist stratification group, please enter as vector.
 

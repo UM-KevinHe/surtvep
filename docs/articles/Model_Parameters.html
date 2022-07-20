@@ -36,12 +36,14 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
+  <a class="nav-link" href="../articles/surtvep.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/A_Simple_Start.html">A_Simple_Start</a>
     <a class="dropdown-item" href="../articles/Model_Parameters.html">Model_Parameters</a>
   </div>
 </li>
@@ -81,7 +83,7 @@
 <div class="section level3">
 <h3 id="coxtp">1. <code>coxtp</code>:<a class="anchor" aria-label="anchor" href="#coxtp"></a>
 </h3>
-<p><code>coxtp(formula,data,spline="P-spline", nsplines=8, ties="Breslow",tol=1e-9, iter.max=20L, method="Newton",</code>
+<p><code>coxtp(event,z,time,strata=c(),spline="P-spline", nsplines=8, ties="Breslow",tol=1e-9, iter.max=20L, method="Newton",</code>
 <code>lambda=1e8,factor=10, btr="dynamic", sigma=1e-2, tau=0.6,stop="incre", parallel=FALSE, threads=1L,</code>
 <code>degree=3L, TIC = FALSE, TIC_prox = FALSE, lambda_spline = 0, ord = 4, fixedstep = FALSE, effectsize = 0,</code>
 <code>difflambda = FALSE,addsecond = FALSE, penalizestop = FALSE, ICLastOnly = FALSE)</code></p>
@@ -93,17 +95,18 @@ to the “Cox Non-proportional Hazards model with penalization”.</p>
 <p><code>coxtp</code> function have two required input, which is
 <code>formula</code> and <code>data</code>.</p>
 <ul>
-<li><p><strong><code>formula</code></strong>: The coxtp() function
-requires similar inputs to the familiar coxph() from the package
-survival.An example could be
-<code>formula=Surv(time, event) ~ tv(X1) + tv(X2) + strata(strata)</code></p></li>
-<li><p><strong><code>data</code></strong>: The dataset for cox model,
-should contain all the variables listed in the formula above</p></li>
-<li><p><strong><code>event</code></strong>: Event vector, should be a
-vector containing 0 or 1</p></li>
-<li><p><strong><code>z</code></strong>: Covariate matrix</p></li>
-<li><p><strong><code>time</code></strong>: Time vector, should be a
-vector with non-negative numeric value</p></li>
+<li>
+<strong><code>event</code></strong>: Event vector, should be a
+vector containing 0 or 1</li>
+<li>
+<strong><code>z</code></strong>: Covariate matrix</li>
+<li>
+<strong><code>time</code></strong>: Time vector, should be a vector
+with non-negative numeric value</li>
+<li>
+<strong><code>strata</code></strong>: stratification group defined
+in the data. If there exist stratification group, please enter as
+vector.</li>
 </ul>
 </div>
 <div class="section level4">
@@ -282,6 +285,62 @@ information criteria if is TRUE. Default is
 </li>
 </ul>
 </div>
+</div>
+<div class="section level3">
+<h3 id="coxtp-plot">2. coxtp.plot<a class="anchor" aria-label="anchor" href="#coxtp-plot"></a>
+</h3>
+<p><code>coxtp.plot(fit,IC="AIC",coef,xlab="Time",ylab="Hazard Ratio (log-scale)")</code></p>
+<p>Function <code>coxtp.plot</code> was created to generate related
+hazard ratio plot from the result generated from <code>coxtp</code></p>
+<ul>
+<li>
+<strong><code>fit</code></strong>: Model fitted from coxtp</li>
+<li>
+<strong><code>IC</code></strong> :The Criteria selected for the
+plotting. Default is IC=“AIC”.
+<ul>
+<li>
+<strong><code>IC</code></strong>=“TIC”: Takeuchi information
+criterion (Insert link here)</li>
+<li>
+<strong><code>IC</code></strong>=“GIC”: Generalized information
+criterion (Insert link here)</li>
+<li>
+<strong><code>IC</code></strong>=“AIC”: Akakia information criterion
+(Insert link here)</li>
+</ul>
+</li>
+<li>
+<strong><code>coef</code></strong>: The variable that needed to be
+plotted</li>
+<li>
+<strong><code>xlab</code></strong>: X axis label, default is
+xlab=“Time”</li>
+<li>
+<strong><code>ylab</code></strong>: X axis label, default is
+ylab=“Hazard Ratio (log-scale)”</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="coxtp-baseline">3. coxtp.baseline<a class="anchor" aria-label="anchor" href="#coxtp-baseline"></a>
+</h3>
+<p><code>coxtp.baseline(fit, delta,z,time,strata=c())</code></p>
+<ul>
+<li>
+<strong><code>fit</code></strong>: Model fitted from coxtp</li>
+<li>
+<strong><code>delta</code></strong>: Event vector, should be a
+vector containing 0 or 1</li>
+<li>
+<strong><code>z</code></strong>: Covariate matrix</li>
+<li>
+<strong><code>time</code></strong>: Time vector, should be a vector
+with non-negative numeric value.</li>
+<li>
+<strong><code>strata</code></strong>: stratification group defined
+in the data. If there exist stratification group, please enter as
+vector.</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
