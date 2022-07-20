@@ -1,0 +1,8 @@
+pandoc: 2.17.1.1
+pkgdown: 2.0.6
+pkgdown_sha: ~
+articles:
+  A_Simple_Start: A_Simple_Start.html
+  Model_Parameters: Model_Parameters.html
+last_built: 2022-07-20T17:37Z
+
