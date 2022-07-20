@@ -5,7 +5,8 @@ URL: https://github.com/umich-biostatistics/surtvep
 BugReports: https://github.com/umich-biostatistics/surtvep/issues
 Authors@R: c(
     person("Xueting","Tao",role=c("aut","cre"), email="xuetao@umich.edu"),
-    person("Lingfeng","Luo",role=c("aut"),email="lfluo@umich.edu")
+    person("Lingfeng","Luo",role=c("aut"),email="lfluo@umich.edu"),
+    person("Wenbo","Wu",role=c("aut"),email="wenbowu@umich.edu")
   )
 Description: Surtvep is an R package for fitting penalized Newton's method 
   for the time-varying effects model using mAIC, TIC, GIC as information criteria, 
