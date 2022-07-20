@@ -1,7 +1,10 @@
 ---
 title: "Model Parameters"
-output: html_document
-date: '2022-05-23'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A_Simple_Start}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 ```{r, include=FALSE}
 knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
