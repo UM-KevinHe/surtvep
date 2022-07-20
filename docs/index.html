@@ -60,7 +60,7 @@
 
       <ul class="navbar-nav">
 <li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/umich-biostatistics/surtvep/" aria-label="github">
+  <a class="external-link nav-link" href="https://github.com/UM-KevinHe/surtvep/" aria-label="github">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -79,8 +79,11 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature. However, traditional methods of modeling time-varying survival models typically rely on expanding the original data in a repeated measurement format, which, even with moderate sample size, usually leads to an intractably large working dataset. Consequently, the computational burden increases dramatically as the sample size grows, precluding the evaluation of time-varying effects in large-scale studies.</p>
-<p>Thus, propose a computationally efficient Kronecker product-based proximal algorithm, which enables us to extend existing methods of estimating time-varying effects for time-to-event data to a large-scale context. Detailed information about our method could be found under (Insert Link) Also, by allowing paralle computing, our packages could handle the moderate and large sample size quite well compared to current packages and methods which we would compare at the end of this file.</p>
+<p>Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature. However, there are no formal R packages for estimating the time-varying effect without pre-assuming the time-dependent function. However, in the real dataset, if we get the pre-assuming incorrect, the estimation could be largely influenced by the assumption. Thus, we decided to develop a time-varying model using spline terms with penalization which don’t need pre-assumption for the true time-dependent function and implemented it in R.</p>
+<p>Following are some benefits of our packages:</p>
+<p>To begin with, traditional methods of modeling time-varying survival models typically rely on expanding the original data in a repeated measurement format, which, even with moderate sample size, usually leads to an intractably large working dataset. Consequently, the computational burden increases dramatically as the sample size grows, precluding the evaluation of time-varying effects in large-scale studies, thus, we propose a computationally efficient Kronecker product-based proximal algorithm, which enables us to extend existing methods of estimating time-varying effects for time-to-event data to a large-scale context. Detailed information about our method could be found here.</p>
+<p>Also, by allowing parallel computing, our packages could handle the moderate and large sample size quite well compared to current methods which we would compare at the end of this page.</p>
+<p>Specifically, when the data under analysis include a number of binary covariates with near-zero variation (e.g., in the SEER prostate cancer data, only 0.6% of the 716,553 patients had their tumors regional to the lymph nodes), the associated observed information matrix of a Newton-type method may have its minimum eigenvalue close to zero with a large condition number. Inverting such a nearly singular matrix is numerically unstable and the corresponding Newton updates are likely to be conned within a small neighborhood of the initial value, causing the estimates to be far from the optimal solutions. However, our proposed Proximal-Newtown method could handle this problem quite well by adding (how to describe the edited Hessian matrix)</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -126,8 +129,8 @@ coxtp.plot(fit,coef="V1")
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/umich-biostatistics/surtvep/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/umich-biostatistics/surtvep/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/UM-KevinHe/surtvep/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
