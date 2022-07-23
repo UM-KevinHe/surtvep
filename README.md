@@ -49,7 +49,27 @@ coxtp.plot(fit,coef="V1")
 <a href="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe"><img src="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture"/></a>
 
   
-## Improvement compared to previous Time-varying packages:
+## Penalized Newton's method
+In order to add penalty to the penalized Newton's method, three additional parameters can be added.
+
+Now, set a sequence of smoothing paramemter to choose from. The default range is set as
+```{r example.fit, eval=FALSE}
+#specify smoothing parameter lambda:
+lambda_spline = c(1:10)
+
+#if not specified, the default range is set as follows, where n is the sample size
+lambda_spline = seq(0, n^(1/3), length.out = 10)
+```
+
+Then set the relevant parameters and fit a model to the prepared data:
+```{r example.fit, eval=FALSE}
+fit.spline <- surtvep(Surv(time, event)~., data = simulData, 
+               lambda = c(0:100),
+               spline = "Smooth-spline",
+               IC = "all")
+}
+```
+
 
 
 ## Detailed tutorial
