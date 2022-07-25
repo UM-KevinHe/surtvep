@@ -3,9 +3,9 @@ template:
   bootstrap: 5
 navbar:
   structure:
-    left: [intro, reference]
+    left: [intro, parameter]
     right: [search, github]
   components:
-    reference:
-      text: Reference
+    parameter:
+      text: Model Parameters
       href: articles/Model_Parameters.html
