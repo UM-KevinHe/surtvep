@@ -1,3 +1,11 @@
 url: ~
 template:
   bootstrap: 5
+navbar:
+  structure:
+    left: [intro, reference]
+    right: [search, github]
+  components:
+    reference:
+      text: Reference
+      href: articles/Model_Parameters.html

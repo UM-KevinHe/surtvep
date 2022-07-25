@@ -42,16 +42,7 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
-  <a class="nav-link" href="articles/surtvep.html">Get started</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="reference/index.html">Reference</a>
-</li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/Model_Parameters.html">Model_Parameters</a>
-  </div>
+  <a class="nav-link" href="articles/Model_Parameters.html">Reference</a>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -88,27 +79,31 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>```{r } #Install the package, need to install the devtools packages: install.packages(“devtools”) devtools::install_github(“UM-KevinHe/surtvep”)</p>
-<p>#To install with Vignettes: install.packages(“devtools”) devtools::install_github(“UM-KevinHe/surtvep”,build_vignettes =T)</p>
-<pre><code>## Usage:
-
-Here, we are using the Simulation study included in our packages as an example
-
-```{r }
-library(surtvep)
-
-#Load Simulation study
-sim_data=sim_data
-#Clean and create label and covariate matrix for the package:
-event=sim_data[,"event"]
-time=sim_data[,"time"]
-data=sim_data[,!colnames(sim_data) %in% c("event","time")]
-
-#Fit the model(Time varying model without penalty)
-
-fit &lt;- coxtp(event = event, z = data, time = time)
-coxtp.plot(fit,coef="V1")
-</code></pre>
+<pre><code><span><span class="co">#Install the package, need to install the devtools packages:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#To install with Vignettes:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span>,build_vignettes <span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="usage">Usage:<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
+<p>Here, we are using the Simulation study included in our packages as an example</p>
+<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/umich-biostatistics/surtvep" class="external-link">surtvep</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Load Simulation study</span></span>
+<span><span class="va">sim_data</span><span class="op">=</span><span class="va">sim_data</span></span>
+<span><span class="co">#Clean and create label and covariate matrix for the package:</span></span>
+<span><span class="va">event</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="st">"event"</span><span class="op">]</span></span>
+<span><span class="va">time</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="st">"time"</span><span class="op">]</span></span>
+<span><span class="va">data</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sim_data</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"event"</span>,<span class="st">"time"</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co">#Fit the model(Time varying model without penalty)</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">data</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/coxtp.plot.html">coxtp.plot</a></span><span class="op">(</span><span class="va">fit</span>,coef<span class="op">=</span><span class="st">"V1"</span><span class="op">)</span></span></code></pre>
 <p><a href="https://drive.google.com/uc?export=view&amp;id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" class="external-link"><img src="https://drive.google.com/uc?export=view&amp;id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture"></a></p>
 </div>
 <div class="section level2">
@@ -118,7 +113,7 @@ coxtp.plot(fit,coef="V1")
 <div class="section level2">
 <h2 id="detailed-tutorial">Detailed tutorial<a class="anchor" aria-label="anchor" href="#detailed-tutorial"></a>
 </h2>
-<p>For detailed tutorial and model paramter explaination, please go to <a href="https://sites.google.com/umich.edu/coxtp/simple-start#h.d4gu4nlfijxd" target="_blank" class="external-link">here</a></p>
+<p>For detailed tutorial and model paramter explaination, please go to <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank" class="external-link">here</a></p>
 </div>
 <div class="section level2">
 <h2 id="getting-help">Getting Help:<a class="anchor" aria-label="anchor" href="#getting-help"></a>
