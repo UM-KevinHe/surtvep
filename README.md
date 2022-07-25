@@ -16,7 +16,7 @@ Specifically, when the data under analysis include a number of binary covariates
 
 ## Installation
 
-```{r }
+```
 #Install the package, need to install the devtools packages:
 install.packages("devtools")
 devtools::install_github("UM-KevinHe/surtvep")
@@ -30,7 +30,7 @@ devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)
 
 Here, we are using the Simulation study included in our packages as an example
 
-```{r }
+```
 library(surtvep)
 
 #Load Simulation study
