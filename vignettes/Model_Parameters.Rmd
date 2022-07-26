@@ -132,21 +132,21 @@ Function `coxtp.plot` was created to generate related hazard ratio plot from the
 
 Example data for surtvep with 5000 observations of 4 variables
 
-* **`V1`**: Simulated covariate V1, Binary variable with 0, 1. True time-dependent function is b(t)=1}
-* **`V2`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=exp(-1.5*t)}
-* **`event`**: Simulated event variable, Binary varible with 0, 1 }
-* **`time`**: Simulated time variable, Continous variable with non-negative value}
+* **`V1`**: Simulated covariate V1, Binary variable with 0, 1. True time-dependent function is $\beta(t)=1$
+* **`V2`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=exp(-1.5*t)$
+* **`event`**: Simulated event variable, Binary varible with 0, 1 
+* **`time`**: Simulated time variable, Continous variable with non-negative value
 
 
 ### 2.2 sim_data_p5
 
 Example data for surtvep with 5000 observations of 7 variables:
 
-* **`V1`**: Simulated covariate V1, Binary variable with 0, 1. True time-dependent function is b(t)=1}
-* **`V2`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=sin(3\emph{pi}t/4)}
-* **`V3`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=-1}
-* **`V4`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=(t/3)**2\emph{exp(t/2)}
-* **`V5`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=exp(-1.5}t)}
+* **`V1`**: Simulated covariate V1, Binary variable with 0, 1. True time-dependent function is $\beta(t)=1$
+* **`V2`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=sin(3\pi t/4)$
+* **`V3`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=-1$
+* **`V4`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=(t/3)**2exp(t/2)$
+* **`V5`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=exp(-1.5t)$
 * **`event`**: Simulated event variable, Binary varible with 0, 1 }
 * **`time`**: Simulated time variable, Continous variable with non-negative value}
 
@@ -156,13 +156,13 @@ Example data for surtvep with 5000 observations of 7 variables:
 Example data for surtvep with 5000 observations of 8 variables(With strata):
 
 
-* **`V1`**: Simulated covariate V1, Binary variable with 0, 1. True time-dependent function is b(t)=1}
-* **`V2`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=sin(3\emph{pi}t/4)}
-* **`V3`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=-1}
-* **`V4`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=(t/3)**2\emph{exp(t/2)}
-* **`V5`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=exp(-1.5}t)}
-* **`event`**: Simulated event variable, Binary varible with 0, 1 }
-* **`time`**: Simulated time variable, Continous variable with non-negative value}
-* **`facility`**: Simulated stratification variable. Have 5 levels}
+* **`V1`**: Simulated covariate V1, Binary variable with 0, 1. True time-dependent function is $\beta(t)=1$
+* **`V2`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=sin(3\pi t/4)$
+* **`V3`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=-1$
+* **`V4`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=(t/3)**2exp(t/2)$
+* **`V5`**: Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is $\beta(t)=exp(-1.5t)$
+* **`event`**: Simulated event variable, Binary variable with 0, 1 
+* **`time`**: Simulated time variable, Continuous variable with non-negative value
+* **`facility`**: Simulated stratification variable. Have 5 levels
 
 
