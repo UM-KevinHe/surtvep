@@ -13,6 +13,9 @@
     <loc>/articles/surtvep.html</loc>
   </url>
   <url>
+    <loc>/articles/surtvep_temp.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -26,6 +29,9 @@
   </url>
   <url>
     <loc>/reference/coxtp.plot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/coxtp.predict.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>

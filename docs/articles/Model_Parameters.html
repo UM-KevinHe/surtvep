@@ -35,6 +35,9 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../articles/surtvep.html">Get started</a>
+</li>
 <li class="active nav-item">
   <a class="nav-link" href="../articles/Model_Parameters.html">Model Parameters</a>
 </li>
@@ -334,6 +337,23 @@ with non-negative numeric value.</li>
 <strong><code>strata</code></strong>: stratification group defined
 in the data. If there exist stratification group, please enter as
 vector.</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="coxtp-predict">1.4 coxtp.predict<a class="anchor" aria-label="anchor" href="#coxtp-predict"></a>
+</h3>
+<p><code>coxtp.predict(fit,baseline,newdata=c(),strata=FALSE)</code></p>
+<ul>
+<li>
+<strong><code>fit</code></strong>: Model get from coxtp</li>
+<li>
+<strong><code>baseline</code></strong>: Baseline estimation from
+coxtp.baseline or the arbitary baseline entered</li>
+<li>
+<strong><code>newdata</code></strong>: New data in vector</li>
+<li>
+<strong><code>strata</code></strong>: Whether there is
+stratification in the dataset, default is FALSE.</li>
 </ul>
 </div>
 </div>

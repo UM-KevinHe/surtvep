@@ -117,6 +117,15 @@ Function `coxtp.plot` was created to generate related hazard ratio plot from the
 * **`time`**:  Time vector, should be a vector with non-negative numeric value.
 * **`strata`**: stratification group defined in the data. If there exist stratification group, please enter as vector.
 
+### 1.4 coxtp.predict
+
+`coxtp.predict(fit,baseline,newdata=c(),strata=FALSE)`
+
+* **`fit`**: Model get from coxtp
+* **`baseline`**: Baseline estimation from coxtp.baseline or the arbitary baseline entered
+* **`newdata`**: New data in vector
+* **`strata`**: Whether there is stratification in the dataset, default is FALSE.
+
 ## 2. Data sets
 
 ### 2.1 sim_data

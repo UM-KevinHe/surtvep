@@ -72,23 +72,6 @@ coxtp.baseline <- function(fit, delta,z,time,strata=c()){
       Lambda <- cumsum(lambda)
 
       temp_data <- data.frame(unique(time_temp),lambda,Lambda)
-
-      time_max <- NULL
-      time_unique <- unique(time_temp)
-      time_max <- NULL
-      z1 <- as.data.frame(data_temp)
-      N_min <- 30
-      for(i in 1:length(time_unique)){
-        CS_tmp                 <- z1[which(time_temp>=time_unique[i]),]
-        N_tmp                  <- nrow(CS_tmp)
-        if(N_tmp>=N_min){
-          time_max = time_unique[i]
-        }
-      }
-      index_max         <- which(time_unique <= time_max)
-      if(time_max < 12){
-        temp_data$lambda        <- c(temp_data$lambda[index_max],rep(NA,(length(time_unique) - length(index_max))))
-      }
       temp_data$strata=f
       if(f!=flevel[1]){
         baselinedata=rbind(baselinedata,temp_data)
