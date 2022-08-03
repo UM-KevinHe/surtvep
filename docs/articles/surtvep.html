@@ -482,11 +482,12 @@ linesearch with Newton Increment.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 x 6</span></span></span>
 <span><span class="co">#&gt;   expression      min   median `itr/sec` mem_alloc `gc/sec`</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;bch:tm&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:tm&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> none          1.79s    1.79s    0.559     50.8MB   0.559 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> static        4.58s    4.58s    0.218     51.6MB   0.218 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> dynamic      10.02s   10.02s    0.099<span style="text-decoration: underline;">8</span>    52.8MB   0.099<span style="text-decoration: underline;">8</span></span></span></code></pre></div>
-<p>Following is the comparison of three methods regards of accuracy
-:</p>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> none          1.78s    1.78s    0.561     50.8MB    0.561</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> static         4.6s     4.6s    0.218     51.6MB    0.435</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> dynamic      10.11s   10.11s    0.098<span style="text-decoration: underline;">9</span>    52.8MB    0.198</span></span></code></pre></div>
+<p>Compared to dynamic and static, no backtracking linesearch gives the
+optimal programming time. Following is the performance of each
+method:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">time_list</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">3</span>,length.out<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">event</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
@@ -510,9 +511,6 @@ linesearch with Newton Increment.</p>
 <span>  <span class="op">}</span></span>
 <span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Compared to dynamic and static, no backtracking linesearch gives the
-optimal programming time. Following is the performance of each
-method:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/" class="external-link">cowplot</a></span><span class="op">)</span></span>
 <span><span class="co">##Plot v1</span></span>
@@ -548,32 +546,84 @@ link). Following is the default setting</p>
 <h4 id="baseline-estimation">5.3 Baseline estimation<a class="anchor" aria-label="anchor" href="#baseline-estimation"></a>
 </h4>
 <p>The baseline estimation here refers to the baseline hazard at time t
-when holding all the covariates equals to zero. It could be calculated
-by the calling the <code>coxtp.baseline</code> function</p>
+when holding all the covariates equals to zero. We use the model fitted
+result <code>fit_penalized</code> in section 4.2.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sim_data</span><span class="op">=</span><span class="va">sim_data_p5</span></span>
-<span><span class="co">#Fit the model first:</span></span>
+<code class="sourceCode R"><span></span>
 <span><span class="va">event</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="st">"event"</span><span class="op">]</span></span>
 <span><span class="va">time</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="st">"time"</span><span class="op">]</span></span>
 <span><span class="va">data</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sim_data</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"event"</span>,<span class="st">"time"</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>,<span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">fit_penalized</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">data</span>, time <span class="op">=</span> <span class="va">time</span>,lambda_spline<span class="op">=</span><span class="va">lambda_spline_all</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">model1</span>  <span class="op">=</span> <span class="va">fit_penalized</span><span class="op">$</span><span class="va">model.AIC</span></span>
 <span></span>
 <span><span class="co">##baseline</span></span>
 <span><span class="va">plotdata</span><span class="op">=</span><span class="fu"><a href="../reference/coxtp.baseline.html">coxtp.baseline</a></span><span class="op">(</span>fit<span class="op">=</span><span class="va">model1</span>, delta<span class="op">=</span><span class="va">event</span>,z<span class="op">=</span><span class="va">data</span>,time<span class="op">=</span><span class="va">time</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">plotdata</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   unique.time.       lambda       Lambda</span></span>
+<span><span class="co">#&gt; 1 0.0003028248 0.0001609517 0.0001609517</span></span>
+<span><span class="co">#&gt; 2 0.0004273569 0.0001609879 0.0003219395</span></span>
+<span><span class="co">#&gt; 3 0.0008948164 0.0000000000 0.0003219395</span></span>
+<span><span class="co">#&gt; 4 0.0008981023 0.0001610787 0.0004830182</span></span>
+<span><span class="co">#&gt; 5 0.0009103830 0.0000000000 0.0004830182</span></span>
+<span><span class="co">#&gt; 6 0.0010759157 0.0001611453 0.0006441635</span></span></code></pre></div>
+<p>Let’s check the result of baseline function first. The function
+returned a dataset containing the baseline estimation including 3
+variables:</p>
+<ul>
+<li>
+<code>unique.time.</code>: The unique time listed in the original
+dataset used to fit the model</li>
+<li>
+<code>lambda</code>: refers to <span class="math inline">\(\lambda_0(t)\)</span> in the model, which is
+baseline hazard</li>
+<li>
+<code>Lambda</code>: refers to the cumulative baseline hazard in the
+model.</li>
+</ul>
+<p>Note that since our baseline estimation is based on Breslow
+Estimator, when there is no ties in the data, the baseline estimation
+could sometime results as 0 since there is no death at certain
+time-point. As a result, we could either increase the time interval to
+make ties exists or remove the points that have <span class="math inline">\(\lambda=0\)</span>. The only differences would
+result in the baseline hazard, there is no influence on the cumulative
+baseline hazard.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plotdata</span><span class="op">=</span><span class="va">plotdata</span><span class="op">[</span><span class="va">plotdata</span><span class="op">$</span><span class="va">lambda</span><span class="op">!=</span><span class="fl">0</span>,<span class="op">]</span></span></code></pre></div>
+<p>Next, we are going to visualize the result using <code>ggplot2</code>
+and <code>cowplot</code> function.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="co">#Exclude censoring points</span></span>
-<span><span class="va">plotdata</span><span class="op">=</span><span class="va">plotdata</span><span class="op">[</span><span class="va">plotdata</span><span class="op">$</span><span class="va">lambda</span><span class="op">!=</span><span class="fl">0</span>,<span class="op">]</span></span>
 <span></span>
 <span><span class="va">baseline_plot</span><span class="op">&lt;-</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">plotdata</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">unique.time.</span>, y<span class="op">=</span><span class="va">lambda</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Years since diagnosis'</span>, limits<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">3</span><span class="op">)</span>, breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'baseline hazard'</span>, limits<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">" Baseline Hazard by time"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">baseline_plot</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;"></p>
+<span></span>
+<span><span class="va">cum_plot</span><span class="op">&lt;-</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">plotdata</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">unique.time.</span>, y<span class="op">=</span><span class="va">Lambda</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Years since diagnosis'</span>, limits<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">3</span><span class="op">)</span>, breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Cumulative baseline hazard'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Cumulative Baseline Hazard by time"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">baseline_plot</span>,<span class="va">cum_plot</span>,ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;"></p>
+<p>One use of Cumulative baseline hazard is to calculate the survival
+function where cumulative hazard is the negative log of the survival
+probabilities. If we assume cumulative baseline hazard function as <span class="math inline">\(S(t)\)</span> and cumulative hazard function as
+<span class="math inline">\(H(t)\)</span>, then we have <span class="math inline">\(H(t)=-log(S(t))\)</span>. Thus, we could plot the
+survival function as follows:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plotdata</span><span class="op">$</span><span class="va">survive</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">plotdata</span><span class="op">$</span><span class="va">Lambda</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">plotdata</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">unique.time.</span>, y<span class="op">=</span><span class="va">survive</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Years since diagnosis'</span>, limits<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">3</span><span class="op">)</span>, breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Survival Function'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Survival by time"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
 <h4 id="testing-for-time-varying-effect">5.4 Testing for time-varying effect<a class="anchor" aria-label="anchor" href="#testing-for-time-varying-effect"></a>
@@ -587,7 +637,7 @@ packages will use each facility as its own risk sets and finish the
 estimation. To add strata in the model, simply use the
 <code>strata</code> option. Following is an example:</p>
 <p>Here, we are using the sim_data_p5_f5 as example.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_data_p5_f5</span><span class="op">=</span><span class="va">sim_data_p5_f5</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_data_p5_f5</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      V1 V2 V3 V4 V5 event         time facility</span></span>
@@ -614,8 +664,9 @@ estimation. To add strata in the model, simply use the
 <p>Now, let’s fit the model by simply add one option
 <code>strata =facility</code>. The black line in the plot refers to the
 true function while the red line and area refers to the estimated
-function and its 95% CI.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+function and its 95% CI. Again, we assume the best
+<code>lambda_spline=1000</code></p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Extract data</span></span>
 <span><span class="va">event_stra</span><span class="op">=</span><span class="va">sim_data_p5_f5</span><span class="op">[</span>,<span class="st">"event"</span><span class="op">]</span></span>
 <span><span class="va">time_stra</span><span class="op">=</span><span class="va">sim_data_p5_f5</span><span class="op">[</span>,<span class="st">"time"</span><span class="op">]</span></span>
@@ -623,14 +674,17 @@ function and its 95% CI.</p>
 <span><span class="va">facility</span><span class="op">=</span><span class="va">sim_data_p5_f5</span><span class="op">[</span>,<span class="st">"facility"</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co">#select best lambda</span></span>
-<span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>,<span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">fit_stra</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event<span class="op">=</span><span class="va">event_stra</span>,z<span class="op">=</span><span class="va">data_stra</span>,time<span class="op">=</span><span class="va">time_stra</span>,strata <span class="op">=</span><span class="va">facility</span>,lambda_spline<span class="op">=</span><span class="va">lambda_spline_all</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000)</span></span>
+<span><span class="co"># fit_stra&lt;-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline_all)</span></span>
+<span></span>
+<span><span class="va">lambda_spline</span><span class="op">=</span><span class="fl">1000</span></span>
+<span><span class="va">fit_stra</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event<span class="op">=</span><span class="va">event_stra</span>,z<span class="op">=</span><span class="va">data_stra</span>,time<span class="op">=</span><span class="va">time_stra</span>,strata <span class="op">=</span><span class="va">facility</span>,lambda_spline<span class="op">=</span><span class="va">lambda_spline</span><span class="op">)</span></span></code></pre></div>
 <p>Again, we use the <code>coxtp.baseline</code> function to get the
 baseline estimation for different group. Just add the option
 <code>strata=facility</code> to get specific facility data</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="va">model1</span>  <span class="op">=</span> <span class="va">fit_stra</span><span class="op">$</span><span class="va">model.AIC</span></span>
+<span><span class="va">model1</span>  <span class="op">=</span> <span class="va">fit_stra</span><span class="op">$</span><span class="va">model_result</span></span>
 <span><span class="va">baselinedata</span><span class="op">=</span><span class="fu"><a href="../reference/coxtp.baseline.html">coxtp.baseline</a></span><span class="op">(</span>fit<span class="op">=</span><span class="va">model1</span>, delta<span class="op">=</span><span class="va">event_stra</span>,z<span class="op">=</span><span class="va">data_stra</span>,time<span class="op">=</span><span class="va">time_stra</span>,strata <span class="op">=</span> <span class="va">facility</span><span class="op">)</span></span>
 <span><span class="va">baselinedata</span><span class="op">=</span><span class="va">baselinedata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lambda</span><span class="op">!=</span><span class="fl">0</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -641,21 +695,23 @@ baseline estimation for different group. Just add the option
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">" Baseline Hazard by time and facility"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">baseline_plot</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;"></p>
 <div class="section level5">
 <h5 id="model-prediction">5.6 Model prediction:<a class="anchor" aria-label="anchor" href="#model-prediction"></a>
 </h5>
-<p>To predict the new data, we offered the function coxtp.predict.
-Suppose the new data to be predicted is <code>c(1,1,0,0,0)</code> for
+<p>To predict the new data, we offered the function coxtp.predict. This
+function could also be used to calculate absolute hazard. Suppose the
+new data to be predicted is <code>c(1,1,0,0,0)</code> for
 <code>V1</code> to <code>V5</code>. For data with no stratification:
-(Suppose we already have the best tuning parameter lambda selected).</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+(Suppose we already have the best tuning parameter
+<code>lambda_spline</code> selected).</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_data</span><span class="op">=</span><span class="va">sim_data_p5</span></span>
 <span><span class="va">event</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="st">"event"</span><span class="op">]</span></span>
 <span><span class="va">time</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="st">"time"</span><span class="op">]</span></span>
 <span><span class="va">data</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sim_data</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"event"</span>,<span class="st">"time"</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">lambda_spline</span><span class="op">=</span><span class="fl">100</span></span>
+<span><span class="va">lambda_spline</span><span class="op">=</span><span class="fl">1000</span></span>
 <span><span class="va">fit_penalized</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">data</span>, time <span class="op">=</span> <span class="va">time</span>,lambda_spline<span class="op">=</span><span class="va">lambda_spline</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">model_result</span>  <span class="op">=</span> <span class="va">fit_penalized</span><span class="op">$</span><span class="va">model_result</span></span>
@@ -665,39 +721,57 @@ Suppose the new data to be predicted is <code>c(1,1,0,0,0)</code> for
 <p>The result dataset <code>predict</code> is a dataset with predicted
 hazard and time points in the orginal dataset. We could plot the data
 using ggplot:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">predict</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">unique.time.</span>,y<span class="op">=</span><span class="va">lambda0_exp_betax</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Years since diagnosis'</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Predicted hazard'</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Predicted Hazard"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;"></p>
+<p>If we want to calculate and show the difference of absolute hazard
+for variable <code>V2</code>, we could use the
+<code>coxtp.predict</code> to get it done. Assume that besides
+<code>V2</code>, other covariate are all set to the reference level.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_predict0</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">predict0</span><span class="op">=</span><span class="fu"><a href="../reference/coxtp.predict.html">coxtp.predict</a></span><span class="op">(</span><span class="va">model_result</span>,<span class="va">baseline</span>,newdata<span class="op">=</span><span class="va">data_predict0</span>,strata <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="va">data_predict1</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">predict1</span><span class="op">=</span><span class="fu"><a href="../reference/coxtp.predict.html">coxtp.predict</a></span><span class="op">(</span><span class="va">model_result</span>,<span class="va">baseline</span>,newdata<span class="op">=</span><span class="va">data_predict1</span>,strata <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">predict0</span><span class="op">$</span><span class="va">unique.time.</span>,y<span class="op">=</span><span class="va">predict0</span><span class="op">$</span><span class="va">lambda0_exp_betax</span>,color<span class="op">=</span><span class="st">"V2=0"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">predict1</span><span class="op">$</span><span class="va">unique.time.</span>,y<span class="op">=</span><span class="va">predict1</span><span class="op">$</span><span class="va">lambda0_exp_betax</span>,color<span class="op">=</span><span class="st">"V2=1"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Years since diagnosis'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Predicted hazard'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Predicted Hazard"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>For data with stratification, just define that
 <code>strata=T</code>(Default is FALSE):(Again, suppose we already have
 the best tuning parameter lambda selected)</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">event_stra</span><span class="op">=</span><span class="va">sim_data_p5_f5</span><span class="op">[</span>,<span class="st">"event"</span><span class="op">]</span></span>
 <span><span class="va">time_stra</span><span class="op">=</span><span class="va">sim_data_p5_f5</span><span class="op">[</span>,<span class="st">"time"</span><span class="op">]</span></span>
 <span><span class="va">data_stra</span><span class="op">=</span><span class="va">sim_data_p5_f5</span><span class="op">[</span>,<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sim_data_p5_f5</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"event"</span>,<span class="st">"time"</span>,<span class="st">"facility"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">facility</span><span class="op">=</span><span class="va">sim_data_p5_f5</span><span class="op">[</span>,<span class="st">"facility"</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co">#select best lambda</span></span>
-<span><span class="va">lambda_spline</span><span class="op">=</span><span class="fl">100</span></span>
+<span><span class="va">lambda_spline</span><span class="op">=</span><span class="fl">1000</span></span>
 <span><span class="va">fit_stra</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event<span class="op">=</span><span class="va">event_stra</span>,z<span class="op">=</span><span class="va">data_stra</span>,time<span class="op">=</span><span class="va">time_stra</span>,strata <span class="op">=</span><span class="va">facility</span>,lambda_spline<span class="op">=</span><span class="va">lambda_spline</span><span class="op">)</span></span>
 <span><span class="va">model_result</span>  <span class="op">=</span> <span class="va">fit_stra</span><span class="op">$</span><span class="va">model_result</span></span>
 <span><span class="va">baseline_strata</span><span class="op">=</span><span class="fu"><a href="../reference/coxtp.baseline.html">coxtp.baseline</a></span><span class="op">(</span>fit<span class="op">=</span><span class="va">model_result</span>, delta<span class="op">=</span><span class="va">event_stra</span>,z<span class="op">=</span><span class="va">data_stra</span>,time<span class="op">=</span><span class="va">time_stra</span>,strata <span class="op">=</span> <span class="va">facility</span><span class="op">)</span></span>
 <span><span class="va">data_predict</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">predict</span><span class="op">=</span><span class="fu"><a href="../reference/coxtp.predict.html">coxtp.predict</a></span><span class="op">(</span><span class="va">model_result</span>,<span class="va">baseline_strata</span>,newdata<span class="op">=</span><span class="va">data_predict</span>,strata <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <p>Again, we could plot the result by ggplot:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">predict</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">unique.time.</span>,y<span class="op">=</span><span class="va">lambda0_exp_betax</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">strata</span>,group<span class="op">=</span><span class="va">strata</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Years since diagnosis'</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Predicted hazard'</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Predicted Hazard"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
@@ -718,7 +792,7 @@ knots. Following is the code showing the performance of the estimation
 when choosing different knots:</p>
 <p>Following is the code showing the performance of the estimation when
 choosing different knots:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_data</span><span class="op">=</span><span class="fu">surtvep</span><span class="fu">::</span><span class="va"><a href="../reference/sim_data.html">sim_data</a></span></span>
 <span><span class="va">event</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="st">"event"</span><span class="op">]</span></span>
 <span><span class="va">time</span><span class="op">=</span><span class="va">sim_data</span><span class="op">[</span>,<span class="st">"time"</span><span class="op">]</span></span>
@@ -753,11 +827,11 @@ choosing different knots:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
 <span>    plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">7</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">p1</span><span class="op">=</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">plot6</span>,<span class="va">plot8</span>,<span class="va">plot10</span>,<span class="va">plot20</span>,ncol<span class="op">=</span><span class="fl">2</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">labels</span><span class="op">)</span>,label_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span></span>
 <span><span class="va">p1</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;">
+<p><img src="surtvep_files/figure-html/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;">
 For the result above, the red line and shadow refer to the estimated
 function and 95%CI while the black line refers to the true function
 which is time-fixed(y=1). From the result above, we noticed that as the
@@ -769,7 +843,7 @@ knots of selection in the non-penalized model very important.</p>
 of knots didn’t matters much, instead, the <span class="math inline">\(\lambda\)</span> is more important. Following plot
 is the performance of estimation when we use the lambda_spline selected
 before, which is <code>lambda_spline= 1000</code></p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">knot_list</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">8</span>,<span class="fl">10</span>,<span class="fl">20</span><span class="op">)</span></span>
 <span><span class="va">labels</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Knots="</span>,<span class="va">knot_list</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">3</span>,length.out<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">event</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
@@ -785,7 +859,7 @@ before, which is <code>lambda_spline= 1000</code></p>
 <span>  <span class="va">plot</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/assign.html" class="external-link">assign</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"plot"</span>,<span class="va">knot</span><span class="op">)</span>,<span class="va">plot</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/" class="external-link">cowplot</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">title</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://wilkelab.org/cowplot/reference/ggdraw.html" class="external-link">ggdraw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -801,7 +875,7 @@ before, which is <code>lambda_spline= 1000</code></p>
 <span>  <span class="op">)</span></span>
 <span><span class="va">p1</span><span class="op">=</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">plot6</span>,<span class="va">plot8</span>,<span class="va">plot10</span>,<span class="va">plot20</span>,ncol<span class="op">=</span><span class="fl">2</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">labels</span><span class="op">)</span>,label_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span></span>
 <span><span class="va">p1</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;">
+<p><img src="surtvep_files/figure-html/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;">
 From the plot above, we could observe that with different knots
 selected, the performance is not different so much for different knots,
 all the estimates are relatively close to the real function. However, in
@@ -810,7 +884,7 @@ reason that we need to select the best lambda before actually fitting
 the model. The following plot is the performance of different lambda
 selected. For the following plot, the knot was set as default, which is
 <code>knot=8</code>.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>,<span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">labels</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"lambda="</span>,<span class="va">lambda_spline_all</span><span class="op">)</span></span>
 <span><span class="va">i</span><span class="op">=</span><span class="fl">1</span></span>
@@ -842,10 +916,10 @@ selected. For the following plot, the knot was set as default, which is
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
 <span>    plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">7</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p1</span><span class="op">=</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">plot1</span>,<span class="va">plot2</span>,<span class="va">plot3</span>,<span class="va">plot4</span>,<span class="va">plot5</span>,<span class="va">plot6</span>,ncol<span class="op">=</span><span class="fl">2</span>,labels<span class="op">=</span><span class="va">labels</span>,label_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span></span>
 <span><span class="va">p1</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;">
+<p><img src="surtvep_files/figure-html/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;">
 As a result, as the lambda increase, the estimated function is more
 related to the true function. This is happening because that the true
 function is time-fixed function, thus, as the lambda increase, the real
@@ -862,7 +936,7 @@ define <code>threads</code>, which refers to the number of cores of the
 computer. Here we set <code>thread=4</code>. The following code and plot
 is to use to compare parallel and non-parallel time for different sample
 size:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringi.gagolewski.com/" class="external-link">stringi</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -912,13 +986,13 @@ size:</p>
 <span>         median_time<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">median</span>,<span class="st">"ms"</span><span class="op">)</span>,<span class="va">median_time</span><span class="op">/</span><span class="fl">1000</span>,<span class="va">median_time</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>samplesize<span class="op">=</span><span class="va">expression</span><span class="op">)</span> </span>
 <span><span class="co">#Plot Time used:</span></span></code></pre></div>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">time_data</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">samplesize</span>,y<span class="op">=</span><span class="va">median_time</span>,group<span class="op">=</span><span class="va">parallel</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">parallel</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">parallel</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Sample Size"</span>,y<span class="op">=</span><span class="st">"Seconds"</span>,title<span class="op">=</span><span class="st">"Internal Computation time Comparison"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level4">

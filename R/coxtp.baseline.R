@@ -15,16 +15,19 @@ coxtp.baseline <- function(fit, delta,z,time,strata=c()){
 
   
   model1  = fit
-  
-  # fit=model1
+  # 
+  # fit=model1$model_result
   # delta=event
   # z=data
-  # time=time
+  # time=round(time,2)
   # strata=strata
+  # 
+  # model1=model1$model_result
   
   if(length(strata)==0){
     #Calculated unique time and ties for the baseline calculation:
     unique_time   <- unique(time)
+    
     tieseq <- NULL
     index  <- NULL
     for (i in 1:length(unique(time))) {

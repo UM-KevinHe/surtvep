@@ -15,9 +15,9 @@ knitr::opts_chunk$set(
 ```
 
 
-## 1. Functions
+# 1. Functions
 
-### 1.1 `coxtp`:
+## 1.1 `coxtp`:
 
 `coxtp(event,z,time,strata=c(),spline="P-spline", nsplines=8, ties="Breslow",tol=1e-9, iter.max=20L, method="Newton",`
 `lambda=1e8,factor=10, btr="dynamic", sigma=1e-2, tau=0.6,stop="incre", parallel=FALSE, threads=1L,`
@@ -28,7 +28,7 @@ The main function in our package is `coxtp` which refers to the "Cox Non-proport
 
 
 
-#### 1.1.1 Common Parameters
+### 1.1.1 Common Parameters
 
 `coxtp` function have two required input, which is `formula` and `data`.
 
@@ -38,7 +38,7 @@ The main function in our package is `coxtp` which refers to the "Cox Non-proport
 * **`strata`**: stratification group defined in the data. If there exist stratification group, please enter as vector.
 
 
-#### 1.1.2 Method related Parameters:
+### 1.1.2 Method related Parameters:
 
 Here we offered both model estimation with penalization and without penalization. Detail method could be found in our paper(add link here). Following parameters defines the model settings:
 
@@ -64,7 +64,7 @@ Here we offered both model estimation with penalization and without penalization
   
 * `penalizestop`: could delete
   
-#### 1.1.3 Stopping creteria related Parameters:
+## 1.1.3 Stopping creteria related Parameters:
 
 * **`tol`**: Convergence threshold. The default threshold is set as **`tol=1e-6`**
 * **`iter.max`**: Maximum Iteration number, default is **`iter.max=20L`**
@@ -75,7 +75,7 @@ Here we offered both model estimation with penalization and without penalization
 
 * **`fixedstep`**: There might be times when the stopping criteria not working, thus, the number of steps could be set manually. Default value is **`fixedstep = FALSE`**, if it is true, will stop by `iter.max`
 
-#### 1.1.4 Other Parameters:
+### 1.1.4 Other Parameters:
 
 * **`ties`**: Ways to deal with ties, default is **`ties="Breslow"`**:
   * **`"Breslow"`**: Breslow approximation. Detailed information could be found here(add link)
@@ -92,7 +92,7 @@ Here we offered both model estimation with penalization and without penalization
 * **`ICLastOnly`** : Only calculate the last information criteria if is TRUE. Default is **`ICLastOnly=FALSE`**
 
 
-### 1.2. coxtp.plot
+## 1.2. coxtp.plot
 
 `coxtp.plot(fit,IC="AIC",coef,xlab="Time",ylab="Hazard Ratio (log-scale)")`
 
@@ -107,7 +107,7 @@ Function `coxtp.plot` was created to generate related hazard ratio plot from the
 * **`xlab`**: X axis label, default is xlab="Time"
 * **`ylab`**: X axis label, default is ylab="Hazard Ratio (log-scale)"
 
-### 1.3. coxtp.baseline
+## 1.3. coxtp.baseline
 
 `coxtp.baseline(fit, delta,z,time,strata=c())`
 
@@ -117,7 +117,7 @@ Function `coxtp.plot` was created to generate related hazard ratio plot from the
 * **`time`**:  Time vector, should be a vector with non-negative numeric value.
 * **`strata`**: stratification group defined in the data. If there exist stratification group, please enter as vector.
 
-### 1.4 coxtp.predict
+## 1.4 coxtp.predict
 
 `coxtp.predict(fit,baseline,newdata=c(),strata=FALSE)`
 
@@ -126,9 +126,9 @@ Function `coxtp.plot` was created to generate related hazard ratio plot from the
 * **`newdata`**: New data in vector
 * **`strata`**: Whether there is stratification in the dataset, default is FALSE.
 
-## 2. Data sets
+# 2. Data sets
 
-### 2.1 sim_data
+## 2.1 sim_data
 
 Example data for surtvep with 5000 observations of 4 variables
 
@@ -138,7 +138,7 @@ Example data for surtvep with 5000 observations of 4 variables
 * **`time`**: Simulated time variable, Continous variable with non-negative value
 
 
-### 2.2 sim_data_p5
+## 2.2 sim_data_p5
 
 Example data for surtvep with 5000 observations of 7 variables:
 
@@ -151,7 +151,7 @@ Example data for surtvep with 5000 observations of 7 variables:
 * **`time`**: Simulated time variable, Continous variable with non-negative value}
 
 
-### 2.3 sim_data_p5_f5
+## 2.3 sim_data_p5_f5
 
 Example data for surtvep with 5000 observations of 8 variables(With strata):
 

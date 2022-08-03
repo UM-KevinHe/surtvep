@@ -295,7 +295,8 @@ t
 
 ```
 
-Following is the comparison of three methods regards of accuracy :
+Compared to dynamic and static, no backtracking linesearch gives the optimal programming time. Following is the performance of each method:
+
 ```{r}
 time_list=c()
 x=seq(0,3,length.out=sum(event==1))
@@ -323,8 +324,6 @@ for(btr in c("none","dynamic","static")){
 
 
 ```
-
-Compared to dynamic and static, no backtracking linesearch gives the optimal programming time. Following is the performance of each method:
 
 ```{r,fig.height = 9, fig.width = 7, fig.align = "center"}
 library(cowplot)
@@ -356,33 +355,70 @@ There are 4 parameters could be defined in the stopping criteria, Convergence th
 
 ### 5.3 Baseline estimation
 
-The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero. It could be calculated by the calling the `coxtp.baseline` function
+The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero. We use the model fitted result `fit_penalized` in section 4.2. 
 
-```{r,fig.height = 4, fig.width = 7, fig.align = "center"}
-sim_data=sim_data_p5
-#Fit the model first:
+```{r,fig.height = 7, fig.width = 7, fig.align = "center"}
+
 event=sim_data[,"event"]
 time=sim_data[,"time"]
 data=sim_data[,!colnames(sim_data) %in% c("event","time")]
 
-lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000)
-fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline_all)
 
 model1  = fit_penalized$model.AIC
 
 ##baseline
 plotdata=coxtp.baseline(fit=model1, delta=event,z=data,time=time)
-#Exclude censoring points
+head(plotdata)
+```
+Let's check the result of baseline function first. The function returned a dataset containing the baseline estimation including 3 variables:
+
+* `unique.time.`: The unique time listed in the original dataset used to fit the model
+* `lambda`: refers to $\lambda_0(t)$ in the model, which is baseline hazard
+* `Lambda`: refers to the cumulative baseline hazard in the model.
+
+
+Note that since our baseline estimation is based on Breslow Estimator, when there is no ties in the data, the baseline estimation could sometime results as 0 since there is no death at certain time-point. As a result, we could either increase the time interval to make ties exists or remove the points that have $\lambda=0$. The only differences would result in the baseline hazard, there is no influence on the cumulative baseline hazard.
+
+```{r}
 plotdata=plotdata[plotdata$lambda!=0,]
+```
+
+
+Next, we are going to visualize the result using `ggplot2` and `cowplot` function.
+
+```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
+
+#Exclude censoring points
 
 baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) +  
   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
   scale_y_continuous(name='baseline hazard', limits=c(0,0.1)) +
   ggtitle(" Baseline Hazard by time") +
   theme(plot.title = element_text(hjust = 0.5))
-baseline_plot
+
+cum_plot<-ggplot(plotdata,aes(x=unique.time., y=Lambda)) + geom_line(size = 0.6) +  
+  scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
+  scale_y_continuous(name='Cumulative baseline hazard') +
+  ggtitle("Cumulative Baseline Hazard by time") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+plot_grid(baseline_plot,cum_plot,ncol = 2)
 
 ```
+
+One use of Cumulative baseline hazard is to calculate the survival function where cumulative hazard is the negative log of the survival probabilities. If we assume cumulative baseline hazard function as $S(t)$ and cumulative hazard function as $H(t)$, then we have $H(t)=-log(S(t))$. Thus, we could plot the survival function as follows:
+
+```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
+plotdata$survive=exp(-plotdata$Lambda)
+
+ggplot(plotdata,aes(x=unique.time., y=survive)) + geom_line(size = 0.6) +  
+  scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
+  scale_y_continuous(name='Survival Function') +
+  ggtitle("Survival by time") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
 
 
 ### 5.4 Testing for time-varying effect
@@ -407,7 +443,7 @@ The dataset have 5 covariates, "V1" to "V5", and a strata variable, "facility". 
 * V4: $\beta(t)=(t/3)**2*exp(t/2)$  
 * V5: $\beta(t)=exp(-1.5*t)$ 
 
-Now, let's fit the model by simply add one option `strata =facility`. The black line in the plot refers to the true function while the red line and area refers to the estimated function and its 95% CI.
+Now, let's fit the model by simply add one option `strata =facility`. The black line in the plot refers to the true function while the red line and area refers to the estimated function and its 95% CI. Again, we assume the best `lambda_spline=1000`
 
 ```{r}
 #Extract data
@@ -417,15 +453,18 @@ data_stra=sim_data_p5_f5[,!colnames(sim_data_p5_f5) %in% c("event","time","facil
 facility=sim_data_p5_f5[,"facility"]
 
 #select best lambda
-lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000)
-fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline_all)
+# lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000)
+# fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline_all)
+
+lambda_spline=1000
+fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline)
 ```
 
 Again, we use the `coxtp.baseline` function to get the baseline estimation for different group. Just add the option `strata=facility` to get specific facility data 
 
 ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
 library(dplyr)
-model1  = fit_stra$model.AIC
+model1  = fit_stra$model_result
 baselinedata=coxtp.baseline(fit=model1, delta=event_stra,z=data_stra,time=time_stra,strata = facility)
 baselinedata=baselinedata %>%
   filter(lambda!=0) %>%
@@ -443,7 +482,7 @@ baseline_plot
 
 #### 5.6 Model prediction:
 
-To predict the new data, we offered the function coxtp.predict. Suppose the new data to be predicted is `c(1,1,0,0,0)` for `V1` to `V5`. For data with no stratification: (Suppose we already have the best tuning parameter lambda selected).
+To predict the new data, we offered the function coxtp.predict. This function could also be used to calculate absolute hazard. Suppose the new data to be predicted is `c(1,1,0,0,0)` for `V1` to `V5`. For data with no stratification: (Suppose we already have the best tuning parameter `lambda_spline` selected).
 
 ```{r}
 sim_data=sim_data_p5
@@ -451,7 +490,7 @@ event=sim_data[,"event"]
 time=sim_data[,"time"]
 data=sim_data[,!colnames(sim_data) %in% c("event","time")]
 
-lambda_spline=100
+lambda_spline=1000
 fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline)
 
 model_result  = fit_penalized$model_result
@@ -473,6 +512,26 @@ ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) +
 ```
 
 
+If we want to calculate and show the difference of absolute hazard for variable `V2`, we could use the `coxtp.predict` to get it done.
+Assume that besides `V2`, other covariate are all set to the reference level.
+
+```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
+data_predict0=c(0,1,0,0,0)
+predict0=coxtp.predict(model_result,baseline,newdata=data_predict0,strata = F)
+data_predict1=c(0,0,0,0,0)
+predict1=coxtp.predict(model_result,baseline,newdata=data_predict1,strata = F)
+
+ggplot() +
+  geom_line(aes(x=predict0$unique.time.,y=predict0$lambda0_exp_betax,color="V2=0"),size = 0.6) + 
+  geom_line(aes(x=predict1$unique.time.,y=predict1$lambda0_exp_betax,color="V2=1"),size = 0.6) + 
+  scale_x_continuous(name='Years since diagnosis') + 
+  scale_y_continuous(name='Predicted hazard') +
+  ggtitle("Predicted Hazard") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
 For data with stratification, just define that `strata=T`(Default is FALSE):(Again, suppose we already have the best tuning parameter lambda selected)
 
 ```{r}
@@ -482,7 +541,7 @@ data_stra=sim_data_p5_f5[,!colnames(sim_data_p5_f5) %in% c("event","time","facil
 facility=sim_data_p5_f5[,"facility"]
 
 #select best lambda
-lambda_spline=100
+lambda_spline=1000
 fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline)
 model_result  = fit_stra$model_result
 baseline_strata=coxtp.baseline(fit=model_result, delta=event_stra,z=data_stra,time=time_stra,strata = facility)
@@ -501,6 +560,7 @@ ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) +
   ggtitle("Predicted Hazard") +
   theme(plot.title = element_text(hjust = 0.5))
 ```
+
 
 
 ## 6. Model performance
