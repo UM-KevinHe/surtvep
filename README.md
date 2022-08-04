@@ -58,5 +58,5 @@ coxtp.plot(fit,coef="V1")
 For detailed tutorial and model paramter explaination, please go to <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">here</a>
 
 ## Getting Help:
-If you encounter any problems or bugs, please contact me at:  xuetao@umich.edu
+If you encounter any problems or bugs, please contact us at:  xuetao@umich.edu, lfluo@umich.edu
 
