@@ -4,7 +4,7 @@
 \alias{coxtp.predict}
 \title{Title}
 \usage{
-coxtp.predict(fit, baseline, newdata = c(), strata = FALSE)
+coxtp.predict(fit, baseline, newdata = c(), strata = FALSE, out_seq = NULL)
 }
 \arguments{
 \item{fit}{Model get from coxtp}
@@ -14,6 +14,8 @@ coxtp.predict(fit, baseline, newdata = c(), strata = FALSE)
 \item{newdata}{New data in vector}
 
 \item{strata}{Whether there is stratification in the dataset, default is FALSE.}
+
+\item{out_seq}{Output time sequence. Default is out_seq=NULL. When default, will output the time sequence according to input fit}
 }
 \value{
 

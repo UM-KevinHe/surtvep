@@ -51,7 +51,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">coxtp.predict</span><span class="op">(</span><span class="va">fit</span>, <span class="va">baseline</span>, newdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>, strata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">coxtp.predict</span><span class="op">(</span><span class="va">fit</span>, <span class="va">baseline</span>, newdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>, strata <span class="op">=</span> <span class="cn">FALSE</span>, out_seq <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -70,6 +70,10 @@
 
 <dt>strata</dt>
 <dd><p>Whether there is stratification in the dataset, default is FALSE.</p></dd>
+
+
+<dt>out_seq</dt>
+<dd><p>Output time sequence. Default is out_seq=NULL. When default, will output the time sequence according to input fit</p></dd>
 
 </dl></div>
     <div class="section level2">

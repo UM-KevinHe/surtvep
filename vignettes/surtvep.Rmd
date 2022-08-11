@@ -269,10 +269,10 @@ The detail calculation of B-spline matrix, $\theta$ matrix and $\beta$ matrix wa
 
 
 
-## 5. Other information
+# 5. Other information
 
 
-### 5.1 Backtracking Linesearch
+## 5.1 Backtracking Linesearch
 
 In our packages, we provide 3 options for backtracking linesearch(`btr`).  The usual way of backtracking linesearch is with Newton Increment(Detailed information could be found here). However, When binary predictors with extremely low frequency are present, the calculation of the second-order derivative has some issues. In that case, the Newton increment presents extreme values, leading to a huge bias. We provided a way of limiting the step size in such cases. Instead of using the Newton increment, we use a fixed value of 1. This method is referred to as “`static`” in our function which is the default setting. Besides this, `btr="none"` refers to no backtracking, and `btr="dynamic"` refers to backtracking linesearch with Newton Increment.  
 
@@ -348,12 +348,19 @@ plot_grid(title,p1,p2,p3,ncol=1,labels=c("","None","Dynamic","Static"),rel_heigh
 
 ```
 
-### 5.2 Stopping criteria
+## 5.2 Stopping criteria
 There are 4 parameters could be defined in the stopping criteria, Convergence threshold(tol ), Maximum Iteration number(iter.max), Stopping rule(stop), and number of steps(fixedstep). Detailed information about stopping criteria selection could be viewed here(add link). Following is the default setting
 
 `coxtp(...,tol=1e-6,iter.max=20L,stop="ratch",fixedstep=FALSE)`
 
-### 5.3 Baseline estimation
+## 5.3 Baseline estimation
+
+
+The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, where it takes the value
+\begin{align*}
+    d\Lambda_0 = {d_i}\left\{\mathop{\sum}\limits_{\ell \in R(T_i)} \exp \{\boldsymbol{X}_{i' }^T \boldsymbol{\Theta}  \boldsymbol{B}(T_{i}) \}\right\}^{-1}.
+\end{align*}
+
 
 The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero. We use the model fitted result `fit_penalized` in section 4.2. 
 
@@ -377,7 +384,24 @@ Let's check the result of baseline function first. The function returned a datas
 * `Lambda`: refers to the cumulative baseline hazard in the model.
 
 
-Note that since our baseline estimation is based on Breslow Estimator, when there is no ties in the data, the baseline estimation could sometime results as 0 since there is no death at certain time-point. As a result, we could either increase the time interval to make ties exists or remove the points that have $\lambda=0$. The only differences would result in the baseline hazard, there is no influence on the cumulative baseline hazard.
+Note that since our baseline estimation is based on Breslow Estimator, when there is no ties in the data, the baseline estimation could sometime results as 0 since there is no death at certain time-point. Thus, if we directly draw the plot, it would be something like this:
+
+```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
+
+#Exclude censoring points
+
+baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) +  
+  scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
+  scale_y_continuous(name='baseline hazard', limits=c(0,0.1)) +
+  ggtitle(" Baseline Hazard by time") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+baseline_plot
+
+```
+
+
+As a result, we could either increase the time interval to make ties exists or remove the points that have $\lambda=0$. The only differences would result in the baseline hazard, there is no influence on the cumulative baseline hazard.
 
 ```{r}
 plotdata=plotdata[plotdata$lambda!=0,]
@@ -421,10 +445,10 @@ ggplot(plotdata,aes(x=unique.time., y=survive)) + geom_line(size = 0.6) +
 
 
 
-### 5.4 Testing for time-varying effect
+## 5.4 Testing for time-varying effect
 
 
-### 5.5 Stratification
+## 5.5 Stratification
 
 To handle different stratification groups in the dataset, the packages will use each facility as its own risk sets and finish the estimation. To add strata in the model, simply use the `strata` option. Following is an example:
 
@@ -480,7 +504,9 @@ baseline_plot
 
 
 
-#### 5.6 Model prediction:
+## 5.6 Model prediction:
+
+### 5.6.1 Simple prediction
 
 To predict the new data, we offered the function coxtp.predict. This function could also be used to calculate absolute hazard. Suppose the new data to be predicted is `c(1,1,0,0,0)` for `V1` to `V5`. For data with no stratification: (Suppose we already have the best tuning parameter `lambda_spline` selected).
 
@@ -511,6 +537,7 @@ ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
+### 5.6.2 absolute hazard
 
 If we want to calculate and show the difference of absolute hazard for variable `V2`, we could use the `coxtp.predict` to get it done.
 Assume that besides `V2`, other covariate are all set to the reference level.
@@ -530,7 +557,42 @@ ggplot() +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
+### 5.6.3 Prediction for certain time points
 
+Also, we could specify the time points of output by define `out_seq`. Following is an example:
+
+Let's check the output first:
+
+```{r}
+predict_seq=coxtp.predict(model_result,baseline,newdata=data_predict,strata = F,out_seq=seq(0,3,by=0.5))
+predict_seq
+```
+
+Instead of outputing all the data points, the `coxtp.predict` will only output the time points that has been specified. Next, we are going to see if there is any difference between the one with default output and the one with specified time points:
+
+```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
+predict_seq=coxtp.predict(model_result,baseline,newdata=data_predict,strata = F,out_seq=seq(0,3,by=0.1))
+
+plot_or=ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) +
+          geom_line(size = 0.6) + 
+          scale_x_continuous(name='Years since diagnosis') + 
+          scale_y_continuous(name='Predicted hazard') +
+          ggtitle("Without specify out_seq") +
+          theme(plot.title = element_text(hjust = 0.5))
+
+plot_seq=ggplot(predict_seq,aes(x=unique.time.,y=lambda0_exp_betax)) +
+          geom_line(size = 0.6) + 
+          scale_x_continuous(name='Years since diagnosis') + 
+          scale_y_continuous(name='Predicted hazard') +
+          ggtitle("With specify out_seq") +
+          theme(plot.title = element_text(hjust = 0.5))
+plot_grid(plot_or,plot_seq,ncol = 2)
+
+
+```
+From the result above, we could notice that only the function smoothness looks different.
+
+### 5.6.3 Prediction with stratification
 
 For data with stratification, just define that `strata=T`(Default is FALSE):(Again, suppose we already have the best tuning parameter lambda selected)
 
@@ -563,11 +625,11 @@ ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) +
 
 
 
-## 6. Model performance
+# 6. Model performance
 
-### 6.1 Internal comparison
+## 6.1 Internal comparison
 
-#### 6.6.1 Accurancy:
+### 6.1.1 Accurancy:
 
 For the non-penalized method, the estimation is largely depended on the number of knots chosen in the B-Spline base function. The example shown above is using the default knots, which is `nspline=8`. However, the estimation could be largely different if we choose other knots. Following is the code showing the performance of the estimation when choosing different knots:
 
@@ -704,7 +766,7 @@ p1
 As a result, as the lambda increase, the estimated function is more related to the true function. This is happening because that the true function is time-fixed function, thus, as the lambda increase, the real function tends to shrink to the fixed function.
 
 
-#### 6.1.2 Efficacy
+### 6.1.2 Efficacy
 
 Next, we are going to compare the Efficacy of different methods. The main function we used to eliminate computation time by parallel. For the function, the default setting for parallel is `parallel=FALSE`. For parallel computation, we also need to define `threads`, which refers to the number of cores of the computer. Here we set `thread=4`. The following code and plot is to use to compare parallel and non-parallel time for different sample size:
 
@@ -760,11 +822,49 @@ ggplot(time_data,aes(x=samplesize,y=median_time,group=parallel)) +
 
 
 
-### 6.2 External comparison
+## 6.2 External comparison
 
-#### 6.2.1 Accurancy
+### 6.2.1 Accurancy
 
 In this section, we are going to compare the performance between our package and other time-varying survival packages.
+
+
+# 7. Simulation
+
+In this section, we will generate our model prediction to large dataset and illustrate how to do simulation based on our package
+
+To start with, we first divided our dataset into training and testing dataset:
+
+```{r}
+sim_data=sim_data_p5
+#Generate ID for sampling
+sim_data=cbind(sim_data,c(1:nrow(sim_data)))
+train_id=sample(c(1:nrow(sim_data)),2000,replace=F)
+train_data=sim_data[sim_data[,8] %in% train_id, ]
+test_data=sim_data[!sim_data[,8] %in% train_id, ]
+#Remove ID
+train_data=train_data[,1:7]
+test_data=test_data[,1:7]
+```
+
+Next, we are going to build the model using the training data. The step is similar as we have shown in previous step
+
+```{r}
+event=train_data[,"event"]
+time=train_data[,"time"]
+data=train_data[,!colnames(train_data) %in% c("event","time")]
+lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000)
+fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline_all)
+fit_penalized$lambda.selected
+
+```
+
+
+From the result above, we noticed that the lambda.selected is 1. Next, we are going to predict the model using the test_data. Here we are going to treat the `test_data` as a whole new population data and want to predict the event probability by time. 
+
+From previous illustration, we know that the function `cox.predict` could generate absolute hazard for one individual during the time period. 
+
+
 
 
 
