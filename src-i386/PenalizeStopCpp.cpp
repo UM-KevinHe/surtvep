@@ -1,8 +1,8 @@
+#include "myomp.h"
 #define ARMA_NO_DEBUG
 #define ARMA_DONT_USE_OPENMP
 #define STRICT_R_HEADERS // needed on Windows, not macOS
 #include <RcppArmadillo.h>
-#include <omp.h>
 #include <RcppArmadilloExtensions/sample.h> // for Rcpp::RcppArmadillo::sample
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::plugins(cpp11)]]

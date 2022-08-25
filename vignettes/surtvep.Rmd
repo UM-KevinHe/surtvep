@@ -35,6 +35,8 @@ devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)
 
 ```{r setup,include=TRUE}
 library(surtvep)
+library(bench)
+library(cowplot)
 ```
 
 
