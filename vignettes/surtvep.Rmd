@@ -25,7 +25,8 @@ knitr::opts_chunk$set(
 ```{r ,include=TRUE,eval=FALSE}
 #Install the package, need to install the devtools packages:
 install.packages("devtools")
-devtools::install_github("UM-KevinHe/surtvep")
+require("remotes")
+remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
 
 #To install with Vignettes:
 install.packages("devtools")
