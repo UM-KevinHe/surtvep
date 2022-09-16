@@ -24,13 +24,13 @@ knitr::opts_chunk$set(
 
 ```{r ,include=TRUE,eval=FALSE}
 #Install the package, need to install the devtools packages:
-install.packages("devtools")
+require("devtools")
 require("remotes")
-remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
+remotes::install_github("UM-KevinHe/surtvep", ref = "Lingfeng_test")
 
 #To install with Vignettes:
-install.packages("devtools")
-devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)
+# install.packages("devtools")
+# devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)
 ```
 
 ```{r setup,include=TRUE}
