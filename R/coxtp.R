@@ -38,7 +38,7 @@ coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines
                     tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
                     btr="static", tau=0.5,
                     stop="ratch", parallel=FALSE, threads=1L, degree=3L, TIC = FALSE, TIC_prox = FALSE,
-                    lambda_spline = 0, ord = 4, fixedstep = FALSE,
+                    lambda_spline = NULL, ord = 4, fixedstep = FALSE,
                     ICLastOnly = TRUE,penalizestop = FALSE){
   
   if(length(strata)==0){
