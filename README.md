@@ -1,8 +1,19 @@
 # surtvep
 
-"surtvep" is an R package for time-varying effects analysis in large-scale time-to-event data, including Newton's method, Proximal Newton's method and their combination with P-spline and smoothing-spline. mAIC, TIC and GIC are provided to choose the penalization coefficient.
+"surtvep" is an R package for time-varying effects analysis in large-scale time-to-event data, including Newton's method, Proximal Newton's method and their combination with P-spline and smoothing-spline. mAIC, TIC, GIC and cross-validation are provided to choose the penalization coefficient.
 
-## Get Started
+# Get Started
+
+First you can install the 'surtvep' via:
+
+    #Install the package, need to install the devtools packages:
+    install.packages("devtools")
+    require("remotes")
+    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
+
+    #To install with Vignettes:
+    install.packages("devtools")
+    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp", build_vignettes =T)
 
 Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature. However, there are no formal R packages for estimating the time-varying effect without pre-assuming the time-dependent function. However, in the real dataset, if we get the pre-assuming incorrect, the estimation could be largely influenced by the assumption. Thus, we decided to develop a time-varying model using spline terms with penalization which don't need pre-assumption for the true time-dependent function and implemented it in R.
 
@@ -14,20 +25,6 @@ Also, by allowing parallel computing, our packages could handle the moderate and
 
 Specifically, when the data under analysis include a number of binary covariates with near-zero variation (e.g., in the SEER prostate cancer data, only 0.6% of the 716,553 patients had their tumors regional to the lymph nodes), the associated observed information matrix of a Newton-type method may have its minimum eigenvalue close to zero with a large condition number. Inverting such a nearly singular matrix is numerically unstable and the corresponding Newton updates are likely to be conned within a small neighborhood of the initial value, causing the estimates to be far from the optimal solutions. However, our proposed Proximal-Newtown method could handle this problem quite well by adding (how to describe the edited Hessian matrix)
 
-## Installation
-
-You can install 'surtvep' via:
-
-    #Install the package, need to install the devtools packages:
-    install.packages("devtools")
-    require("remotes")
-    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
-
-    #To install with Vignettes:
-    install.packages("devtools")
-    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp", build_vignettes =T)
-
-We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">tutorial</a>, which explains the general usage of the package in terms of preprocessing, model training, penalziation parameter selection and evalutaion procedure.
 
 ## Models:
 <table>
@@ -165,27 +162,33 @@ The SUPPORT dataset is available in the "surtvep" package. The following code wi
         <td></td>
         <td>
         The support dataset is a random sample of 1000 patients from Phases I & II of SUPPORT (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment). This dataset is very good for learning how to fit highly nonlinear predictor effects. See 
-        <a href="#references">[1]</a> for preprocessing.
+        <a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#model-fitting">tutorial</a></td> for preprocessing.
         </td>
         <td><a href="https://biostat.app.vumc.org/wiki/Main/SupportDesc">source</a>
     </tr>
 </table>
 
 
+# Installation
+
+**Note:** *This package is still in its early stages of development, so please don't hesitate to report any problems you may experience.* 
+
+The package only works for R 4.1.0+.
+
+You can install 'surtvep' via:
+
+    #Install the package, need to install the devtools packages:
+    install.packages("devtools")
+    require("remotes")
+    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
+
+    #To install with Vignettes:
+    install.packages("devtools")
+    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp", build_vignettes =T)
+
+We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">tutorial</a>, which explains the general usage of the package in terms of preprocessing, model training, penalziation parameter selection and evalutaion procedure.
 
 
-We will use the SUPPORT dataset as an example to show the usage of "surtvep"
-
-    event = support$death
-    time  = support$d.time
-    z = as.matrix(as.numeric(as.factor(support$sex)))
-    colnames(z) = "gender"
-
-    fit = coxtp(event = event, time = time, z = z)
-
-To get the estimated time-varying effect of a specific coefficient, we could use the following plot function in our package:
-
-    coxtp.plot(fit, coef = "gender")
 
 ## Detailed tutorial
 
