@@ -144,3 +144,10 @@ For detailed tutorial and model paramter explaination, please go to <a href="htt
 ## Getting Help:
 
 If you encounter any problems or bugs, please contact us at: [lfluo\@umich.edu](mailto:lfluo@umich.edu){.email}, [xuetao\@umich.edu](mailto:xuetao@umich.edu){.email}
+
+
+
+# References
+
+  \[1\] Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. Scalable proximal Methods for cause-specific hazard modeling with time-varying coefficients. *Lifetime Data Analysis*, 28(2):194-218, 2022. \[[paper](https://pubmed.ncbi.nlm.nih.gov/35092553/)\]
+
