@@ -116,13 +116,63 @@ Here, we are using the Simulation study included in our packages as an example
 
 <!---<a href="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe"><img src="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture"/></a>-->
 
-## Datasets
+# Datasets
 
 The SUPPORT dataset is available in the "surtvep" package. The following code will load the dataset in the form of a dataframe
 
     data("support")
 
-## Example
+## Simulated Datasets:
+
+<table>
+    <tr>
+        <th>Dataset</th>
+        <th>Size</th>
+        <th>Dataset</th>
+        <th>Data source</th>
+    </tr>
+    <tr>
+        <td>simulN2kOP2</td>
+        <td>25,000</td>
+        <td>
+        Dataset from simulation study in <a href="#references">[2]</a>.
+        This is a simulation study with continuous time predictors
+        </td>
+        <td><a href="https://github.com/havakv/pycox/blob/master/pycox/simulations/relative_risk.py">simulN2kOP2Continuous</a>
+    </tr>
+    <tr>
+        <td>simulN2kOP2Binary</td>
+        <td>100,000</td>
+        <td>
+        Dataset from simulation study in <a href="#references">[12]</a>.
+        This is a discrete time dataset with 1000 possible event-times.
+        </td>
+        <td><a href="https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py">simulN2kOP2Binary</a>
+    </tr>
+</table>
+
+
+## Real Datasets:
+<table>
+    <tr>
+        <th>Dataset</th>
+        <th>Size</th>
+        <th>Dataset</th>
+        <th>Data source</th>
+    </tr>
+    <tr>
+        <td>SUPPORT</td>
+        <td></td>
+        <td>
+        The support dataset is a random sample of 1000 patients from Phases I & II of SUPPORT (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment). This dataset is very good for learning how to fit highly nonlinear predictor effects. See 
+        <a href="#references">[1]</a> for preprocessing.
+        </td>
+        <td><a href="https://biostat.app.vumc.org/wiki/Main/SupportDesc">source</a>
+    </tr>
+</table>
+
+
+
 
 We will use the SUPPORT dataset as an example to show the usage of "surtvep"
 
