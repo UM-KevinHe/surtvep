@@ -1,11 +1,4 @@
-url: ~
+url: https://um-kevinhe.github.io/surtvep/
 template:
   bootstrap: 5
-navbar:
-  structure:
-    left: [intro, parameter]
-    right: [search, github]
-  components:
-    parameter:
-      text: Model Parameters
-      href: articles/Model_Parameters.html
+

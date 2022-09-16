@@ -45,7 +45,15 @@
   <a class="nav-link" href="articles/surtvep.html">Get started</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="articles/Model_Parameters.html">Model Parameters</a>
+  <a class="nav-link" href="reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/Model_Parameters.html">Model Parameters</a>
+    <a class="dropdown-item" href="articles/reference.html">Reference</a>
+    <a class="dropdown-item" href="articles/surtvep_temp.html">Introduction to surtvep</a>
+  </div>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -69,9 +77,9 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="surtvep">surtvep<a class="anchor" aria-label="anchor" href="#surtvep"></a>
 </h1></div>
-<p>Cox Non-PH model with penalization</p>
+<p>“surtvep” is an R package for time-varying effects analysis in large-scale time-to-event data, including Newton’s method, Proximal Newton’s method and their combination with P-spline and smoothing-spline. mAIC, TIC and GIC are provided to choose the penalization coefficient.</p>
 <div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+<h2 id="get-started">Get Started<a class="anchor" aria-label="anchor" href="#get-started"></a>
 </h2>
 <p>Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature. However, there are no formal R packages for estimating the time-varying effect without pre-assuming the time-dependent function. However, in the real dataset, if we get the pre-assuming incorrect, the estimation could be largely influenced by the assumption. Thus, we decided to develop a time-varying model using spline terms with penalization which don’t need pre-assumption for the true time-dependent function and implemented it in R.</p>
 <p>Following are some benefits of our packages:</p>
@@ -82,13 +90,16 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>You can install ‘surtvep’ via:</p>
 <pre><code><span><span class="co">#Install the package, need to install the devtools packages:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span>, ref <span class="op">=</span> <span class="st">"openmp"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#To install with Vignettes:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span>,build_vignettes <span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span>, ref <span class="op">=</span> <span class="st">"openmp"</span>, build_vignettes <span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre>
+<p>We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">tutorial</a>, which explains the general usage of the package in terms of preprocessing, model training, penalziation parameter selection and evalutaion procedure.</p>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage:<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -107,21 +118,36 @@
 <span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">data</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/coxtp.plot.html">coxtp.plot</a></span><span class="op">(</span><span class="va">fit</span>,coef<span class="op">=</span><span class="st">"V1"</span><span class="op">)</span></span></code></pre>
-<p><a href="https://drive.google.com/uc?export=view&amp;id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" class="external-link"><img src="https://drive.google.com/uc?export=view&amp;id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture"></a></p>
+<!---<a href="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe"><img src="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture"/></a>-->
 </div>
 <div class="section level2">
-<h2 id="improvement-compared-to-previous-time-varying-packages">Improvement compared to previous Time-varying packages:<a class="anchor" aria-label="anchor" href="#improvement-compared-to-previous-time-varying-packages"></a>
+<h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a>
 </h2>
+<p>The SUPPORT dataset is available in the “surtvep” package. The following code will load the dataset in the form of a dataframe</p>
+<pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"support"</span><span class="op">)</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<p>We will use the SUPPORT dataset as an example to show the usage of “surtvep”</p>
+<pre><code><span><span class="va">event</span> <span class="op">=</span> <span class="va">support</span><span class="op">$</span><span class="va">death</span></span>
+<span><span class="va">time</span>  <span class="op">=</span> <span class="va">support</span><span class="op">$</span><span class="va">d.time</span></span>
+<span><span class="va">z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">=</span> <span class="st">"gender"</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, time <span class="op">=</span> <span class="va">time</span>, z <span class="op">=</span> <span class="va">z</span><span class="op">)</span></span></code></pre>
+<p>To get the estimated time-varying effect of a specific coefficient, we could use the following plot function in our package:</p>
+<pre><code><span><span class="fu"><a href="reference/coxtp.plot.html">coxtp.plot</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="st">"gender"</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="detailed-tutorial">Detailed tutorial<a class="anchor" aria-label="anchor" href="#detailed-tutorial"></a>
 </h2>
-<p>For detailed tutorial and model paramter explaination, please go to <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank" class="external-link">here</a></p>
+<p>For detailed tutorial and model paramter explaination, please go to <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">here</a></p>
 </div>
 <div class="section level2">
 <h2 id="getting-help">Getting Help:<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h2>
-<p>If you encounter any problems or bugs, please contact me at: <a href="mailto:xuetao@umich.edu" class="email">xuetao@umich.edu</a></p>
+<p>If you encounter any problems or bugs, please contact us at: <a href="mailto:lfluo@umich.edu" class="email">lfluo@umich.edu</a>, <a href="mailto:xuetao@umich.edu" class="email">xuetao@umich.edu</a></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

@@ -1,8 +1,8 @@
 
 # surtvep
-Cox Non-PH model with penalization
+"surtvep" is an R package for time-varying effects analysis in large-scale time-to-event data, including Newton's method, Proximal Newton's method and their combination with P-spline and smoothing-spline. mAIC, TIC and GIC are provided to choose the penalization coefficient.
 
-## Overview
+## Get Started
 Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature. However, there are no formal R packages for estimating the time-varying effect without pre-assuming the time-dependent function. However, in the real dataset, if we get the pre-assuming incorrect, the estimation could be largely influenced by the assumption. Thus, we decided to develop a time-varying model using spline terms with penalization which don't need pre-assumption for the true time-dependent function and implemented it in R.
 
 Following are some benefits of our packages: 
@@ -16,16 +16,21 @@ Specifically, when the data under analysis include a number of binary covariates
 
 ## Installation
 
+You can install 'surtvep' via:
+
 ```
 #Install the package, need to install the devtools packages:
 install.packages("devtools")
-devtools::install_github("UM-KevinHe/surtvep")
+require("remotes")
+remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
 
 #To install with Vignettes:
 install.packages("devtools")
-devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)
-
+remotes::install_github("UM-KevinHe/surtvep", ref = "openmp", build_vignettes =T)
 ```
+
+We recommand  to start with <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">tutorial</a>, which explains the general usage of the package in terms of preprocessing, model training, penalziation parameter selection and evalutaion procedure.
+
 ## Usage:
 
 Here, we are using the Simulation study included in our packages as an example
@@ -46,10 +51,31 @@ fit <- coxtp(event = event, z = data, time = time)
 coxtp.plot(fit,coef="V1")
 
 ```
-<a href="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe"><img src="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture"/></a>
+<!---<a href="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe"><img src="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture"/></a>-->
 
-  
-## Improvement compared to previous Time-varying packages:
+
+## Datasets
+The SUPPORT dataset is available in the "surtvep" package. The following code will load the dataset in the form of a dataframe
+```
+data("support")
+```
+
+## Example
+We will use the SUPPORT dataset as an example to show the usage of "surtvep"
+
+```
+event = support$death
+time  = support$d.time
+z = as.matrix(as.numeric(as.factor(support$sex)))
+colnames(z) = "gender"
+
+fit = coxtp(event = event, time = time, z = z)
+```
+
+To get the estimated time-varying effect of a specific coefficient, we could use the following plot function in our package:
+```
+coxtp.plot(fit, coef = "gender")
+```
 
 
 ## Detailed tutorial
@@ -58,5 +84,5 @@ coxtp.plot(fit,coef="V1")
 For detailed tutorial and model paramter explaination, please go to <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">here</a>
 
 ## Getting Help:
-If you encounter any problems or bugs, please contact us at:  xuetao@umich.edu, lfluo@umich.edu
+If you encounter any problems or bugs, please contact us at: lfluo@umich.edu, xuetao@umich.edu
 

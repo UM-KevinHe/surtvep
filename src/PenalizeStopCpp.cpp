@@ -461,7 +461,7 @@ List stepinc_fixtra_spline(const arma::mat &Z_tv, const arma::mat &B_spline, con
                           const std::string &method="Newton", const double &lambda=1e8,
                           const bool &parallel=false, const unsigned int &threads=1) {
   
-  int N = Z_tv.n_rows;
+  // int N = Z_tv.n_rows;
 
   arma::vec grad, grad_p; arma::mat info, info_p; // gradient and info matrix
   if (ti) {
@@ -648,7 +648,6 @@ List TIC_J_penalized_second(const arma::mat &Z_tv, const arma::mat &B_spline, co
     for (unsigned int j = 0; j < idx_fail[i].n_elem; ++j) {
       arma::vec B_sp_tmp = B_sp.row(j).t();
       unsigned int arstart = idx_fail[i](j), arend = n_Z_tv_theta-1;
-      //cout<<"arstart and arend:" << nar <<endl;
       arma::vec exp_lincomb = exp(Z_tv_theta.rows(arstart,arend) * B_sp_tmp);
       double S0 = accu(exp_lincomb);
       arma::mat Z_tv_exp =
@@ -688,7 +687,7 @@ List TIC_J_penalized_second(const arma::mat &Z_tv, const arma::mat &B_spline, co
       arma::mat Z_tv_strata = Z_tv.rows(idx_Z_strata[i][0], idx_Z_strata[i][1]);
       arma::mat Z_tv_theta = Z_tv_strata * theta;
       arma::mat B_sp = B_spline.rows(idx_B_sp[i]);
-      unsigned int n_Z_tv_theta = Z_tv_theta.n_rows;
+      // unsigned int n_Z_tv_theta = Z_tv_theta.n_rows;
 
       for (unsigned int j = 0; j < Z_tv_strata.n_rows; ++j) {
         grad_tmp2 =  arma::zeros<arma::vec> (theta.n_elem);
@@ -701,7 +700,6 @@ List TIC_J_penalized_second(const arma::mat &Z_tv, const arma::mat &B_spline, co
           arma::vec S1_tv_second = S1_second_all[i*idx_fail[i].size()+k];
           double dlambda = 1/S0_second;
           arma::vec exp_zi_beta = exp(Z_tv_theta.row(j) * B_sp_second_tmp);
-          //cout<<"exp_zi_beta number of elements:"<<exp_zi_beta.n_elem<<endl;
           grad_tmp2 += kron(dlambda*exp_zi_beta[0]*(Z_tv_strata.row(j).t() - S1_tv_second/S0_second), B_sp_second_tmp);//*exp_zi_beta[0];
         }
 
@@ -773,8 +771,8 @@ List TIC_J_penalized_second_bresties(const arma::mat &Z_tv, const arma::mat &B_s
     unsigned int n_Z_tv_theta = Z_tv_theta.n_rows;
     for (unsigned int j = 0; j < idx_fail[i].size(); ++j) {
       arma::vec B_sp_tmp = B_sp.row(j).t();
-      unsigned int arstart = idx_fail[i][j](0), arend = n_Z_tv_theta-1,
-          nar = idx_fail[i][j].n_elem;
+      unsigned int arstart = idx_fail[i][j](0), arend = n_Z_tv_theta-1;
+          // nar = idx_fail[i][j].n_elem;
       arma::vec exp_lincomb = exp(Z_tv_theta.rows(arstart,arend) * B_sp_tmp);
       double S0 = accu(exp_lincomb);
       arma::mat Z_tv_exp =
@@ -816,7 +814,7 @@ List TIC_J_penalized_second_bresties(const arma::mat &Z_tv, const arma::mat &B_s
       arma::mat Z_tv_strata = Z_tv.rows(idx_Z_strata[i][0], idx_Z_strata[i][1]);
       arma::mat Z_tv_theta = Z_tv_strata * theta;
       arma::mat B_sp = B_spline.rows(idx_B_sp[i]);
-      unsigned int n_Z_tv_theta = Z_tv_theta.n_rows;
+      // unsigned int n_Z_tv_theta = Z_tv_theta.n_rows;
 
       for (unsigned int j = 0; j < Z_tv_strata.n_rows; ++j) {
         grad_tmp2 =  arma::zeros<arma::vec> (theta.n_elem);
@@ -972,11 +970,11 @@ List spline_udpate(const arma::mat &Z_tv, const arma::mat &B_spline, arma::mat &
           crit123(2) = diff_theta;
         }
         crit = max(crit123);
-        cout<<"crit = "<<crit<<endl;
+        Rcout<<"crit = "<<crit<<endl;
       }
       logplkd += diff_logplkd;
     }
-    cout << "Iter " << iter << ": Obj fun = " << setprecision(7) << fixed << 
+    Rcout << "Iter " << iter << ": Obj fun = " << setprecision(7) << fixed << 
      logplkd << "; Stopping crit = " << setprecision(7) << scientific << 
        crit << ";" << endl;
     logplkd_vec.push_back(logplkd);
@@ -1128,8 +1126,9 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
   }
 
   arma::mat theta = theta_init; arma::vec beta_ti = beta_ti_init;
-  double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
-    inc, rhs_btr = 0;
+  // double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
+  //   inc, rhs_btr = 0;
+  double logplkd;
   List objfun_list, update_list;
   NumericVector logplkd_vec, iter_NR_all;
   objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti, n_strata,
@@ -1230,7 +1229,7 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
     // VarianceMatrix2.push_back(VarianceMatrix_tmp2);
     // VarianceMatrix_I.push_back(info_lambda_inv);
     // VarianceMatrix_J.push_back(inv(J_p));
-    cout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
+    Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
 
   }
 
@@ -1272,7 +1271,7 @@ List stepinc_fixtra_spline_bresties(const arma::mat &Z_tv, const arma::mat &B_sp
                                     const std::string &method="Newton", const double &lambda=1e8,
                                     const bool &parallel=false, const unsigned int &threads=1) {
   
-  int N = Z_tv.n_rows;
+  // int N = Z_tv.n_rows;
 
   arma::vec grad, grad_p; arma::mat info, info_p; // gradient and info matrix
   if (ti) {
@@ -1472,11 +1471,11 @@ List spline_udpate_bresties(const arma::mat &Z_tv, const arma::vec &time,
             crit123(2) = diff_theta;
           }
           crit = max(crit123);
-          cout<<"crit = "<<crit<<endl;
+          Rcout<<"crit = "<<crit<<endl;
         }        
         logplkd += diff_logplkd;
       }
-      cout << "Iter " << iter << ": Obj fun = " << setprecision(7) << fixed << 
+      Rcout << "Iter " << iter << ": Obj fun = " << setprecision(7) << fixed << 
        logplkd << "; Stopping crit = " << setprecision(7) << scientific << 
          crit << ";" << endl;
       logplkd_vec.push_back(logplkd);
@@ -1683,8 +1682,8 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
   //unsigned int iter = 0, btr_max = 1000, btr_ct = 0;      //set as 100 instead of 1000 to improve speed
   arma::mat theta = theta_init; arma::vec beta_ti = beta_ti_init;
   List theta_list = List::create(theta), beta_ti_list = List::create(beta_ti);
-  double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
-    inc, rhs_btr = 0;
+
+  double logplkd;
   List objfun_list, update_list;
   NumericVector logplkd_vec;
   objfun_list = obj_fixtra_bresties(Z_tv, B_spline, theta, Z_ti, beta_ti, 
@@ -1780,7 +1779,7 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
     theta_all.slice(i)    = theta_ilambda;
     logplkd_vec.push_back(logplkd);
     VarianceMatrix = VarianceMatrix_tmp;
-    cout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
+    Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
 
 
   }
@@ -1812,8 +1811,8 @@ List LogPartialTest(const arma::vec &event, const arma::mat &Z_tv, const arma::m
                     const bool &parallel=false, const unsigned int &threads=1,
                     const bool TestAll = true){
 
-    int p     = Z_tv.n_cols; //dimension
-    int K     = B_spline.n_cols; //number of knots  
+    // int p     = Z_tv.n_cols; //dimension
+    // int K     = B_spline.n_cols; //number of knots  
 
     //for training data: //////////////////////////////////////////////////////////////
     int N    = Z_tv.n_rows;
@@ -2276,7 +2275,6 @@ List spline_udpate_lambdafromlarge(const arma::mat &Z_tv, const arma::mat &B_spl
                             idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata,
                             istart, iend, parallel, threads);
   logplkd = objfun_list["logplkd"];
-  //cout<<"logplkd_init = "<<logplkd_init<<endl;
   logplkd -= lambda_i*as_scalar(vectorise(theta,1)*S_matrix*vectorise(theta,1).t())/(N*1.0);
   List theta_list = List::create(theta);
     
@@ -2335,7 +2333,7 @@ List spline_udpate_lambdafromlarge(const arma::mat &Z_tv, const arma::mat &B_spl
         crit = abs(diff_logplkd/(diff_logplkd+logplkd-logplkd_init));
       logplkd += diff_logplkd;
     }
-    cout << "Iter " << iter << ": Obj fun = " << setprecision(7) << fixed << 
+    Rcout << "Iter " << iter << ": Obj fun = " << setprecision(7) << fixed << 
      logplkd << "; Stopping crit = " << setprecision(7) << scientific << 
        crit << ";" << endl;
     logplkd_vec.push_back(logplkd);
@@ -2484,8 +2482,9 @@ List surtiver_fixtra_fit_penalizestop_lambdafromlarge(const arma::vec &event, co
   }
 
   arma::mat theta = theta_init; arma::vec beta_ti = beta_ti_init;
-  double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
-    inc, rhs_btr = 0;
+  // double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
+  //   inc, rhs_btr = 0;
+  double logplkd;
   List objfun_list, update_list;
   NumericVector logplkd_vec, iter_NR_all;
   objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti, n_strata,
@@ -2595,7 +2594,7 @@ List surtiver_fixtra_fit_penalizestop_lambdafromlarge(const arma::vec &event, co
     // VarianceMatrix2.push_back(VarianceMatrix_tmp2);
     // VarianceMatrix_I.push_back(info_lambda_inv);
     // VarianceMatrix_J.push_back(inv(J_p));
-    cout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
+    Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
 
   }
 
@@ -2645,7 +2644,6 @@ List Lambda_estimate_ties2(int knot,
     else{
       index = cumtie(i-1);
     }
-    //cout << "index: " <<index <<endl;
     z_temp     = z.rows(index, n-1);
     zbeta_mat  = exp(z_temp * theta * b_spline.row(i).t());
     S0(i)      = accu(zbeta_mat);

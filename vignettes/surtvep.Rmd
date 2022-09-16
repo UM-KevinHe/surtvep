@@ -31,7 +31,6 @@ remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
 #To install with Vignettes:
 install.packages("devtools")
 devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)
-
 ```
 
 ```{r setup,include=TRUE}
@@ -95,15 +94,15 @@ First, Let's look at the `fit` result
 ```{r}
 summary(fit)
 ```
-There are 4 results saved under the fit result. 
+There are 4 results saved under the fit result.
 
-* `model_result` save the detailed model results which we will explain in a minute. 
+* `model_result` save the detailed model results which we will explain in a minute.
 
-* `lambda.selected` saved the best lambda chosen based on different criteria which will not be used for the non-penalized model. 
+* `lambda.selected` saved the best lambda chosen based on different criteria which will not be used for the non-penalized model.
 
-* `p` refers to the number of covariates used in the model 
+* `p` refers to the number of covariates used in the model
 
-* `z_names` records the covariates names. 
+* `z_names` records the covariates names.
 
 
 The detailed model result was saved in `model_result`, which can be called by `fit$model_result`. Now, let's explore the result a little bit:
@@ -111,10 +110,10 @@ The detailed model result was saved in `model_result`, which can be called by `f
 ```{r}
 summary(fit$model_result)
 ```
-Here we noticed that there are 18 items in the model results list. Following is an explanation of each item: 
+Here we noticed that there are 18 items in the model results list. Following is an explanation of each item:
 
 * `theta`: Estimation matrix of $\theta$
-* `logplkd`: log-partial likelihood 
+* `logplkd`: log-partial likelihood
 * `theta_all`: Internal validation use
 * `theta_list`: The estimation matrix at each Newton's update
 * `AIC_all`: Akakia information criterion
@@ -169,7 +168,7 @@ head(beta)
 As a result, $\beta$ is a 2487*2 matrix(we are using the "Breslow" ties, thus there are 2487 rows instead of 5000, detail about ties and Breslow ties could refers to here(insert link)). We could also get the 95%CI for the estimation, which is calculates as below:
 
 ```{r}
-B.spline <- as.matrix(model_result$bases)  
+B.spline <- as.matrix(model_result$bases)
 theta_plot  <- model_result$theta_list[[length(model_result$theta_list)]]
 
 beta     <- B.spline%*%t(theta_plot)
@@ -187,7 +186,7 @@ for(i in 1:p){
   temp       <- 1.96*sqrt(vapply(list, function(x) matrix(B.spline[x,],1,knot)%*%var2%*%t(matrix(B.spline[x,],1,knot)),FUN.VALUE=numeric(1)))
   low        <- beta_t_1-temp
   up         <- beta_t_1+temp
-  
+
   beta_low[,i] <- low
   beta_up[,i]  <- up
 }
@@ -212,23 +211,23 @@ ymax=beta$V2_up
 time=model_result$uniqfailtimes
 
 
-ggplot(data=beta, aes(x=time)) + 
-  geom_line(aes(y= y),size = 0.9,color = 'red') + 
-  geom_ribbon(aes(ymin = ymin, ymax = ymax), fill="red", alpha = 0.2) + 
+ggplot(data=beta, aes(x=time)) +
+  geom_line(aes(y= y),size = 0.9,color = 'red') +
+  geom_ribbon(aes(ymin = ymin, ymax = ymax), fill="red", alpha = 0.2) +
   scale_y_continuous(name='Hazard Ratio (log-scale)') +
   theme_bw() +  theme(plot.title = element_text(hjust = 0.5)) +
   theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank()) +
   theme(text= element_text(size=14)) + theme(axis.text= element_text(size=14)) +
-  theme(axis.title.y = element_text(margin= margin(t=0, r=10, b=0, l=0))) +labs(x="Time") + 
+  theme(axis.title.y = element_text(margin= margin(t=0, r=10, b=0, l=0))) +labs(x="Time") +
   ggtitle(paste0("Effect of V2 When holding other covariates constant"))
 ```
 
 
 ## 4.2 Newton Method with penalization:
 
-We use the smooth spline here for penalization(default). You could also use `spline="P-spline"`. For lambda_spline, you could either enter a numeric number(must be an integer) or a vector of numbers. 
-If `lambda_spline` was entered as a vector of numbers, the best lambda was selected based on different criteria(AIC, TIC or GIC). 
-If `lambda_spline` was entered as a single number, the model result format was kind of similar as the 4.1, the model result could be called by `model_result`. 
+We use the smooth spline here for penalization(default). You could also use `spline="P-spline"`. For lambda_spline, you could either enter a numeric number(must be an integer) or a vector of numbers.
+If `lambda_spline` was entered as a vector of numbers, the best lambda was selected based on different criteria(AIC, TIC or GIC).
+If `lambda_spline` was entered as a single number, the model result format was kind of similar as the 4.1, the model result could be called by `model_result`.
 Following is a model fit with the `lambda_spline` as a vector for different illustration purposes:
 
 ```{r}
@@ -256,15 +255,15 @@ library(cowplot)
 x=seq(0,3,length.out=sum(event==1))
 y1=1
 y2=exp(-1.5*x)
-p1=coxtp.plot(fit_penalized,IC="AIC",coef="V1") + 
-    ggtitle("Penalized NR") + geom_line(aes(x=x,y=y1)) 
-p2=coxtp.plot(fit,IC="AIC",coef="V1") + 
-    ggtitle("Non-Penalized NR")+ geom_line(aes(x=x,y=y1)) 
+p1=coxtp.plot(fit_penalized,IC="AIC",coef="V1") +
+    ggtitle("Penalized NR") + geom_line(aes(x=x,y=y1))
+p2=coxtp.plot(fit,IC="AIC",coef="V1") +
+    ggtitle("Non-Penalized NR")+ geom_line(aes(x=x,y=y1))
 plot_grid(p1,p2)
 
 ```
 
-Compare with the non-penalized Model, we could see that the effect of "V1" was shrink to roughly linear in the penalized model. 
+Compare with the non-penalized Model, we could see that the effect of "V1" was shrink to roughly linear in the penalized model.
 
 The detail calculation of B-spline matrix, $\theta$ matrix and $\beta$ matrix was similar as that illustrate as 4.1.2.2.
 
@@ -275,20 +274,20 @@ The detail calculation of B-spline matrix, $\theta$ matrix and $\beta$ matrix wa
 
 ## 5.1 Backtracking Linesearch
 
-In our packages, we provide 3 options for backtracking linesearch(`btr`).  The usual way of backtracking linesearch is with Newton Increment(Detailed information could be found here). However, When binary predictors with extremely low frequency are present, the calculation of the second-order derivative has some issues. In that case, the Newton increment presents extreme values, leading to a huge bias. We provided a way of limiting the step size in such cases. Instead of using the Newton increment, we use a fixed value of 1. This method is referred to as “`static`” in our function which is the default setting. Besides this, `btr="none"` refers to no backtracking, and `btr="dynamic"` refers to backtracking linesearch with Newton Increment.  
+In our packages, we provide 3 options for backtracking linesearch(`btr`).  The usual way of backtracking linesearch is with Newton Increment(Detailed information could be found here). However, When binary predictors with extremely low frequency are present, the calculation of the second-order derivative has some issues. In that case, the Newton increment presents extreme values, leading to a huge bias. We provided a way of limiting the step size in such cases. Instead of using the Newton increment, we use a fixed value of 1. This method is referred to as “`static`” in our function which is the default setting. Besides this, `btr="none"` refers to no backtracking, and `btr="dynamic"` refers to backtracking linesearch with Newton Increment.
 
 
 ```{r, warning=FALSE}
 # For no backtracking linesearch:
-t1=bench::mark(coxtp(event = event, z = data, 
+t1=bench::mark(coxtp(event = event, z = data,
                   time = time,lambda_spline=1000,btr="none"))
 
 #For static backtracking linesearch:
-t2=bench::mark(coxtp(event = event, z = data, 
+t2=bench::mark(coxtp(event = event, z = data,
                   time = time,lambda_spline=1000,btr="static"))
 
 #For dynamic backtracking linesearch:
-t3= bench::mark(coxtp(event = event, z = data, 
+t3= bench::mark(coxtp(event = event, z = data,
                   time = time,lambda_spline=1000,btr="dynamic"))
 t=rbind(t1,t2,t3)
 t[,1]=c("none","static","dynamic")
@@ -307,15 +306,15 @@ y2=exp(-1.5*x)
 for(btr in c("none","dynamic","static")){
   fit=coxtp(event = event, z = data, time = time,lambda_spline=1000,btr=btr)
   for(v in c("V1","V2")){
-    plot=coxtp.plot(fit,IC="AIC",coef=v,ylab="HR(log-scale)")+ 
+    plot=coxtp.plot(fit,IC="AIC",coef=v,ylab="HR(log-scale)")+
     theme(text = element_text(size = 10),
           axis.text.x = element_text(size = 8),
-          axis.text.y=element_text(size = 8)) + 
+          axis.text.y=element_text(size = 8)) +
     ggtitle(v)
     if(v=="V1"){
-      plot=plot + geom_line(aes(x=x,y=y1)) 
+      plot=plot + geom_line(aes(x=x,y=y1))
     } else {
-      plot=plot + geom_line(aes(x=x,y=y2)) 
+      plot=plot + geom_line(aes(x=x,y=y2))
     }
     assign(paste0("plot",v,"_",btr),plot)
   }
@@ -329,7 +328,7 @@ for(btr in c("none","dynamic","static")){
 ```{r,fig.height = 9, fig.width = 7, fig.align = "center"}
 library(cowplot)
 ##Plot v1
-title <- ggdraw() + 
+title <- ggdraw() +
   draw_label(
     "Backtracking comparsion",
     fontface = 'bold',
@@ -363,7 +362,7 @@ The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is gi
 \end{align*}
 
 
-The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero. We use the model fitted result `fit_penalized` in section 4.2. 
+The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero. We use the model fitted result `fit_penalized` in section 4.2.
 
 ```{r,fig.height = 7, fig.width = 7, fig.align = "center"}
 
@@ -391,7 +390,7 @@ Note that since our baseline estimation is based on Breslow Estimator, when ther
 
 #Exclude censoring points
 
-baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) +  
+baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) +
   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
   scale_y_continuous(name='baseline hazard', limits=c(0,0.1)) +
   ggtitle(" Baseline Hazard by time") +
@@ -415,13 +414,13 @@ Next, we are going to visualize the result using `ggplot2` and `cowplot` functio
 
 #Exclude censoring points
 
-baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) +  
+baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) +
   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
   scale_y_continuous(name='baseline hazard', limits=c(0,0.1)) +
   ggtitle(" Baseline Hazard by time") +
   theme(plot.title = element_text(hjust = 0.5))
 
-cum_plot<-ggplot(plotdata,aes(x=unique.time., y=Lambda)) + geom_line(size = 0.6) +  
+cum_plot<-ggplot(plotdata,aes(x=unique.time., y=Lambda)) + geom_line(size = 0.6) +
   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
   scale_y_continuous(name='Cumulative baseline hazard') +
   ggtitle("Cumulative Baseline Hazard by time") +
@@ -436,7 +435,7 @@ One use of Cumulative baseline hazard is to calculate the survival function wher
 ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
 plotdata$survive=exp(-plotdata$Lambda)
 
-ggplot(plotdata,aes(x=unique.time., y=survive)) + geom_line(size = 0.6) +  
+ggplot(plotdata,aes(x=unique.time., y=survive)) + geom_line(size = 0.6) +
   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
   scale_y_continuous(name='Survival Function') +
   ggtitle("Survival by time") +
@@ -460,13 +459,13 @@ head(sim_data_p5_f5)
 ```
 
 
-The dataset have 5 covariates, "V1" to "V5", and a strata variable, "facility". For this dataset, the true time-dependent function is 
+The dataset have 5 covariates, "V1" to "V5", and a strata variable, "facility". For this dataset, the true time-dependent function is
 
-* V1: $\beta(t)=1$  
-* V2: $\beta(t)=sin(3*\pi*t/4)$   
-* V3: $\beta(t)=-1$  
-* V4: $\beta(t)=(t/3)**2*exp(t/2)$  
-* V5: $\beta(t)=exp(-1.5*t)$ 
+* V1: $\beta(t)=1$
+* V2: $\beta(t)=sin(3*\pi*t/4)$
+* V3: $\beta(t)=-1$
+* V4: $\beta(t)=(t/3)**2*exp(t/2)$
+* V5: $\beta(t)=exp(-1.5*t)$
 
 Now, let's fit the model by simply add one option `strata =facility`. The black line in the plot refers to the true function while the red line and area refers to the estimated function and its 95% CI. Again, we assume the best `lambda_spline=1000`
 
@@ -485,7 +484,7 @@ lambda_spline=1000
 fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline)
 ```
 
-Again, we use the `coxtp.baseline` function to get the baseline estimation for different group. Just add the option `strata=facility` to get specific facility data 
+Again, we use the `coxtp.baseline` function to get the baseline estimation for different group. Just add the option `strata=facility` to get specific facility data
 
 ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
 library(dplyr)
@@ -494,7 +493,7 @@ baselinedata=coxtp.baseline(fit=model1, delta=event_stra,z=data_stra,time=time_s
 baselinedata=baselinedata %>%
   filter(lambda!=0) %>%
   mutate(facility=as.character(strata))
-baseline_plot<-ggplot(baselinedata,aes(x=unique.time_temp., y=lambda,group=facility)) + geom_line(size = 0.6,aes(color=facility)) +  
+baseline_plot<-ggplot(baselinedata,aes(x=unique.time_temp., y=lambda,group=facility)) + geom_line(size = 0.6,aes(color=facility)) +
   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) +
   scale_y_continuous(name='baseline hazard') +
   ggtitle(" Baseline Hazard by time and facility") +
@@ -531,8 +530,8 @@ The result dataset `predict` is a dataset with predicted hazard and time points 
 
 ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
 ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) +
-  geom_line(size = 0.6) + 
-  scale_x_continuous(name='Years since diagnosis') + 
+  geom_line(size = 0.6) +
+  scale_x_continuous(name='Years since diagnosis') +
   scale_y_continuous(name='Predicted hazard') +
   ggtitle("Predicted Hazard") +
   theme(plot.title = element_text(hjust = 0.5))
@@ -550,9 +549,9 @@ data_predict1=c(0,0,0,0,0)
 predict1=coxtp.predict(model_result,baseline,newdata=data_predict1,strata = F)
 
 ggplot() +
-  geom_line(aes(x=predict0$unique.time.,y=predict0$lambda0_exp_betax,color="V2=0"),size = 0.6) + 
-  geom_line(aes(x=predict1$unique.time.,y=predict1$lambda0_exp_betax,color="V2=1"),size = 0.6) + 
-  scale_x_continuous(name='Years since diagnosis') + 
+  geom_line(aes(x=predict0$unique.time.,y=predict0$lambda0_exp_betax,color="V2=0"),size = 0.6) +
+  geom_line(aes(x=predict1$unique.time.,y=predict1$lambda0_exp_betax,color="V2=1"),size = 0.6) +
+  scale_x_continuous(name='Years since diagnosis') +
   scale_y_continuous(name='Predicted hazard') +
   ggtitle("Predicted Hazard") +
   theme(plot.title = element_text(hjust = 0.5))
@@ -575,15 +574,15 @@ Instead of outputing all the data points, the `coxtp.predict` will only output t
 predict_seq=coxtp.predict(model_result,baseline,newdata=data_predict,strata = F,out_seq=seq(0,3,by=0.1))
 
 plot_or=ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) +
-          geom_line(size = 0.6) + 
-          scale_x_continuous(name='Years since diagnosis') + 
+          geom_line(size = 0.6) +
+          scale_x_continuous(name='Years since diagnosis') +
           scale_y_continuous(name='Predicted hazard') +
           ggtitle("Without specify out_seq") +
           theme(plot.title = element_text(hjust = 0.5))
 
 plot_seq=ggplot(predict_seq,aes(x=unique.time.,y=lambda0_exp_betax)) +
-          geom_line(size = 0.6) + 
-          scale_x_continuous(name='Years since diagnosis') + 
+          geom_line(size = 0.6) +
+          scale_x_continuous(name='Years since diagnosis') +
           scale_y_continuous(name='Predicted hazard') +
           ggtitle("With specify out_seq") +
           theme(plot.title = element_text(hjust = 0.5))
@@ -617,8 +616,8 @@ Again, we could plot the result by ggplot:
 
 ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE}
 ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) +
-  geom_line(aes(color=strata,group=strata),size = 0.6) + 
-  scale_x_continuous(name='Years since diagnosis') + 
+  geom_line(aes(color=strata,group=strata),size = 0.6) +
+  scale_x_continuous(name='Years since diagnosis') +
   scale_y_continuous(name='Predicted hazard') +
   ggtitle("Predicted Hazard") +
   theme(plot.title = element_text(hjust = 0.5))
@@ -649,11 +648,11 @@ x=seq(0,3,length.out=sum(event==1))
 y=1
 for(knot in knot_list){
   fit<-coxtp(event=event,z=data,time=time,nspline=knot)
-  plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + 
+  plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") +
     theme(text = element_text(size = 10),
           axis.text.x = element_text(size = 8),
-          axis.text.y=element_text(size = 8)) + 
-    ggtitle("") + geom_line(aes(x=x,y=y))   
+          axis.text.y=element_text(size = 8)) +
+    ggtitle("") + geom_line(aes(x=x,y=y))
   plot
   assign(paste0("plot",knot),plot)
 }
@@ -661,7 +660,7 @@ for(knot in knot_list){
 library(cowplot)
 
 
-title <- ggdraw() + 
+title <- ggdraw() +
   draw_label(
     "Non-penalized NR",
     fontface = 'bold',
@@ -692,12 +691,12 @@ x=seq(0,3,length.out=sum(event==1))
 y=1
 for(knot in knot_list){
   fit<-coxtp(event=event,z=data,time=time,nspline=knot,lambda_spline = 1000)
-  plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + 
+  plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") +
     theme(text = element_text(size = 10),
           axis.text.x = element_text(size = 8),
-          axis.text.y=element_text(size = 8)) + 
-    ggtitle("") + 
-    geom_line(aes(x=x,y=y)) 
+          axis.text.y=element_text(size = 8)) +
+    ggtitle("") +
+    geom_line(aes(x=x,y=y))
   plot
   assign(paste0("plot",knot),plot)
 }
@@ -707,7 +706,7 @@ for(knot in knot_list){
 ```{r,fig.height = 7, fig.width = 7, fig.align = "center"}
 library(cowplot)
 
-title <- ggdraw() + 
+title <- ggdraw() +
   draw_label(
     paste0("Penalized NR,lambda=",1000),
     fontface = 'bold',
@@ -722,7 +721,7 @@ p1=plot_grid(plot6,plot8,plot10,plot20,ncol=2,labels=c(labels),label_size = 13)
 p1
 
 ```
-From the plot above, we could observe that with different knots selected, the performance is not different so much for different knots, all the estimates are relatively close to the real function. 
+From the plot above, we could observe that with different knots selected, the performance is not different so much for different knots, all the estimates are relatively close to the real function.
 However, in the penalized model, the lambda is more important which is another reason that we need to select the best lambda before actually fitting the model. The following plot is the performance of different lambda selected. For the following plot, the knot was set as default, which is `knot=8`.
 
 ```{r}
@@ -733,11 +732,11 @@ x=seq(0,3,length.out=sum(event==1))
 y=1
 for(lambda in lambda_spline_all){
   fit<-coxtp(event=event,z=data,time=time,lambda_spline = lambda)
-  plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + 
+  plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") +
     theme(text = element_text(size = 10),
           axis.text.x = element_text(size = 8),
-          axis.text.y=element_text(size = 8)) + 
-    ggtitle("")  + 
+          axis.text.y=element_text(size = 8)) +
+    ggtitle("")  +
     geom_line(aes(x=x,y=y))
   plot
   assign(paste0("plot",i),plot)
@@ -746,7 +745,7 @@ for(lambda in lambda_spline_all){
 
 library(cowplot)
 
-title <- ggdraw() + 
+title <- ggdraw() +
   draw_label(
     paste0("Penalized NR,knot=",8),
     fontface = 'bold',
@@ -784,7 +783,7 @@ for(samplesize in samplesize_list){
   event_sub=sim_data_sub[,"event"]
   time_sub=sim_data_sub[,"time"]
   data_sub=sim_data_sub[,!colnames(sim_data_sub) %in% c("event","time")]
-  
+
   non_parallel=bench::mark(coxtp(event=event_sub,z=data_sub,time=time_sub,lambda_spline = 100))[,1:8]
   parallel=bench::mark(coxtp(event=event_sub,z=data_sub,time=time_sub,lambda_spline = 100,parallel = T,threads = 4))[,1:8]
   non_parallel[,1]=samplesize
@@ -797,7 +796,7 @@ for(samplesize in samplesize_list){
     non_parallel_list=non_parallel
     parallel_list=parallel
   }
-  
+
   i=i+1
 }
 
@@ -808,14 +807,14 @@ time_data=rbind(parallel_list,non_parallel_list) %>%
          median_time=str_remove(median_time,"m"),
          median_time=as.numeric(median_time),
          median_time=ifelse(str_detect(median,"ms"),median_time/1000,median_time)) %>%
-  rename(samplesize=expression) 
+  rename(samplesize=expression)
 #Plot Time used:
 ```
 
 ```{r,fig.height = 5, fig.width = 7, fig.align = "center"}
 
-ggplot(time_data,aes(x=samplesize,y=median_time,group=parallel)) + 
-  geom_point(aes(color=parallel)) + 
+ggplot(time_data,aes(x=samplesize,y=median_time,group=parallel)) +
+  geom_point(aes(color=parallel)) +
   geom_line(aes(color=parallel)) +
   labs(x="Sample Size",y="Seconds",title="Internal Computation time Comparison")
 
@@ -861,9 +860,9 @@ fit_penalized$lambda.selected
 ```
 
 
-From the result above, we noticed that the lambda.selected is 1. Next, we are going to predict the model using the test_data. Here we are going to treat the `test_data` as a whole new population data and want to predict the event probability by time. 
+From the result above, we noticed that the lambda.selected is 1. Next, we are going to predict the model using the test_data. Here we are going to treat the `test_data` as a whole new population data and want to predict the event probability by time.
 
-From previous illustration, we know that the function `cox.predict` could generate absolute hazard for one individual during the time period. 
+From previous illustration, we know that the function `cox.predict` could generate absolute hazard for one individual during the time period.
 
 
 
