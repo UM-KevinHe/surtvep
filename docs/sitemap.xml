@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/404.html</loc>
+    <loc>/404.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/articles/index.html</loc>
+    <loc>/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/articles/Model_Parameters.html</loc>
+    <loc>/articles/Model_Parameters.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/articles/reference.html</loc>
+    <loc>/articles/reference.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/articles/surtvep.html</loc>
+    <loc>/articles/surtvep.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/articles/surtvep_temp.html</loc>
+    <loc>/articles/surtvep_temp.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/authors.html</loc>
+    <loc>/authors.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/index.html</loc>
+    <loc>/index.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.baseline.html</loc>
+    <loc>/reference/coxtp.baseline.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.html</loc>
+    <loc>/reference/coxtp.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.plot.html</loc>
+    <loc>/reference/coxtp.plot.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.predict.html</loc>
+    <loc>/reference/coxtp.predict.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/index.html</loc>
+    <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/sim_data.html</loc>
+    <loc>/reference/sim_data.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/sim_data_p5.html</loc>
+    <loc>/reference/sim_data_p5.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/sim_data_p5_f5.html</loc>
+    <loc>/reference/sim_data_p5_f5.html</loc>
   </url>
 </urlset>

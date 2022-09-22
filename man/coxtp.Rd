@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{Cox Non-proportional Hazards model with penalization: Main function}
+\title{Cox Non-proportional Hazards model with penalization:}
 \usage{
 coxtp(
   event,
@@ -22,13 +22,11 @@ coxtp(
   parallel = FALSE,
   threads = 1L,
   degree = 3L,
-  TIC = FALSE,
   TIC_prox = FALSE,
   lambda_spline = 0,
   ord = 4,
   fixedstep = FALSE,
-  ICLastOnly = TRUE,
-  penalizestop = FALSE
+  ICLastOnly = TRUE
 )
 }
 \arguments{
@@ -67,8 +65,6 @@ Number related to the paper). Default setting is \strong{\code{spline="Smooth-sp
 
 \item{degree}{Degree of smoothing spline. Default setting is \strong{\code{degree=3L}}.}
 
-\item{TIC}{}
-
 \item{TIC_prox}{When calculating information criteria, there might be numerical issue(second order derivative,
 Hessian matrix approximate is singular), thus we proposed to add a small term to the diagonal. Default \strong{\code{TIC_prox = FALSE}}}
 
@@ -80,12 +76,10 @@ Hessian matrix approximate is singular), thus we proposed to add a small term to
 the number of steps could be set manually. Default value is \strong{\code{fixedstep = FALSE}}, if it is true, will stop by \code{iter.max}}
 
 \item{ICLastOnly}{Only calculate the last information criteria if is TRUE. Default is \strong{\code{ICLastOnly=FALSE}}}
-
-\item{penalizestop}{}
-}
-\value{
-
 }
 \description{
-Cox Non-proportional Hazards model with penalization: Main function
+Descritpion (...)
+}
+\details{
+put the link to the wesite()...
 }

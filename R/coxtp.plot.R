@@ -6,19 +6,24 @@
 #' @param IC The Creteria selected for the plotting
 #' @param coef The variable that needed to be plotted
 #'
+#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
+#' 
 #' @return
 #' @export
-#'
+#' 
 #' @examples
-coxtp.plot <- function(fit, IC="AIC", coef,xlab="Time",ylab="Hazard Ratio (log-scale)"){
+coxtp.plot <- function(fit, IC="AIC", coef){
   # if (missing(fit)) stop ("Argument fit is required!")
   # if (class(fit)!="surtvep") stop("Object fit is not of class 'surtvep'!")
 
-  # #Test use
+  # #Test uses
   # coef="V1"
   # IC="AIC"
   # fit=fit
   # ##
+  xlab="Time"
+  ylab="Hazard Ratio (log-scale)"
+  
   if(is.null(fit$model.AIC)){
     model_plot<-fit$model_result
   } else {

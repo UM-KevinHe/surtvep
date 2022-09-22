@@ -7,6 +7,7 @@
 \format{
 A data.frame with 5000 observations of 7 variables:
 \describe{
+\itemize{
 \item{V1}{Simulated covariate V1, Binary variable with 0, 1. True time-dependent function is b(t)=1}
 \item{V2}{Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=sin(3\emph{pi}t/4)}
 \item{V3}{Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=-1}
@@ -14,6 +15,7 @@ A data.frame with 5000 observations of 7 variables:
 \item{V5}{Simulated covariate V2, Binary variable with 0, 1. True time-dependent function is b(t)=exp(-1.5}t)}
 \item{event}{Simulated event variable, Binary varible with 0, 1 }
 \item{time}{Simulated time variable, Continous variable with non-negative value}
+}
 }
 }
 \usage{

@@ -1,6 +1,9 @@
 
-#' Cox Non-proportional Hazards model with penalization: Main function
+#' Cox Non-proportional Hazards model with penalization: 
 #' 
+#' Descritpion (...)
+#' 
+#' @details put the link to the wesite()...
 #'
 #' @param event event vector, should be a vector containing 0 or 1
 #' @param z Covariate matrix
@@ -20,7 +23,6 @@
 #' @param parallel Parallel computation, Default is **`parallel=FALSE`**
 #' @param threads Parallel computation parameter(number of cores)Default is **`threads=1L`**
 #' @param degree Degree of smoothing spline. Default setting is **`degree=3L`**.
-#' @param TIC 
 #' @param TIC_prox When calculating information criteria, there might be numerical issue(second order derivative, 
 #' Hessian matrix approximate is singular), thus we proposed to add a small term to the diagonal. Default **`TIC_prox = FALSE`**
 #' @param lambda_spline  Smoothing parameter lambda. Default is **`lambda_spline = 0`** which refers to Newton's Method without penalization.
@@ -28,7 +30,6 @@
 #' @param fixedstep There might be times when the stopping criteria not working, thus, 
 #' the number of steps could be set manually. Default value is **`fixedstep = FALSE`**, if it is true, will stop by `iter.max`
 #' @param ICLastOnly Only calculate the last information criteria if is TRUE. Default is **`ICLastOnly=FALSE`**
-#' @param penalizestop 
 #'
 #' @return
 #' @export
@@ -37,9 +38,9 @@
 coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines=8, ties="Breslow",
                     tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
                     btr="static", tau=0.5,
-                    stop="ratch", parallel=FALSE, threads=1L, degree=3L, TIC = FALSE, TIC_prox = FALSE,
-                    lambda_spline = NULL, ord = 4, fixedstep = FALSE,
-                    ICLastOnly = TRUE,penalizestop = FALSE){
+                    stop="ratch", parallel=FALSE, threads=1L, degree=3L, TIC_prox = FALSE,
+                    lambda_spline = 0, ord = 4, fixedstep = FALSE,
+                    ICLastOnly = TRUE){
   
   if(length(strata)==0){
     stratum=rep(1, length(time))
@@ -67,7 +68,6 @@ coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines
                     lambda_spline = lambda_all[lambda_index],TIC_prox = TIC_prox, ord = ord, degree = degree,
                     tol = tol, iter.max = iter.max, tau= tau, parallel = parallel, threads = threads,
                     fixedstep = fixedstep,
-                    penalizestop = penalizestop,
                     ICLastOnly = ICLastOnly)
 
     model[[lambda_index]] <- model1

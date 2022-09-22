@@ -17,9 +17,6 @@ coxtp.baseline(fit, delta, z, time, strata = c())
 
 \item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.}
 }
-\value{
-
-}
 \description{
 Calculating Baseline hazard using the result from coxtp()
 }

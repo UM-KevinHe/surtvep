@@ -4,13 +4,7 @@
 \alias{coxtp.plot}
 \title{Plotting result from coxtp() function}
 \usage{
-coxtp.plot(
-  fit,
-  IC = "AIC",
-  coef,
-  xlab = "Time",
-  ylab = "Hazard Ratio (log-scale)"
-)
+coxtp.plot(fit, IC = "AIC", coef)
 }
 \arguments{
 \item{fit}{Model get from coxtp}
@@ -18,9 +12,6 @@ coxtp.plot(
 \item{IC}{The Creteria selected for the plotting}
 
 \item{coef}{The variable that needed to be plotted}
-}
-\value{
-
 }
 \description{
 Plotting result from coxtp() function

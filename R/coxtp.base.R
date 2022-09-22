@@ -23,7 +23,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   ord           <- control$ord
   fixedstep     <- control$fixedstep
   addsecond     <- control$addsecond
-  penalizestop  <- control$penalizestop
   ICLastOnly    <- control$ICLastOnly
   
   
@@ -100,7 +99,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
                                                   btr=control$btr, stop=control$stop, TIC_prox = control$TIC_prox,
                                                   fixedstep = control$fixedstep,
                                                   difflambda = control$difflambda,
-                                                  penalizestop = control$penalizestop,
                                                   ICLastOnly = control$ICLastOnly)
       # row.names(fit$ctrl.pts) <- term.tv
       # fit$internal.knots <- unname(knots)
@@ -128,7 +126,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
                                          btr=control$btr, stop=control$stop, TIC_prox = control$TIC_prox,
                                          fixedstep = control$fixedstep,
                                          difflambda = control$difflambda,
-                                         penalizestop = control$penalizestop,
                                          ICLastOnly = control$ICLastOnly)
       
       
@@ -202,7 +199,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
                                                   btr=control$btr, stop=control$stop, TIC_prox = TIC_prox,
                                                   fixedstep=control$fixedstep,
                                                   difflambda = control$difflambda,
-                                                  penalizestop = control$penalizestop,
                                                   ICLastOnly = control$ICLastOnly)
       # row.names(fit$ctrl.pts) <- term.tv
       # fit$internal.knots <- unname(knots)
@@ -271,7 +267,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
                                          btr=control$btr, stop=control$stop, TIC_prox = TIC_prox,
                                          fixedstep=control$fixedstep,
                                          difflambda = control$difflambda,
-                                         penalizestop = control$penalizestop,
                                          ICLastOnly = control$ICLastOnly)
       # row.names(fit$ctrl.pts) <- term.tv
       # fit$internal.knots <- unname(knots)
@@ -304,7 +299,7 @@ coxtp.control <- function(tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
                              factor=10, btr="dynamic", sigma=1e-2, tau=0.6,
                              stop="incre", parallel=FALSE, threads=1L, degree=3L, TIC = FALSE, TIC_prox = FALSE, 
                              lambda_spline = 0, ord = 4, fixedstep = FALSE, effectsize = 0, difflambda = FALSE,
-                             addsecond = FALSE, penalizestop = FALSE, ICLastOnly = FALSE) {
+                             addsecond = FALSE,  ICLastOnly = FALSE) {
   if (tol <= 0) stop("Invalid convergence tolerance!")
   if (iter.max <= 0 | !is.numeric(iter.max))
     stop("Invalid maximum number of iterations!")
@@ -331,13 +326,12 @@ coxtp.control <- function(tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
                "It should be greater than one."))
   if (!stop %in% c("incre", "ratch", "relch")) stop("Invalid stopping rule!")
   if (!is.numeric(degree) | degree < 2L) stop("Invalid degree for spline!")
-  if (ICLastOnly) {penalizestop = FALSE} 
   list(tol=tol, iter.max=as.integer(iter.max), method=method, lambda=lambda,
        factor=factor, btr=btr, s=sigma, t=tau, stop=stop,
        parallel=parallel, threads=as.integer(threads), degree=as.integer(degree),
        TIC=TIC, TIC_prox = TIC_prox, lambda_spline= lambda_spline, ord = ord, fixedstep = fixedstep, 
        effectsize = effectsize, difflambda = difflambda, addsecond = addsecond, 
-       penalizestop= penalizestop, ICLastOnly=ICLastOnly)
+       ICLastOnly=ICLastOnly)
 }
 
 
@@ -365,8 +359,7 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
   ord           <- control$ord
   fixedstep     <- control$fixedstep
   addsecond     <- control$addsecond
-  penalizestop  <- control$penalizestop
-  
+
   Terms <- terms(formula, specials=c("tv", "strata", "offset"))
   if(attr(Terms, 'response')==0) stop("Formula must have a Surv response!")
   factors <- attr(Terms, 'factors')
