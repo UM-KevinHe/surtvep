@@ -1775,7 +1775,7 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
     theta_all.slice(i)    = theta_ilambda;
     logplkd_vec.push_back(logplkd);
     VarianceMatrix = VarianceMatrix_tmp;
-    Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
+    // Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
 
 
   }
