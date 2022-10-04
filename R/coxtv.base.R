@@ -31,7 +31,17 @@
 #' @export
 #'
 #' @examples 
-coxtv <- function(event , z , time ,strata=c(), spline="Smooth-spline", nsplines=8, ties="Breslow", 
+#' data(ExampleData)
+#' z <- ExampleData$x
+#' time <- ExampleData$time
+#' event <- ExampleData$event
+#' fit <- coxtv(event = event, z = z, time = time)
+#' 
+#' @useDynLib surtvep, .registration=TRUE
+#' @importFrom Rcpp evalCpp
+#' 
+#' 
+coxtv <- function(event , z , time ,strata=c(), spline="P-spline", nsplines=8, ties="Breslow", 
                      control, ...) {
   if (!ties%in%c("Breslow", "none")) stop("Invalid ties!")
   # pass ... args to coxtv.control
@@ -377,8 +387,6 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", lambda=1e8,
 }
 
 confint.surtiver <- function(fit, times, parm, level=0.95) {
-  level = 0.95
-  
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtv") stop("Object fit is not of class 'coxtv'!")
   # if (missing(times)) {

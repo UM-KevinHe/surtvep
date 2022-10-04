@@ -9,7 +9,7 @@ coxtv(
   z,
   time,
   strata = c(),
-  spline = "Smooth-spline",
+  spline = "P-spline",
   nsplines = 8,
   ties = "Breslow",
   control,
@@ -62,4 +62,12 @@ Descritpion (...)
 }
 \details{
 put the link to the wesite()...
+}
+\examples{
+data(ExampleData)
+z <- ExampleData$x
+time <- ExampleData$time
+event <- ExampleData$event
+fit <- coxtv(event = event, z = z, time = time)
+
 }

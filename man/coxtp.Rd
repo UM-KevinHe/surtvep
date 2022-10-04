@@ -14,9 +14,9 @@ coxtp(
   ties = "Breslow",
   tol = 1e-09,
   iter.max = 20L,
-  method = "Newton",
+  method = "ProxN",
   lambda = 1e+08,
-  btr = "static",
+  btr = "dynamic",
   tau = 0.5,
   stop = "ratch",
   parallel = FALSE,
@@ -82,4 +82,15 @@ Descritpion (...)
 }
 \details{
 put the link to the wesite()...
+}
+\examples{
+data(ExampleData)
+z <- ExampleData$x
+time  <- ExampleData$time
+event <- ExampleData$event
+
+lambda.spline  = c(0,1)
+fit   <- coxtp(event = event, z = z, time = time, lambda_spline=lambda.spline)
+
+
 }

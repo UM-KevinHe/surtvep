@@ -9,20 +9,44 @@
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
 #' @return
-#' @export
+#' @exportS3Method plot coxtp
 #' 
 #' @examples
-coxtp.plot <- function(fit, IC="AIC", coef){
-  # if (missing(fit)) stop ("Argument fit is required!")
-  # if (class(fit)!="surtvep") stop("Object fit is not of class 'surtvep'!")
-
+# plot.coxtp <- function(model, IC="AIC", coef){
+IC="AIC"
+  if (!IC %in% c("AIC", "TIC", "GIC")) stop("IC has to be one of AIC, TIC and GIC!")
   # #Test uses
   # coef="V1"
   # IC="AIC"
   # fit=fit
   # ##
-  xlab="Time"
-  ylab="Hazard Ratio (log-scale)"
+  if(IC == 'AIC'){
+    fit <- model$model.AIC
+  } else if(IC == 'TIC'){
+    fit <- model$model.AIC
+  } else{
+    fit <- model$model.GIC
+  }
+  
+  if (missing(model)) stop ("Argument model is required!")
+  if (class(fit)!="coxtp") stop("Object fit is not of class 'coxtp'!")
+  # if (!is.logical(save)) stop("Invalid save!")
+  # if (!is.logical(exponentiate)) stop("Invalid exponentiate!")
+  term.event <- attr(fit, "response")
+  if (missing(xlab)) xlab <- "time"
+  if (missing(ylab)) ylab <- ifelse(exponentiate,"hazard ratio","coefficient")
+  missingxlim <- missing(xlim); missingylim <- missing(ylim); 
+  missingtitle <- missing(title); missinglty <- missing(linetype)
+  missingfill <- missing(fill); missingcolor <- missing(color)
+  defaultcols <- c("#F8766D","#A3A500","#00BF7D","#00B0F6","#E76BF3")
+  defaultltys <- c("solid", "dashed", "dotted", "dotdash", "longdash")
+  if (missing(expand)) expand <- c(1,1)/100
+  ls.tvef <- confint.surtiver(fit, times, parm, level)$tvef
+  if (length(ls.tvef)==0) stop("No time-varying effect chosen!")
+  if (missing(labels)) labels <- names(ls.tvef)
+  # if (!require(ggplot2)) install.packages('ggplot2')
+  library(ggplot2)
+  options(stringsAsFactors=F)
   
   if(is.null(fit$model.AIC)){
     model_plot<-fit$model_result

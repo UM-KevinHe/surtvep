@@ -35,9 +35,18 @@
 #' @export
 #'
 #' @examples 
+#' data(ExampleData)
+#' z <- ExampleData$x
+#' time  <- ExampleData$time
+#' event <- ExampleData$event
+#' 
+#' lambda.spline  = c(0,1)
+#' fit   <- coxtp(event = event, z = z, time = time, lambda_spline=lambda.spline)
+#' 
+#' 
 coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines=8, ties="Breslow",
-                    tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
-                    btr="static", tau=0.5,
+                    tol=1e-9, iter.max=20L, method="ProxN", lambda=1e8,
+                    btr="dynamic", tau=0.5,
                     stop="ratch", parallel=FALSE, threads=1L, degree=3L, TIC_prox = FALSE,
                     lambda_spline = 0, ord = 4, fixedstep = FALSE,
                     ICLastOnly = TRUE){
@@ -47,19 +56,13 @@ coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines
   } else {
     stratum=strata
   }
-  stratum=rep(1, length(time))
-  
   data_NR <- data.frame(event=event, time=time, z, strata=stratum, stringsAsFactors=F)
-  #Z.char <- paste0("X", 1:p)
   Z.char <- colnames(data_NR)[c(3:(ncol(data_NR)-1))]
   fmla <- formula(paste0("Surv(time, event)~",
                          paste(c(paste0("tv(", Z.char, ")"), "strata(strata)"), collapse="+")))
 
-  #
-
   lambda_all <- lambda_spline
   model <- list()
-
 
   for(lambda_index in 1:length(lambda_all)){
 
@@ -72,9 +75,7 @@ coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines
 
     model[[lambda_index]] <- model1
   }
-
-
-
+  
   AIC_all <- NULL
   TIC_all <- NULL
   GIC_all <- NULL
@@ -100,14 +101,14 @@ coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines
   z_names=colnames(z)
   p        <- ncol(z)
 
-  if(length(lambda_all)==1){
-    result=model1
-    return(list(model_result=result,
-                lambda.selected = lambda.selected,p=p,z_names=z_names))
-  } else {
-    return(list(model.AIC = model_AIC, model.TIC = model_TIC,  model.GIC = model_GIC,
-                lambda.selected = lambda.selected,p=p,z_names=z_names))
-  }
+  # if(length(lambda_all)==1){
+  #   result=model1
+  #   return(list(model_result=result,
+  #               lambda.selected = lambda.selected,p=p,z_names=z_names))
+  # } else {
+  return(list(model.AIC = model_AIC, model.TIC = model_TIC,  model.GIC = model_GIC,
+              lambda.selected = lambda.selected,p=p,z_names=z_names))
+  # }
 
 
 }

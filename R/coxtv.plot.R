@@ -9,10 +9,17 @@
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
 #' @return
-#' @export
+#' @exportS3Method plot coxtv
 #' 
 #' @examples
-plot.surtiver <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
+#' data(ExampleData)
+#' z <- ExampleData$x
+#' time <- ExampleData$time
+#' event <- ExampleData$event
+#' fit <- coxtv(event = event, z = z, time = time)
+#' plot(fit)
+#' 
+plot.coxtv <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
                           xlab, ylab, xlim, ylim, save=FALSE, allinone=FALSE, 
                           title, linetype, fill, color, labels, expand, ...) {
   
@@ -22,6 +29,7 @@ plot.surtiver <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FA
   # if (!is.logical(exponentiate)) stop("Invalid exponentiate!")
   term.event <- attr(fit, "response")
   if (missing(xlab)) xlab <- "time"
+  if (missing(ylab)) ylab <- ifelse(exponentiate,"hazard ratio","coefficient")
   missingxlim <- missing(xlim); missingylim <- missing(ylim); 
   missingtitle <- missing(title); missinglty <- missing(linetype)
   missingfill <- missing(fill); missingcolor <- missing(color)
@@ -31,7 +39,7 @@ plot.surtiver <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FA
   ls.tvef <- confint.surtiver(fit, times, parm, level)$tvef
   if (length(ls.tvef)==0) stop("No time-varying effect chosen!")
   if (missing(labels)) labels <- names(ls.tvef)
-  if (!require(ggplot2)) install.packages('ggplot2')
+  # if (!require(ggplot2)) install.packages('ggplot2')
   library(ggplot2)
   options(stringsAsFactors=F)
   
