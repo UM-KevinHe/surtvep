@@ -40,3 +40,12 @@
 \description{
 Plotting result from coxtp() function
 }
+\examples{
+data("ExampleData")
+z     <- ExampleData$x
+time  <- ExampleData$time
+event <- ExampleData$event
+model   <- coxtp(event = event, z = z, lambda_spline = c(1))
+plot(model, IC = "AIC", allinone = TRUE)
+
+}

@@ -3,9 +3,9 @@
 \docType{data}
 \name{ExampleData}
 \alias{ExampleData}
-\title{Example data for surtvep with 4000 observations of 2 variables:}
+\title{Example Dataset}
 \format{
-A data.frame
+A data.frame wit
 \describe{
 \item{V1}{Simulated covariate V1, Continuous variable. True time-dependent function is b(t)=1}
 \item{V2}{Simulated covariate V2, Continuous variable. True time-dependent function is b(t)=sin(3\emph{pi}x/4)}
@@ -17,6 +17,9 @@ A data.frame
 ExampleData
 }
 \description{
+Example data for surtvep with 4000 observations of 2 variables:
+}
+\details{
 A simulated data set containing two 2 variables.
 }
 \keyword{datasets}

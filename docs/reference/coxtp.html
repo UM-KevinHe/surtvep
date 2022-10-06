@@ -69,9 +69,9 @@
 <span>  ties <span class="op">=</span> <span class="st">"Breslow"</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">1e-09</span>,</span>
 <span>  iter.max <span class="op">=</span> <span class="fl">20L</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"Newton"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"ProxN"</span>,</span>
 <span>  lambda <span class="op">=</span> <span class="fl">1e+08</span>,</span>
-<span>  btr <span class="op">=</span> <span class="st">"static"</span>,</span>
+<span>  btr <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
 <span>  tau <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  stop <span class="op">=</span> <span class="st">"ratch"</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -183,12 +183,29 @@ the number of steps could be set manually. Default value is <strong><code>fixeds
     <p>put the link to the wesite()...</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set 'ExampleData' not found</span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'ExampleData' not found</span>
+<span class="r-in"><span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'ExampleData' not found</span>
+<span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'ExampleData' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">lambda.spline</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span>   <span class="op">&lt;-</span> <span class="fu">coxtp</span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda_spline<span class="op">=</span><span class="va">lambda.spline</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in data.frame(event = event, time = time, z, strata = stratum, stringsAsFactors = F):</span> object 'event' not found</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Xueting Tao, Lingfeng Luo, Wenbo Wu.</p>
+  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Xueting Tao.</p>
 </div>
 
 <div class="pkgdown-footer-right">

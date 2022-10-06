@@ -14,6 +14,13 @@
 #' @exportS3Method plot coxtp
 #' 
 #' @examples
+#' data("ExampleData")
+#' z     <- ExampleData$x
+#' time  <- ExampleData$time
+#' event <- ExampleData$event
+#' model   <- coxtp(event = event, z = z, lambda_spline = c(1))
+#' plot(model, IC = "AIC", allinone = TRUE)
+#' 
 plot.coxtp <- function(model, IC="AIC", times, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, save=FALSE, allinone=FALSE, 
                        title, linetype, fill, color, labels, expand, ...){
