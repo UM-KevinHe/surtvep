@@ -92,5 +92,4 @@ event <- ExampleData$event
 lambda.spline  = c(0,1)
 fit   <- coxtp(event = event, z = z, time = time, lambda_spline=lambda.spline)
 
-
 }

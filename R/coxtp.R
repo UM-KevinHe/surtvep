@@ -43,7 +43,6 @@
 #' lambda.spline  = c(0,1)
 #' fit   <- coxtp(event = event, z = z, time = time, lambda_spline=lambda.spline)
 #' 
-#' 
 coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines=8, ties="Breslow",
                     tol=1e-9, iter.max=20L, method="ProxN", lambda=1e8,
                     btr="dynamic", tau=0.5,
