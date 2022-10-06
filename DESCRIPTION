@@ -28,7 +28,8 @@ Imports:
     survival,
     ggplot2,
     ggrepel,
-    splines2
+    splines2,
+    ggpubr
 Depends:
     R (>= 3.5)
 Suggests:

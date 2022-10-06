@@ -2,9 +2,11 @@
 
 #' Plotting result from coxtp() function
 #'
-#' @param fit Model get from coxtp
-#' @param IC The Creteria selected for the plotting
-#' @param coef The variable that needed to be plotted
+#' @param fit Fitted "coxtp" model object from the main function "coxtp".
+#' @param IC The Criteria selected for the plot. Default is "AIC", which uses AIC to select the tunning parameter.
+#' @param times The time scale for the plot
+#' @param CI This argument controls the confidence interval on the plot. With 'CI' = TRUE, the confidence interval will be plotted.
+#' @param level The confidence level.
 #'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
@@ -12,7 +14,7 @@
 #' @exportS3Method plot coxtp
 #' 
 #' @examples
-plot.coxtp <- function(model, IC="AIC", times, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
+plot.coxtp <- function(model, IC="AIC", times, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, save=FALSE, allinone=FALSE, 
                        title, linetype, fill, color, labels, expand, ...){
 
