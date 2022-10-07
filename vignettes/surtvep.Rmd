@@ -52,7 +52,7 @@ The main functions used in the package are Newton's method 'coxtv' and Newton's 
 We load a set of data created beforehand for illustration:
 
 ```{r}
-data("ExampleData")
+data(ExampleData)
 z     <- ExampleData$x
 time  <- ExampleData$time
 event <- ExampleData$event
@@ -187,189 +187,128 @@ The related true log-hazard function for each variable is $\beta(t)=1$ and $\bet
 
 Let's check the data first:
 
-```{r}
-data("ExampleDataBinary")
-table(ExampleDataBinary$x[,1])
-table(ExampleDataBinary$x[,2])
+<!-- ```{r} -->
+<!-- data(ExampleDataBinary) -->
+<!-- table(ExampleDataBinary$x[,1]) -->
+<!-- table(ExampleDataBinary$x[,2]) -->
 
-z     <- ExampleData$x
-time  <- ExampleData$time
-event <- ExampleData$event
-```
-Both predictors are presented with frequency around 10%.
+<!-- z     <- ExampleDataBinary$x -->
+<!-- time  <- ExampleDataBinary$time -->
+<!-- event <- ExampleDataBinary$event -->
+<!-- ``` -->
+<!-- Both predictors are presented with frequency around 10%. -->
 
-#### **`method="Newton"`** and **`method="ProxN"`**
+<!-- #### **`method="Newton"`** and **`method="ProxN"`** -->
 
 ```{r, message = FALSE}
 fit.newton <- coxtv(z = z, event = event, time=time, method = 'Newton')
 fit.proxN <- coxtv(z = z, event = event, time=time, method = 'ProxN')
 ```
-
-
-```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
-plot(fit.newton, ylim = c(-2,2), allinone = TRUE)
-plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
-```
+#
+#
+# ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+# plot(fit.newton, ylim = c(-2,2), allinone = TRUE)
+# plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
+# ```
 
 <!-- The plot shows the result of the time-varying effect of Variable "V2". -->
 
 <!-- ### 4.1.2 Detailed calculations and theories. -->
 
-<!-- #### 4.1.2.1 Model results meanings: -->
+#### 4.1.2.1 Model results meanings:
 
-<!-- First, Let's look at the `fit` result -->
+First, Let's look at the `fit` result
 
-<!-- ```{r} -->
-<!-- summary(fit) -->
-<!-- ``` -->
+```{r}
+# summary(fit)
+```
 
-<!-- There are 4 results saved under the fit result. -->
+There are 4 results saved under the fit result.
 
-<!-- -   `model_result` save the detailed model results which we will explain in a minute. -->
+-   `model_result` save the detailed model results which we will explain in a minute.
 
-<!-- -   `lambda.selected` saved the best lambda chosen based on different criteria which will not be used for the non-penalized model. -->
+-   `lambda.selected` saved the best lambda chosen based on different criteria which will not be used for the non-penalized model.
 
-<!-- -   `p` refers to the number of covariates used in the model -->
+-   `p` refers to the number of covariates used in the model
 
-<!-- -   `z_names` records the covariates names. -->
+-   `z_names` records the covariates names.
 
-<!-- The detailed model result was saved in `model_result`, which can be called by `fit$model_result`. -->
-<!-- Now, let's explore the result a little bit: -->
+The detailed model result was saved in `model_result`, which can be called by `fit$model_result`.
+Now, let's explore the result a little bit:
 
-<!-- ```{r} -->
-<!-- summary(fit$model_result) -->
-<!-- ``` -->
+```{r}
+# summary(fit$model_result)
+```
 
-<!-- Here we noticed that there are 18 items in the model results list. -->
-<!-- Following is an explanation of each item: -->
+Here we noticed that there are 16 items in the model results list.
+Following is an explanation of each item:
 
-<!-- -   `theta`: Estimation matrix of $\theta$ -->
-<!-- -   `logplkd`: log-partial likelihood -->
-<!-- -   `theta_all`: Internal validation use -->
-<!-- -   `theta_list`: The estimation matrix at each Newton's update -->
-<!-- -   `AIC_all`: Akakia information criterion -->
-<!-- -   `TIC_all`: Takeuchi information criterion -->
-<!-- -   `TIC2_all`: Internal validation use -->
-<!-- -   `GIC_all`: Generalized information criterion -->
-<!-- -   `AIC_trace`: Internal validation use -->
-<!-- -   `TIC_trace`: Internal validation use -->
-<!-- -   `TIC2_trace`: Internal validation use -->
-<!-- -   `GIC_trace`: Internal validation use -->
-<!-- -   `logplkd_vec`: log-partial likelihood at each iteration -->
-<!-- -   `SplineType`: spline used for fitting the model -->
-<!-- -   `VarianceMatrix`: Variance Matrix -->
-<!-- -   `uniqfailtimes`: The input unique event times if `ties="Breslow"`, input time points if `ties="None"` (Add link) -->
-<!-- -   `bases`: The basis function used for estimating time-varying effects -->
-<!-- -   `knots`: Number of basis functions used for estimating time-varying effects -->
+-   `theta`: Estimation matrix of $\theta$
+-   `logplkd`: log-partial likelihood
+-   `theta.all`: Internal validation use
+-   `theta.list`: The estimation matrix at each Newton's update
+-   `AIC.all`: Akakia information criterion
+-   `TIC.all`: Takeuchi information criterion
+-   `GIC.all`: Generalized information criterion
+-   `AIC.trace`: Internal validation use
+-   `TIC.trace`: Internal validation use
+-   `GIC.trace`: Internal validation use
+-   `logplkd.vec`: log-partial likelihood at each iteration
+-   `SplineType`: spline used for fitting the model
+-   `VarianceMatrix`: Variance Matrix
+-   `uniqfailtimes`: The input unique event times if `ties="Breslow"`, input time points if `ties="None"` (Add link)
+-   `bases`: The basis function used for estimating time-varying effects
+-   `knots`: Number of basis functions used for estimating time-varying effects
 
-<!-- #### 4.1.2.2: How to get the effect of a specific time point? -->
+#### 4.1.2.2: How to get the effect of a specific time point?
 
-<!-- We are more interested in estimating time-varying effect of the covariates. -->
-<!-- Following is an simple tutorial of how to do that. -->
-<!-- First, a little background about the time-varying effect in cox model(You could also check this part at our paper which have more detailed explanation.(insert link)) -->
+We are more interested in estimating time-varying effect of the covariates.
+Following is an simple tutorial of how to do that.
+First, a little background about the time-varying effect in cox model(You could also check this part at our paper which have more detailed explanation.(insert link))
 
-<!-- If we Let $X_i=(X_{i1},X_{i2},...X_{ip})^T$ refers to the $i_{th}$ individuals in the dataset with p covariates(which could also be understand as the $i_{th}$ row in the data we extract above). -->
-<!-- Let $\lambda(t|X_i)$ denote the hazard of having the event at time t for the $i_{th}$ individual, $\lambda_0(t)$ denote the hazard of having the event at time 0. -->
-<!-- When we considering the covarites having time fixed effect, we have the following formula for $\lambda(t|X_i)$: -->
+If we Let $X_i=(X_{i1},X_{i2},...X_{ip})^T$ refers to the $i_{th}$ individuals in the dataset with p covariates(which could also be understand as the $i_{th}$ row in the data we extract above).
+Let $\lambda(t|X_i)$ denote the hazard of having the event at time t for the $i_{th}$ individual, $\lambda_0(t)$ denote the hazard of having the event at time 0.
+When we considering the covarites having time fixed effect, we have the following formula for $\lambda(t|X_i)$:
 
-<!-- $\lambda(t|X_i)=\lambda_0(t)exp(X_i^T\beta)$ -->
+$\lambda(t|X_i)=\lambda_0(t)exp(X_i^T\beta)$
 
-<!-- Where $\beta$ refers to the coefficients where $\beta=(\beta_1,\beta_2,...\beta_p)$, which in this example, is (V1, V2). -->
-<!-- Which have similar format as the GLM model. -->
-<!-- For time-varying effect model, we are simply replace $\beta$ with a set of $\beta(t)$. -->
-<!-- Thus, the time varying equations could be transferred as following: -->
+Where $\beta$ refers to the coefficients where $\beta=(\beta_1,\beta_2,...\beta_p)$, which in this example, is (V1, V2).
+Which have similar format as the GLM model.
+For time-varying effect model, we are simply replace $\beta$ with a set of $\beta(t)$.
+Thus, the time varying equations could be transferred as following:
 
-<!-- $\lambda(t|X_i)=\lambda_0(t)exp(X_i^T\beta(t))$ -->
+$\lambda(t|X_i)=\lambda_0(t)exp(X_i^T\beta(t))$
 
-<!-- Similar, $\beta(t)=(\beta_1(t),\beta_2(t),...\beta_p(t))$ where $\beta(.)$ refers to a set of cubic B-spline(Details for B-spline refers to here : insert link). -->
-<!-- Where, the single $\beta_p(t)$ could be estimated using the following formula: -->
+Similar, $\beta(t)=(\beta_1(t),\beta_2(t),...\beta_p(t))$ where $\beta(.)$ refers to a set of cubic B-spline(Details for B-spline refers to here : insert link).
+Where, the single $\beta_p(t)$ could be estimated using the following formula:
 
-<!-- $\beta_p(t)=\theta_p^TB(t)=\sum_{k=1}^K\theta_{pk}B_k(t)$ -->
+$\beta_p(t)=\theta_p^TB(t)=\sum_{k=1}^K\theta_{pk}B_k(t)$
 
-<!-- Here, K refers to the given number of knots. -->
+Here, K refers to the given number of knots.
 
-<!-- Thus, to calculate the time varying effect of coefficient p, we just need to get both estimated B spline and the $\theta$ matrix. -->
-<!-- The B-spline was saved in `model_result$bases` and $\theta$ matrix was saved in the last item in `model_result$theta_list` Following is the code for calculation: -->
+Thus, to calculate the time varying effect of coefficient p, we just need to get both estimated B spline and the $\theta$ matrix.
+The B-spline was saved in `model_result$bases` and $\theta$ matrix was saved in the last item in `model_result$theta_list` Following is the code for calculation:
 
-<!-- ```{r} -->
-<!-- model_result  = fit$model_result -->
-<!-- B.spline      = as.matrix(model_result$bases) -->
-<!-- theta         = model_result$theta_list[[length(model_result$theta_list)]] -->
+As a result, $\beta$ is a 2487\*2 matrix(we are using the "Breslow" ties, thus there are 2487 rows instead of 5000, detail about ties and Breslow ties could refers to here(insert link)).
 
-<!-- beta          = B.spline %*% t(theta) -->
-
-<!-- dim(beta) -->
-<!-- head(beta) -->
+We could also get the 95%CI for the estimation by the ``confint.surtiver``
+```{r}
+CI <- confint.surtiver(fit.proxN)
+head(CI$tvef$X1)
+```
 
 
-<!-- ``` -->
 
-<!-- As a result, $\beta$ is a 2487\*2 matrix(we are using the "Breslow" ties, thus there are 2487 rows instead of 5000, detail about ties and Breslow ties could refers to here(insert link)). -->
-<!-- We could also get the 95%CI for the estimation, which is calculates as below: -->
-
-<!-- ```{r} -->
-<!-- B.spline <- as.matrix(model_result$bases) -->
-<!-- theta_plot  <- model_result$theta_list[[length(model_result$theta_list)]] -->
-
-<!-- beta     <- B.spline%*%t(theta_plot) -->
-<!-- var      <-  model_result$VarianceMatrix -->
-
-<!-- colnames(beta)=fit$z_names -->
-<!-- p        <- fit$p -->
-<!-- knot     <- dim(B.spline)[2] -->
-<!-- list     <- 1:dim(B.spline)[1] -->
-<!-- beta_low <- matrix(0,dim(B.spline)[1],p) -->
-<!-- beta_up  <- matrix(0,dim(B.spline)[1],p) -->
-<!-- for(i in 1:p){ -->
-<!--   beta_t_1   <- beta[,i] -->
-<!--   var2       <- var[((i-1)*knot+1):((i-1)*knot+knot),((i-1)*knot+1):((i-1)*knot+knot)] -->
-<!--   temp       <- 1.96*sqrt(vapply(list, function(x) matrix(B.spline[x,],1,knot)%*%var2%*%t(matrix(B.spline[x,],1,knot)),FUN.VALUE=numeric(1))) -->
-<!--   low        <- beta_t_1-temp -->
-<!--   up         <- beta_t_1+temp -->
-
-<!--   beta_low[,i] <- low -->
-<!--   beta_up[,i]  <- up -->
-<!-- } -->
-
-<!-- colnames(beta_low) <- paste0(fit$z_names,"_low") -->
-<!-- colnames(beta_up) <- paste0(fit$z_names,"_up") -->
-
-<!-- head(beta_low) -->
-<!-- head(beta_up) -->
-<!-- ``` -->
-
-<!-- matrix `beta_low` records all the lower bound of beta and `beta_up` records all the upper bound of beta. -->
-
-<!-- As a result, we could plot the effect by ourselves: -->
-
-<!-- ```{r, fig.height = 5, fig.width = 7, fig.align = "center"} -->
-<!-- beta              <- as.data.frame(beta) -->
-<!-- beta              <- cbind(beta, beta_low, beta_up) -->
-<!-- y=beta$V2 -->
-<!-- ymin=beta$V2_low -->
-<!-- ymax=beta$V2_up -->
-<!-- time=model_result$uniqfailtimes -->
+## 4.2 Newton Method with penalization:
 
 
-<!-- ggplot(data=beta, aes(x=time)) + -->
-<!--   geom_line(aes(y= y),size = 0.9,color = 'red') + -->
-<!--   geom_ribbon(aes(ymin = ymin, ymax = ymax), fill="red", alpha = 0.2) + -->
-<!--   scale_y_continuous(name='Hazard Ratio (log-scale)') + -->
-<!--   theme_bw() +  theme(plot.title = element_text(hjust = 0.5)) + -->
-<!--   theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank()) + -->
-<!--   theme(text= element_text(size=14)) + theme(axis.text= element_text(size=14)) + -->
-<!--   theme(axis.title.y = element_text(margin= margin(t=0, r=10, b=0, l=0))) +labs(x="Time") + -->
-<!--   ggtitle(paste0("Effect of V2 When holding other covariates constant")) -->
-<!-- ``` -->
-
-<!-- ## 4.2 Newton Method with penalization: -->
-
-<!-- We use the smooth spline here for penalization(default). -->
-<!-- You could also use `spline="P-spline"`. -->
-<!-- For lambda_spline, you could either enter a numeric number(must be an integer) or a vector of numbers. -->
-<!-- If `lambda_spline` was entered as a vector of numbers, the best lambda was selected based on different criteria(AIC, TIC or GIC). -->
-<!-- If `lambda_spline` was entered as a single number, the model result format was kind of similar as the 4.1, the model result could be called by `model_result`. -->
-<!-- Following is a model fit with the `lambda_spline` as a vector for different illustration purposes: -->
+###
+We use the smooth spline here for penalization(default).
+You could also use `spline="P-spline"`.
+For lambda_spline, you could either enter a numeric number(must be an integer) or a vector of numbers.
+If `lambda_spline` was entered as a vector of numbers, the best lambda was selected based on different criteria(AIC, TIC or GIC).
+If `lambda_spline` was entered as a single number, the model result format was kind of similar as the 4.1, the model result could be called by `model_result`.
+Following is a model fit with the `lambda_spline` as a vector for different illustration purposes:
 
 <!-- ```{r} -->
 <!-- time=sim_data[,"time"] -->
@@ -506,14 +445,14 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 <!-- `coxtp(...,tol=1e-6,iter.max=20L,stop="ratch",fixedstep=FALSE)` -->
 
-<!-- ## 5.3 Baseline estimation -->
+## 5.3 Baseline estimation
 
-<!-- The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, where it takes the value \begin{align*} -->
-<!--     d\Lambda_0 = {d_i}\left\{\mathop{\sum}\limits_{\ell \in R(T_i)} \exp \{\boldsymbol{X}_{i' }^T \boldsymbol{\Theta}  \boldsymbol{B}(T_{i}) \}\right\}^{-1}. -->
-<!-- \end{align*} -->
+The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, where it takes the value \begin{align*}
+    d\Lambda_0 = {d_i}\left\{\mathop{\sum}\limits_{\ell \in R(T_i)} \exp \{\boldsymbol{X}_{i' }^T \boldsymbol{\Theta}  \boldsymbol{B}(T_{i}) \}\right\}^{-1}.
+\end{align*}
 
-<!-- The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero. -->
-<!-- We use the model fitted result `fit_penalized` in section 4.2. -->
+The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero.
+We use the model fitted result `fit_penalized` in section 4.2.
 
 <!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
 
@@ -553,8 +492,8 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 <!-- ``` -->
 
-<!-- As a result, we could either increase the time interval to make ties exists or remove the points that have $\lambda=0$. -->
-<!-- The only differences would result in the baseline hazard, there is no influence on the cumulative baseline hazard. -->
+As a result, we could either increase the time interval to make ties exists or remove the points that have $\lambda=0$.
+The only differences would result in the baseline hazard, there is no influence on the cumulative baseline hazard.
 
 <!-- ```{r} -->
 <!-- plotdata=plotdata[plotdata$lambda!=0,] -->
@@ -582,9 +521,9 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 <!-- ``` -->
 
-<!-- One use of Cumulative baseline hazard is to calculate the survival function where cumulative hazard is the negative log of the survival probabilities. -->
-<!-- If we assume cumulative baseline hazard function as $S(t)$ and cumulative hazard function as $H(t)$, then we have $H(t)=-log(S(t))$. -->
-<!-- Thus, we could plot the survival function as follows: -->
+One use of Cumulative baseline hazard is to calculate the survival function where cumulative hazard is the negative log of the survival probabilities.
+If we assume cumulative baseline hazard function as $S(t)$ and cumulative hazard function as $H(t)$, then we have $H(t)=-log(S(t))$.
+Thus, we could plot the survival function as follows:
 
 <!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
 <!-- plotdata$survive=exp(-plotdata$Lambda) -->
@@ -597,7 +536,7 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 <!-- ``` -->
 
-<!-- ## 5.4 Testing for time-varying effect -->
+### Testing for time-varying effect
 
 <!-- ## 5.5 Stratification -->
 
@@ -659,14 +598,14 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 <!-- ``` -->
 
-<!-- ## 5.6 Model prediction: -->
+## 5.6 Model prediction:
 
-<!-- ### 5.6.1 Simple prediction -->
+### 5.6.1 Simple prediction
 
-<!-- To predict the new data, we offered the function coxtp.predict. -->
-<!-- This function could also be used to calculate absolute hazard. -->
-<!-- Suppose the new data to be predicted is `c(1,1,0,0,0)` for `V1` to `V5`. -->
-<!-- For data with no stratification: (Suppose we already have the best tuning parameter `lambda_spline` selected). -->
+To predict the new data, we offered the function coxtp.predict.
+This function could also be used to calculate absolute hazard.
+Suppose the new data to be predicted is `c(1,1,0,0,0)` for `V1` to `V5`.
+For data with no stratification: (Suppose we already have the best tuning parameter `lambda_spline` selected).
 
 <!-- ```{r} -->
 <!-- sim_data=sim_data_p5 -->
@@ -696,10 +635,10 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 <!--   theme(plot.title = element_text(hjust = 0.5)) -->
 <!-- ``` -->
 
-<!-- ### 5.6.2 absolute hazard -->
+### 5.6.2 absolute hazard
 
-<!-- If we want to calculate and show the difference of absolute hazard for variable `V2`, we could use the `coxtp.predict` to get it done. -->
-<!-- Assume that besides `V2`, other covariate are all set to the reference level. -->
+If we want to calculate and show the difference of absolute hazard for variable `V2`, we could use the `coxtp.predict` to get it done.
+Assume that besides `V2`, other covariate are all set to the reference level.
 
 <!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
 <!-- data_predict0=c(0,1,0,0,0) -->
@@ -752,11 +691,11 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 <!-- ``` -->
 
-<!-- From the result above, we could notice that only the function smoothness looks different. -->
+From the result above, we could notice that only the function smoothness looks different.
 
-<!-- ### 5.6.3 Prediction with stratification -->
+### 5.6.3 Prediction with stratification
 
-<!-- For data with stratification, just define that `strata=T`(Default is FALSE):(Again, suppose we already have the best tuning parameter lambda selected) -->
+For data with stratification, just define that `strata=T`(Default is FALSE):(Again, suppose we already have the best tuning parameter lambda selected)
 
 <!-- ```{r} -->
 <!-- event_stra=sim_data_p5_f5[,"event"] -->
@@ -774,7 +713,7 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 <!-- ``` -->
 
-<!-- Again, we could plot the result by ggplot: -->
+Again, we could plot the result by ggplot:
 
 <!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
 <!-- ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
@@ -785,16 +724,16 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 <!--   theme(plot.title = element_text(hjust = 0.5)) -->
 <!-- ``` -->
 
-<!-- # 6. Model performance -->
+# 6. Model performance
 
-<!-- ## 6.1 Internal comparison -->
+## 6.1 Internal comparison
 
-<!-- ### 6.1.1 Accurancy: -->
+### 6.1.1 Accurancy:
 
-<!-- For the non-penalized method, the estimation is largely depended on the number of knots chosen in the B-Spline base function. -->
-<!-- The example shown above is using the default knots, which is `nspline=8`. -->
-<!-- However, the estimation could be largely different if we choose other knots. -->
-<!-- Following is the code showing the performance of the estimation when choosing different knots: -->
+For the non-penalized method, the estimation is largely depended on the number of knots chosen in the B-Spline base function.
+The example shown above is using the default knots, which is `nspline=8`.
+However, the estimation could be largely different if we choose other knots.
+Following is the code showing the performance of the estimation when choosing different knots:
 
 <!-- Following is the code showing the performance of the estimation when choosing different knots: -->
 
@@ -888,10 +827,10 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 <!-- ``` -->
 
-<!-- From the plot above, we could observe that with different knots selected, the performance is not different so much for different knots, all the estimates are relatively close to the real function. -->
-<!-- However, in the penalized model, the lambda is more important which is another reason that we need to select the best lambda before actually fitting the model. -->
-<!-- The following plot is the performance of different lambda selected. -->
-<!-- For the following plot, the knot was set as default, which is `knot=8`. -->
+From the plot above, we could observe that with different knots selected, the performance is not different so much for different knots, all the estimates are relatively close to the real function.
+However, in the penalized model, the lambda is more important which is another reason that we need to select the best lambda before actually fitting the model.
+The following plot is the performance of different lambda selected.
+For the following plot, the knot was set as default, which is `knot=8`.
 
 <!-- ```{r} -->
 <!-- lambda_spline_all=c(0.001,0.01,0.1,1,10,100) -->

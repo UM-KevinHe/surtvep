@@ -2,6 +2,7 @@
 
 S3method(plot,coxtp.all)
 S3method(plot,coxtv)
+export(confint.surtiver)
 export(coxtp)
 export(coxtp.baseline)
 export(coxtp.predict)
