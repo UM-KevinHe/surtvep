@@ -100,14 +100,18 @@ coxtp <- function(event , z , time ,strata=c() ,spline="Smooth-spline", nsplines
   z_names=colnames(z)
   p        <- ncol(z)
 
-  # if(length(lambda_all)==1){
-  #   result=model1
-  #   return(list(model_result=result,
-  #               lambda.selected = lambda.selected,p=p,z_names=z_names))
-  # } else {
-  return(list(model.AIC = model_AIC, model.TIC = model_TIC,  model.GIC = model_GIC,
-              lambda.selected = lambda.selected,p=p,z_names=z_names))
-  # }
+  
+  res = NULL
+  res$model.AIC = model_AIC
+  res$model.TIC = model_TIC
+  res$model.GIC = model_GIC
+  res$lambda.selected = lambda.selected
+  res$p=p
+  res$z_names=z_names
+  
+  class(res) <- "coxtp.all"
+  
+  return(res)
 
 
 }

@@ -11,20 +11,23 @@
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
 #' @return
-#' @exportS3Method plot coxtp
+#' @exportS3Method plot coxtp.all
 #' 
 #' @examples
 #' data("ExampleData")
 #' z     <- ExampleData$x
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
-#' model   <- coxtp(event = event, z = z, lambda_spline = c(1))
+#' model   <- coxtp(event = event, z = z, time = time, lambda_spline = c(1))
 #' plot(model, IC = "AIC", allinone = TRUE)
 #' 
-plot.coxtp <- function(model, IC="AIC", times, CI=TRUE, level=0.95, exponentiate=FALSE, 
+plot.coxtp.all <- function(model, IC="AIC", times, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, save=FALSE, allinone=FALSE, 
                        title, linetype, fill, color, labels, expand, ...){
-
+  
+  if (missing(model)) stop ("Argument fit is required!")
+  if (class(model)!="coxtp.all") stop("Object fit is not of class 'coxtp.all'!")
+  
   if (!IC %in% c("AIC", "TIC", "GIC")) stop("IC has to be one of AIC, TIC and GIC!")
   # #Test uses
   # coef="V1"
@@ -39,8 +42,6 @@ plot.coxtp <- function(model, IC="AIC", times, CI=TRUE, level=0.95, exponentiate
     fit <- model$model.GIC
   }
   
-  if (missing(model)) stop ("Argument model is required!")
-  if (class(fit)!="coxtp") stop("Object fit is not of class 'coxtp'!")
   if (!is.logical(save)) stop("Invalid save!")
   if (!is.logical(exponentiate)) stop("Invalid exponentiate!")
   term.event <- attr(fit, "response")

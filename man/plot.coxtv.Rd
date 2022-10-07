@@ -27,11 +27,7 @@
 )
 }
 \arguments{
-\item{fit}{Model get from coxtp}
-
-\item{IC}{The Creteria selected for the plotting}
-
-\item{coef}{The variable that needed to be plotted}
+\item{fit}{Model get from coxtv}
 }
 \description{
 Plotting result from coxtp() function

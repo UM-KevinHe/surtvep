@@ -2,9 +2,7 @@
 
 #' Plotting result from coxtp() function
 #'
-#' @param fit Model get from coxtp
-#' @param IC The Creteria selected for the plotting
-#' @param coef The variable that needed to be plotted
+#' @param fit Model get from coxtv
 #'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
