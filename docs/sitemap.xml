@@ -25,6 +25,9 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/coxtp.base.html</loc>
+  </url>
+  <url>
     <loc>/reference/coxtp.baseline.html</loc>
   </url>
   <url>
@@ -37,7 +40,22 @@
     <loc>/reference/coxtp.predict.html</loc>
   </url>
   <url>
+    <loc>/reference/coxtv.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ExampleData.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot.coxtp.all.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot.coxtp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot.coxtv.html</loc>
   </url>
   <url>
     <loc>/reference/sim_data.html</loc>
@@ -47,5 +65,8 @@
   </url>
   <url>
     <loc>/reference/sim_data_p5_f5.html</loc>
+  </url>
+  <url>
+    <loc>/reference/surtvier.plot.html</loc>
   </url>
 </urlset>

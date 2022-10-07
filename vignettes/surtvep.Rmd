@@ -45,16 +45,16 @@ After this section, users may have a better idea of what functions are available
 First, we load the 'surtvep' package:
 
 ```{r}
-library(surtvep)
+library("surtvep")
 ```
 
 The main functions used in the package are Newton's method 'coxtv' and Newton's method combined with penalization 'coxtp', which we will demonstrate in this section.
-We load a set of data created
+We load a set of data created beforehand for illustration:
 
 ```{r}
 data("ExampleData")
-z <- ExampleData$z
-time <- ExampleData$time
+z     <- ExampleData$x
+time  <- ExampleData$time
 event <- ExampleData$event
 ```
 
@@ -63,59 +63,153 @@ The saved data set is a simulation data set with continuous outcomes.
 
 We fit the Newton's method without penalization use the most basic call to 'coxtv'.
 
-<!-- ```{r, eval=FALSE} -->
-<!-- fit <- surtiver(z = z, event = event, time=time) -->
-<!-- ``` -->
+```{r}
+fit <- coxtv(z = z, event = event, time=time)
+```
 
-<!-- 'fit' is an object of class 'surtvep' that contains all the relevant information of the fitted model for further use. -->
-<!-- We do not encourage users to extract the components directly. -->
-<!-- Instead, various methods are provided for the object such as `plot` that enable us to execute those tasks more elegantly. -->
+'fit' is an object of class 'coxtv' that contains all the relevant information of the fitted model for further use.
+We do not encourage users to extract the components directly.
+Instead, various methods are provided for the object such as `plot` and `test` that enable us to execute those tasks more elegantly.
 
-<!-- For the purpose of demonstration, we will first use the simulated dataset "sim_data" in the our package. -->
+We can visualize the time-varying coefficients by executing the `plot` method:
 
-<!-- ```{r} -->
-<!-- sim_data=sim_data -->
-<!-- ``` -->
+```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+plot(fit, ylim = c(-2,2))
+```
 
-<!-- Let's check the data first: -->
 
-<!-- ```{r} -->
-<!-- head(sim_data) -->
-<!-- ``` -->
+Each sub figure corresponds to a variable. It shows the time-varying effect of our predictors. In our `ExampleData`, the first predictor has a constant effect of 1, and the second predictor has a time-varying effect of $\text{sin}(3\pi * t/4)$, where $t$ is the time. The dotted line indicates the that hazard ratio is 0, which means the predictor has no effect. Users may also wish to plot the effect of different covariates in the same plot: this can be done by setting `allinone = TRUE` in the plot command.
 
-<!-- Here, the covariates V1 and V2 were generated as binary variables with around 90% frequency, which is a relatively harsh setting to be estimated. -->
-<!-- The related true log-hazard function for each variable is $\beta(t)=1$ and $\beta(t)=exp(-1.5*t)$, where t denotes time. -->
 
-<!-- Then, let's extract the time and event as vector, and get the remaining information in the dataset as matrix. -->
 
-<!-- ```{r} -->
-<!-- event=sim_data[,"event"] -->
-<!-- time=sim_data[,"time"] -->
-<!-- data=sim_data[,!colnames(sim_data) %in% c("event","time")] -->
-<!-- ``` -->
+Next we fit the Newton's method combined with penalization method. We specify a range of penalization coefficients first, then call the `coxtp` function. Detailed disucussion of how to specify the range of penalization coefficients and how to choose the appropriate one will be discussed in section Information Criteria.
 
-<!-- # 4. Model fitting -->
+```{r, fig = TRUE}
+lambda_all <- c(1)
+fit.penalize = coxtp(z = z, event = event, time=time, lambda_spline = lambda_all)
+```
 
-<!-- ## 4.1 Newton Method without penalization: -->
 
-<!-- ### 4.1.1 Simple fitting: -->
+```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+plot(fit.penalize, ylim = c(-2,2))
+```
 
-<!-- Let's fit the model. -->
-<!-- Here, the default method is Newton Method without penalization, with smooth-spline. -->
-<!-- Term `lambda_spline` refers to the smoothing parameter lambda (Detail could be found under both "Model parameter" section or our paper here(Modified this to XuTao's site after finished). -->
-<!-- Default value is `lambda_spline=0`, which refers to no penalization). -->
-<!-- The number of knots in the base function here is the default which is `nsplines=8` -->
 
-<!-- ```{r} -->
-<!-- fit <- coxtp(event = event, z = data, time = time, ICLastOnly = TRUE, lambda_spline = 0, btr = "dynamic") -->
-<!-- ``` -->
+With the tools introduced so far, users are able to fit the time-varying model. There are many more arguments in the package that give users a great deal of flexibility. To learn more, move on to later section.
 
-<!-- To get the estimated time-varying effect of a specific coefficient, we could use the following plot function in our package: -->
 
-<!-- ```{r, fig.height = 5, fig.width = 7, fig.align = "center"} -->
-<!-- library(ggplot2) -->
-<!-- coxtp.plot(fit,coef="V2") -->
-<!-- ``` -->
+## Newton's method
+
+In this section we introduce the Newton's method for estimating time-varying effects in detail. 
+
+Let $D_{i}$ denote the time lag from transplantation to death and $C_{i}$ be the
+censoring time for patient $i$,
+ $i=1,\ldots, n$. Here $n_j$ is the sample size. The observed
+time is $T_{i} = \min\{D_{i},C_{i}\}$, and
+ the death indicator is given by $\delta_{i} = I(D_{i} \leq C_{i})$.  Let
+  $\boldsymbol{X}_{i}=(X_{i1}, \ldots, X_{iP})^T$ be a $P$-dimensional covariate
+vector.  We assume that $D_{i}$ is independent from $C_{i}$ given $\textbf{X}_{i}$.
+Consider the hazard function
+\[
+   \lambda(t|\boldsymbol{X}_{i}) = \lambda_{0}(t)\exp\{\boldsymbol{X}_{i}^T {\boldsymbol\beta}(t)\}, %\nonumber
+\]
+where $\lambda_{0}(t)$ is the baseline hazard. 
+ To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots,  \beta_{P}(t)\}$, we span
+ $\boldsymbol\beta(\cdot)$  by a set of  cubic B-splines defined on a given number of knots: 
+\begin{eqnarray}
+   \beta_{p}(t)=\boldsymbol\theta_{p}^T  \boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber
+\end{eqnarray}
+where   $\boldsymbol{B}(t)=\{B_1(t), \ldots,
+B_K(t)\}^T$ forms a basis,  $K$ is the number of basis functions, and
+ $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with
+ $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th
+covariate.  
+
+With a length-$PK$  parameter vector
+$\boldsymbol\theta=vec(\boldsymbol\Theta)$,  the vectorization of the coefficient matrix
+$\boldsymbol\Theta=(\boldsymbol\theta_{1}, \ldots, \boldsymbol\theta_{P})^T$ by row,
+ the log-partial likelihood function is
+\begin{equation}
+  \ell(\boldsymbol\theta)=\sum_{i=1}^{n_j} \delta_{i} \left [\boldsymbol{X}_{i}^T \boldsymbol\Theta  \boldsymbol{B}(T_{i})
+  -\log
+  \left\{\sum_{i' \in R_{i}}  \exp \{\boldsymbol{X}_{i' }^T \boldsymbol\Theta  \boldsymbol{B}(T_{i}) \} \right \} \right ]
+\end{equation},
+ where $R_{i}=\{i': 1 \leq i' \leq n, ~ T_{i'}\geq T_{i}\}$ is the at-risk set. 
+
+`coxtv` applies Newton's method to solve the problem. Specifically, suppose we have current estimates $\widetilde{\boldsymbol\theta}$, the update is 
+\[
+    \widetilde{\boldsymbol\theta} \leftarrow \widetilde{\boldsymbol\theta} + \nu \boldsymbol{\mu};
+\]
+where 
+\[
+  \boldsymbol{\mu} = \left(- \nabla^2 \ell(\boldsymbol{\theta}) \right)^{-1} \nabla \ell(\boldsymbol{\theta})
+\],
+and $\nu$ is a step size adjusted by backtracking linesearch. $\nabla \ell(\boldsymbol{\theta})$ and $\nabla^2 \ell(\boldsymbol{\theta})$ is the first and second derivative of the log partial likelihood.
+
+### Commonly used function arguments 
+
+`coxtp` provides various arguments for users to customize the fit: we introduce some commonly used arguments here.
+
+* `strata` is for the stratified cox model. stratification group defined in the data. If there exist stratification group, please enter as vector.
+
+* `nsplines` is for the number of basis functions in the B-splines, denoted as $K$ in our model introduction.
+
+* `ties` is for dealing with ties, default is **`ties="Breslow"`**, which uses brewslow approximation. 
+
+* `tol` is the convergence threshold. The default threshold is set as **`tol=1e-6`**.
+
+* `iter.max` is the maximum Iteration number, default is **`iter.max=20L`**
+
+* `method` is for selecting two variants if Newton's Method. **`method="Newton"`** uses the classical Newton's method. **`method="ProxN"`** is the default method, which uses the proximal Newton's methods.
+
+* `lambda` is the parameter for Proximal Newton's Method. Default is **`lambda=1e8`**
+
+* `btr` is for selecting backtracking line search approach, default is `btr="dynamic"`. When predictors are presented with low frequency, `btr="static"` can be used to improve stability.
+
+* `tau` is a parameter in the backtracking line search to control the step size. Default is **`tau=0.5`**.
+
+* `stop` is for selecting stopping rule, default is **`stop="ratch"`**:
+
+* `parallel` is a logical flag for parallel computation, Default is **`parallel=FALSE`**.
+
+* `threads` is the number of threads used when parallel computation is enabled (**`parallel=TRUE`**).
+
+* `degree` 
+
+* `ord`
+
+* `fixedstep` is a logical flag for fixed iteration steps. Default value is **`fixedstep = FALSE`**. If **`fixedstep = FALSE`**, the algorithm will be stopped by `iter.max` regardless the `stop` criteria is used.
+
+In the following sections we brefily describe these useful arguments when calling `coxtv`.
+
+Now we start with a relatively harsh simulated data. Here, the covariates V1 and V2 were generated as binary variables with around 90% frequency, which is a relatively harsh setting to be estimated.
+The related true log-hazard function for each variable is $\beta(t)=1$ and $\beta(t)=exp(-1.5*t)$, where t denotes time.
+
+Let's check the data first:
+
+```{r}
+data("ExampleDataBinary")
+table(ExampleDataBinary$x[,1])
+table(ExampleDataBinary$x[,2])
+
+z     <- ExampleData$x
+time  <- ExampleData$time
+event <- ExampleData$event
+```
+Both predictors are presented with frequency around 10%.
+
+#### **`method="Newton"`** and **`method="ProxN"`**
+
+```{r, message = FALSE}
+fit.newton <- coxtv(z = z, event = event, time=time, method = 'Newton')
+fit.proxN <- coxtv(z = z, event = event, time=time, method = 'ProxN')
+```
+
+
+```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+plot(fit.newton, ylim = c(-2,2), allinone = TRUE)
+plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
+```
 
 <!-- The plot shows the result of the time-varying effect of Variable "V2". -->
 
