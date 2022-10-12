@@ -52,7 +52,7 @@ The main functions used in the package are Newton's method 'coxtv' and Newton's 
 We load a set of data created beforehand for illustration:
 
 ```{r}
-data("ExampleData")
+data(ExampleData)
 z     <- ExampleData$x
 time  <- ExampleData$time
 event <- ExampleData$event
@@ -206,10 +206,17 @@ fit.proxN <- coxtv(z = z, event = event, time=time, method = 'ProxN')
 ```
 #
 #
+<<<<<<< HEAD
 ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
 plot(fit.newton, ylim = c(-2,2), allinone = TRUE)
 plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 ```
+=======
+# ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+# plot(fit.newton, ylim = c(-2,2), allinone = TRUE)
+# plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
+# ```
+>>>>>>> 08166404a32d659abc3ba7cd96c76ebb344488f5
 
 <!-- The plot shows the result of the time-varying effect of Variable "V2". -->
 
@@ -293,8 +300,13 @@ As a result, $\beta$ is a 2487\*2 matrix(we are using the "Breslow" ties, thus t
 
 We could also get the 95%CI for the estimation by the ``confint.surtiver``
 ```{r}
+<<<<<<< HEAD
 # CI <- confint.surtiver(fit.proxN)
 # head(CI$tvef$X1)
+=======
+CI <- confint.surtiver(fit.proxN)
+head(CI$tvef$X1)
+>>>>>>> 08166404a32d659abc3ba7cd96c76ebb344488f5
 ```
 
 
