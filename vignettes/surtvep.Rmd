@@ -64,17 +64,17 @@ The saved data set is a simulation data set with continuous outcomes.
 We fit the Newton's method without penalization use the most basic call to 'coxtv'.
 
 ```{r}
-fit <- coxtv(z = z, event = event, time=time, method = "ProxN", btr = "static")
+fit.tv <- coxtv(z = z, event = event, time=time)
 ```
 
-'fit' is an object of class 'coxtv' that contains all the relevant information of the fitted model for further use.
+'fit.tv' is an object of class 'coxtv' that contains all the relevant information of the fitted model for further use.
 We do not encourage users to extract the components directly.
 Instead, various methods are provided for the object such as `plot` and `test` that enable us to execute those tasks more elegantly.
 
 We can visualize the time-varying coefficients by executing the `plot` method:
 
 ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
-plot(fit, ylim = c(-2,2))
+plot(fit.tv, ylim = c(-2,2))
 ```
 
 
@@ -187,47 +187,36 @@ The related true log-hazard function for each variable is $\beta(t)=1$ and $\bet
 
 Let's check the data first:
 
-<!-- ```{r} -->
-<!-- data(ExampleDataBinary) -->
-<!-- table(ExampleDataBinary$x[,1]) -->
-<!-- table(ExampleDataBinary$x[,2]) -->
+```{r}
+data(ExampleDataBinary)
+table(ExampleDataBinary$x[,1])
+table(ExampleDataBinary$x[,2])
 
-<!-- z     <- ExampleDataBinary$x -->
-<!-- time  <- ExampleDataBinary$time -->
-<!-- event <- ExampleDataBinary$event -->
-<!-- ``` -->
-<!-- Both predictors are presented with frequency around 10%. -->
-
-<!-- #### **`method="Newton"`** and **`method="ProxN"`** -->
+z     <- ExampleDataBinary$x
+time  <- ExampleDataBinary$time
+event <- ExampleDataBinary$event
+```
+Both predictors are presented with frequency around 25%.
 
 ```{r, message = FALSE}
 fit.newton <- coxtv(z = z, event = event, time=time, method = 'Newton')
 fit.proxN <- coxtv(z = z, event = event, time=time, method = 'ProxN')
 ```
-#
-#
-<<<<<<< HEAD
+
+Then we plot the fitted methods with all the curves on the same plot.
 ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
 plot(fit.newton, ylim = c(-2,2), allinone = TRUE)
 plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 ```
-=======
-# ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
-# plot(fit.newton, ylim = c(-2,2), allinone = TRUE)
-# plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
-# ```
->>>>>>> 08166404a32d659abc3ba7cd96c76ebb344488f5
 
-<!-- The plot shows the result of the time-varying effect of Variable "V2". -->
 
-<!-- ### 4.1.2 Detailed calculations and theories. -->
 
 #### 4.1.2.1 Model results meanings:
 
 First, Let's look at the `fit` result
 
 ```{r}
-# summary(fit)
+summary(fit)
 ```
 
 There are 4 results saved under the fit result.
@@ -300,13 +289,8 @@ As a result, $\beta$ is a 2487\*2 matrix(we are using the "Breslow" ties, thus t
 
 We could also get the 95%CI for the estimation by the ``confint.surtiver``
 ```{r}
-<<<<<<< HEAD
-# CI <- confint.surtiver(fit.proxN)
-# head(CI$tvef$X1)
-=======
 CI <- confint.surtiver(fit.proxN)
 head(CI$tvef$X1)
->>>>>>> 08166404a32d659abc3ba7cd96c76ebb344488f5
 ```
 
 
