@@ -48,54 +48,54 @@ First, we load the 'surtvep' package:
 library("surtvep")
 ```
 
-<!-- The main functions used in the package are Newton's method 'coxtv' and Newton's method combined with penalization 'coxtp', which we will demonstrate in this section. -->
-<!-- We load a set of data created beforehand for illustration: -->
+The main functions used in the package are Newton's method 'coxtv' and Newton's method combined with penalization 'coxtp', which we will demonstrate in this section.
+We load a set of data created beforehand for illustration:
 
-<!-- ```{r} -->
-<!-- data("ExampleData") -->
-<!-- z     <- ExampleData$x -->
-<!-- time  <- ExampleData$time -->
-<!-- event <- ExampleData$event -->
-<!-- ``` -->
+```{r}
+data("ExampleData")
+z     <- ExampleData$x
+time  <- ExampleData$time
+event <- ExampleData$event
+```
 
-<!-- The command loads an input covariate matrix 'z', time-to-event outcome 'time' and 'event' from this saved R data archive. -->
-<!-- The saved data set is a simulation data set with continuous outcomes. -->
+The command loads an input covariate matrix 'z', time-to-event outcome 'time' and 'event' from this saved R data archive.
+The saved data set is a simulation data set with continuous outcomes.
 
-<!-- We fit the Newton's method without penalization use the most basic call to 'coxtv'. -->
+We fit the Newton's method without penalization use the most basic call to 'coxtv'.
 
-<!-- ```{r} -->
-<!-- fit.tv <- coxtv(z = z, event = event, time=time) -->
-<!-- ``` -->
+```{r}
+fit.tv <- coxtv(z = z, event = event, time=time)
+```
 
-<!-- 'fit.tv' is an object of class 'coxtv' that contains all the relevant information of the fitted model for further use. -->
-<!-- We do not encourage users to extract the components directly. -->
-<!-- Instead, various methods are provided for the object such as `plot` and `test` that enable us to execute those tasks more elegantly. -->
+'fit.tv' is an object of class 'coxtv' that contains all the relevant information of the fitted model for further use.
+We do not encourage users to extract the components directly.
+Instead, various methods are provided for the object such as `plot` and `test` that enable us to execute those tasks more elegantly.
 
-<!-- We can visualize the time-varying coefficients by executing the `plot` method: -->
+We can visualize the time-varying coefficients by executing the `plot` method:
 
-<!-- ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE} -->
-<!-- plot(fit.tv, ylim = c(-2,2)) -->
-<!-- ``` -->
-
-
-<!-- Each sub figure corresponds to a variable. It shows the time-varying effect of our predictors. In our `ExampleData`, the first predictor has a constant effect of 1, and the second predictor has a time-varying effect of $\text{sin}(3\pi * t/4)$, where $t$ is the time. The dotted line indicates the that hazard ratio is 0, which means the predictor has no effect. Users may also wish to plot the effect of different covariates in the same plot: this can be done by setting `allinone = TRUE` in the plot command. -->
+```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+plot(fit.tv, ylim = c(-2,2))
+```
 
 
-
-<!-- Next we fit the Newton's method combined with penalization method. We specify a range of penalization coefficients first, then call the `coxtp` function. Detailed disucussion of how to specify the range of penalization coefficients and how to choose the appropriate one will be discussed in section Information Criteria. -->
-
-<!-- ```{r, fig = TRUE} -->
-<!-- lambda_all <- c(1) -->
-<!-- fit.penalize = coxtp(z = z, event = event, time=time, lambda_spline = lambda_all, method = "ProxN", btr = "static") -->
-<!-- ``` -->
+Each sub figure corresponds to a variable. It shows the time-varying effect of our predictors. In our `ExampleData`, the first predictor has a constant effect of 1, and the second predictor has a time-varying effect of $\text{sin}(3\pi * t/4)$, where $t$ is the time. The dotted line indicates the that hazard ratio is 0, which means the predictor has no effect. Users may also wish to plot the effect of different covariates in the same plot: this can be done by setting `allinone = TRUE` in the plot command.
 
 
-<!-- ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE} -->
-<!-- plot(fit.penalize, IC = "TIC", ylim = c(-2,2)) -->
-<!-- ``` -->
+
+Next we fit the Newton's method combined with penalization method. We specify a range of penalization coefficients first, then call the `coxtp` function. Detailed disucussion of how to specify the range of penalization coefficients and how to choose the appropriate one will be discussed in section Information Criteria.
+
+```{r, fig = TRUE}
+lambda_all <- c(1)
+fit.penalize = coxtp(z = z, event = event, time=time, lambda_spline = lambda_all, method = "ProxN", btr = "static")
+```
 
 
-<!-- With the tools introduced so far, users are able to fit the time-varying model. There are many more arguments in the package that give users a great deal of flexibility. To learn more, move on to later section. -->
+```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+plot(fit.penalize, IC = "TIC", ylim = c(-2,2))
+```
+
+
+With the tools introduced so far, users are able to fit the time-varying model. There are many more arguments in the package that give users a great deal of flexibility. To learn more, move on to later section.
 
 
 ## Newton's method
@@ -276,9 +276,6 @@ There are 4 results saved under the fit result.
 The detailed model result was saved in `model_result`, which can be called by `fit$model_result`.
 Now, let's explore the result a little bit:
 
-```{r}
-# summary(fit$model_result)
-```
 
 Here we noticed that there are 16 items in the model results list.
 Following is an explanation of each item:
@@ -342,20 +339,85 @@ head(CI$tvef$X1)
 
 ## Newton Method with penalization:
 
+The proximal Newton can help improve the estimation when the origional hessian matrix is very close to a singular one, which may often occur in the setting of time-varying effects, however, over-fitting issue still exists. We further improve the estimation by introducing the penalty. The basic idea of penalization is to control the model's smoothness by adding a 'wiggliness' penalty to the fitting objective. Rather than fitting the non-proportional hazards model by maximizing original log-partial likelihood,
+it could be fitted by maximizing
+\begin{align}
+    \ell(\boldsymbol{\theta}) - P_\lambda(\boldsymbol{\theta}).
+\end{align}
+
+We have different choices of $P_\lambda(\boldsymbol{\theta})$. Potential choices are to use P-splines, and discrete penalties. Detailed discussions are provided below.
+
+### P-spline
+
+The P-splines are low rank smoothers using a B-spline basis, usually defined on evenly spaced knots, with a difference penalty applied directly to the parameters $\theta_{pk}$, to control function wiggliness.
+When we set standard cubic B-spline basis functions,  the penalty function used for $\beta_p$ will be
+\begin{align*}
+    P_\lambda(\boldsymbol{\theta}) = \lambda\sum_{j=1}^P\sum_{k=1}^{K-1}\{(\boldsymbol{\theta}_{j(k+1)}  - \boldsymbol{\theta}_{jk})\}^2.
+\end{align*}
+
+It is straight forward to express the penalty as a quadratic form, $\boldsymbol{\theta}^T\boldsymbol{S}\boldsymbol{\theta}$, in this basis coefficients:
+
+\begin{align*}
+    \sum_{k=1}^{K-1}\{(\boldsymbol{\theta}_{j(k+1)}  - \boldsymbol{\theta}_{jk})\}^2
+    =
+        \boldsymbol{\theta}^T
+    \begin{bmatrix}
+        1 & -1 & 0 & 0 & . & . & . \\
+        -1 & 2  & -1 & 0 & 0 & . & . \\
+        0 & -1  & 2 & -1 & 0 & 0 & . \\
+        . & . & . & . & . & . & .\\
+        . & . & . & . & . & . & .\\
+    \end{bmatrix}
+    \boldsymbol{\theta}
+\end{align*}
+
+Hence the penalized fitting problem is to maximize 
+\begin{align}
+    \ell(\boldsymbol{\theta}) - \lambda\boldsymbol{\theta}^T\boldsymbol{S}\boldsymbol{\theta}
+\end{align}
+with respect to $\boldsymbol{\theta}$.
+
+### Smoothing-spline
+
+The reduced rank spline smoothers with derivative based penalties can be set up almost as easily, while retaining the sparsity of the basis and penalty and the ability to mix-and-match the orders of spline basis functions and penalties.
+
+We denote the B-spline basis as of order $m_1$, and $m_1 = 3$ denotes a cubic spline. Associated with the spline will be a derivative based penalty
+\begin{align*}
+    P_{\lambda} = \lambda \int_{0}^{T}\boldsymbol{\beta}^{[m_2]}(t)^2dt
+\end{align*}
+where $\bbeta^{[m_2]}(t)$ denotes the $m_2^{th}$ derivative of $\bbeta$ with respect to $t$. It is assumed that $m_2 \leq m_1$, otherwise it makes no sense that the penalty is formulated in terms of a derivative that is not properly defined for the basis functions. Similarly, $P_{\lambda}$ can be written as $\boldsymbol{\theta}^T\boldsymbol{S}\boldsymbol{\theta}$  where $\bS$ is a banded diagonal matrix of known coefficients. The algebraic expression of $\bS$ is complex, as discussed in \textbf{citet{wood2017p}}. However, this has little impact on the computation time. 
+
+
+###Usage
+The usage of Newton Method with penalization `coxtp` is very similar as `coxtv` introduced above. The main difference comes from the penalization parameter selection.
 
 We use the smooth spline here for penalization(default).
 You could also use `spline="P-spline"`.
-For lambda_spline, you could either enter a numeric number(must be an integer) or a vector of numbers.
+For lambda_spline, you could either enter a numeric number or a vector of numbers.
 If `lambda_spline` was entered as a vector of numbers, the best lambda was selected based on different criteria(AIC, TIC or GIC).
-If `lambda_spline` was entered as a single number, the model result format was kind of similar as the 4.1, the model result could be called by `model_result`.
-Following is a model fit with the `lambda_spline` as a vector for different illustration purposes:
+Following is a model fit with the `lambda_spline` as a vector for different illustration purposes. We use the relatively harsh setting `ExampleDataBinary` to illustrate the useage of 'coxtp', the penalization method.
 
-<!-- ```{r} -->
-<!-- time=sim_data[,"time"] -->
-<!-- lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000) -->
-<!-- fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline_all) -->
+```{r}
+data(ExampleDataBinary)
+z     <- ExampleDataBinary$x
+time  <- ExampleDataBinary$time
+event <- ExampleDataBinary$event
+```
 
-<!-- ``` -->
+
+```{r, message = FALSE, results='hide'}
+lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000)
+fit.pspline <- coxtp(event = event, z = z, time = time, lambda_spline=lambda_spline_all, spline = "P-spline")
+fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline=lambda_spline_all, spline = "Smooth-spline")
+```
+
+```{r,  fig.ncol = 1, fig.show="hold", out.width="40%",out.height="44%", message = FALSE, warning=FALSE}
+plot(fit.pspline, IC = "TIC", allinone = TRUE, ylim = c(-2,2))
+plot(fit.smoothspline, IC = "TIC", allinone = TRUE, ylim = c(-2,2))
+```
+
+
+
 
 <!-- The optimal lambda was saved in the model term `lambda.selected` -->
 
@@ -733,7 +795,7 @@ Assume that besides `V2`, other covariate are all set to the reference level.
 
 From the result above, we could notice that only the function smoothness looks different.
 
-### 5.6.3 Prediction with stratification
+<!-- ### 5.6.3 Prediction with stratification -->
 
 For data with stratification, just define that `strata=T`(Default is FALSE):(Again, suppose we already have the best tuning parameter lambda selected)
 
