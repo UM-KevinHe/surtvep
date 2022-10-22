@@ -437,99 +437,6 @@ Compare with the non-penalized Model, we could see that the effect of "V1" was s
 
 The detail calculation of B-spline matrix, $\theta$ matrix and $\beta$ matrix was similar as Newton's method.
 
-<!-- # 5. Other information -->
-
-<!-- ## 5.1 Backtracking Linesearch -->
-
-<!-- In our packages, we provide 3 options for backtracking linesearch(`btr`). -->
-<!-- The usual way of backtracking linesearch is with Newton Increment(Detailed information could be found here). -->
-<!-- However, When binary predictors with extremely low frequency are present, the calculation of the second-order derivative has some issues. -->
-<!-- In that case, the Newton increment presents extreme values, leading to a huge bias. -->
-<!-- We provided a way of limiting the step size in such cases. -->
-<!-- Instead of using the Newton increment, we use a fixed value of 1. -->
-<!-- This method is referred to as "`static`" in our function which is the default setting. -->
-<!-- Besides this, `btr="none"` refers to no backtracking, and `btr="dynamic"` refers to backtracking linesearch with Newton Increment. -->
-
-<!-- ```{r, warning=FALSE} -->
-<!-- # For no backtracking linesearch: -->
-<!-- t1=bench::mark(coxtp(event = event, z = data, -->
-<!--                   time = time,lambda_spline=1000,btr="none")) -->
-
-<!-- #For static backtracking linesearch: -->
-<!-- t2=bench::mark(coxtp(event = event, z = data, -->
-<!--                   time = time,lambda_spline=1000,btr="static")) -->
-
-<!-- #For dynamic backtracking linesearch: -->
-<!-- t3= bench::mark(coxtp(event = event, z = data, -->
-<!--                   time = time,lambda_spline=1000,btr="dynamic")) -->
-<!-- t=rbind(t1,t2,t3) -->
-<!-- t[,1]=c("none","static","dynamic") -->
-<!-- t -->
-
-<!-- ``` -->
-
-<!-- Compared to dynamic and static, no backtracking linesearch gives the optimal programming time. -->
-<!-- Following is the performance of each method: -->
-
-<!-- ```{r} -->
-<!-- time_list=c() -->
-<!-- x=seq(0,3,length.out=sum(event==1)) -->
-<!-- y1=1 -->
-<!-- y2=exp(-1.5*x) -->
-
-<!-- for(btr in c("none","dynamic","static")){ -->
-<!--   fit=coxtp(event = event, z = data, time = time,lambda_spline=1000,btr=btr) -->
-<!--   for(v in c("V1","V2")){ -->
-<!--     plot=coxtp.plot(fit,IC="AIC",coef=v,ylab="HR(log-scale)")+ -->
-<!--     theme(text = element_text(size = 10), -->
-<!--           axis.text.x = element_text(size = 8), -->
-<!--           axis.text.y=element_text(size = 8)) + -->
-<!--     ggtitle(v) -->
-<!--     if(v=="V1"){ -->
-<!--       plot=plot + geom_line(aes(x=x,y=y1)) -->
-<!--     } else { -->
-<!--       plot=plot + geom_line(aes(x=x,y=y2)) -->
-<!--     } -->
-<!--     assign(paste0("plot",v,"_",btr),plot) -->
-<!--   } -->
-
-<!-- } -->
-
-
-
-<!-- ``` -->
-
-<!-- ```{r,fig.height = 9, fig.width = 7, fig.align = "center"} -->
-<!-- library(cowplot) -->
-<!-- ##Plot v1 -->
-<!-- title <- ggdraw() + -->
-<!--   draw_label( -->
-<!--     "Backtracking comparsion", -->
-<!--     fontface = 'bold', -->
-<!--     x = 0, -->
-<!--     hjust = 0, -->
-<!--     size=15 -->
-<!--   ) + -->
-<!--   theme( -->
-<!--     plot.margin = margin(0, 0, 0, 7) -->
-<!--   ) -->
-
-<!-- p1=plot_grid(plotV1_none,plotV2_none,ncol=2) -->
-<!-- p2=plot_grid(plotV1_dynamic,plotV2_dynamic,ncol=2) -->
-<!-- p3=plot_grid(plotV1_static,plotV2_static,ncol=2) -->
-<!-- plot_grid(title,p1,p2,p3,ncol=1,labels=c("","None","Dynamic","Static"),rel_heights = c(0.1,1,1,1),label_size = 13) -->
-
-
-<!-- ``` -->
-
-<!-- ## 5.2 Stopping criteria -->
-
-<!-- There are 4 parameters could be defined in the stopping criteria, Convergence threshold(tol ), Maximum Iteration number(iter.max), Stopping rule(stop), and number of steps(fixedstep). -->
-<!-- Detailed information about stopping criteria selection could be viewed here(add link). -->
-<!-- Following is the default setting -->
-
-<!-- `coxtp(...,tol=1e-6,iter.max=20L,stop="ratch",fixedstep=FALSE)` -->
-
 ### Baseline estimation
 
 The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, where it takes the value \begin{align*}
@@ -622,66 +529,6 @@ Thus, we could plot the survival function as follows:
 <!-- ``` -->
 
 ### Testing for time-varying effect
-
-<!-- ## 5.5 Stratification -->
-
-<!-- To handle different stratification groups in the dataset, the packages will use each facility as its own risk sets and finish the estimation. -->
-<!-- To add strata in the model, simply use the `strata` option. -->
-<!-- Following is an example: -->
-
-<!-- Here, we are using the sim_data_p5_f5 as example. -->
-
-<!-- ```{r} -->
-<!-- sim_data_p5_f5=sim_data_p5_f5 -->
-<!-- head(sim_data_p5_f5) -->
-<!-- ``` -->
-
-<!-- The dataset have 5 covariates, "V1" to "V5", and a strata variable, "facility". -->
-<!-- For this dataset, the true time-dependent function is -->
-
-<!-- -   V1: $\beta(t)=1$ -->
-<!-- -   V2: $\beta(t)=sin(3*\pi*t/4)$ -->
-<!-- -   V3: $\beta(t)=-1$ -->
-<!-- -   V4: $\beta(t)=(t/3)**2*exp(t/2)$ -->
-<!-- -   V5: $\beta(t)=exp(-1.5*t)$ -->
-
-<!-- Now, let's fit the model by simply add one option `strata =facility`. -->
-<!-- The black line in the plot refers to the true function while the red line and area refers to the estimated function and its 95% CI. -->
-<!-- Again, we assume the best `lambda_spline=1000` -->
-
-<!-- ```{r} -->
-<!-- #Extract data -->
-<!-- event_stra=sim_data_p5_f5[,"event"] -->
-<!-- time_stra=sim_data_p5_f5[,"time"] -->
-<!-- data_stra=sim_data_p5_f5[,!colnames(sim_data_p5_f5) %in% c("event","time","facility")] -->
-<!-- facility=sim_data_p5_f5[,"facility"] -->
-
-<!-- #select best lambda -->
-<!-- # lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000) -->
-<!-- # fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline_all) -->
-
-<!-- lambda_spline=1000 -->
-<!-- fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline) -->
-<!-- ``` -->
-
-<!-- Again, we use the `coxtp.baseline` function to get the baseline estimation for different group. -->
-<!-- Just add the option `strata=facility` to get specific facility data -->
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-<!-- library(dplyr) -->
-<!-- model1  = fit_stra$model_result -->
-<!-- baselinedata=coxtp.baseline(fit=model1, delta=event_stra,z=data_stra,time=time_stra,strata = facility) -->
-<!-- baselinedata=baselinedata %>% -->
-<!--   filter(lambda!=0) %>% -->
-<!--   mutate(facility=as.character(strata)) -->
-<!-- baseline_plot<-ggplot(baselinedata,aes(x=unique.time_temp., y=lambda,group=facility)) + geom_line(size = 0.6,aes(color=facility)) + -->
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-<!--   scale_y_continuous(name='baseline hazard') + -->
-<!--   ggtitle(" Baseline Hazard by time and facility") + -->
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- baseline_plot -->
-
-<!-- ``` -->
 
 ## 5.6 Model prediction:
 
@@ -1060,3 +907,31 @@ For the following plot, the knot was set as default, which is `knot=8`.
 <!-- Here we are going to treat the `test_data` as a whole new population data and want to predict the event probability by time. -->
 
 <!-- From previous illustration, we know that the function `cox.predict` could generate absolute hazard for one individual during the time period. -->
+
+
+## Real Data Example `SUPPORT`
+
+In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment).
+
+Some of the original data was missing. Before imputation, there were a total of 9105 individuals and 47 variables. Of those variables, a few were removed before imputation. We removed three response variables:
+hospital charges, patient ratio of costs to charge,s and patient micro-costs. Next, we removed hospital death as it was directly informative of our event of interest, namely death. We also removed functional disability and income as they are ordinal covariates. Finally, we removed 8 covariates related to the results of previous findings: we removed SUPPORT day 3 physiology score (\code{sps}), APACHE III day 3 physiology score (\code{aps}), SUPPORT model 2-month survival estimate, SUPPORT model
+6-month survival estimate, Physician's 2-month survival estimate for pt., Physician's 6-month survival estimate for pt., Patient had Do Not Resuscitate (DNR) order, and Day of DNR order (<0 if before study). Of these, \code{sps} and \code{aps} were added on after imputation, as they were missing only 1 observation. First we imputed manually using the normal values for physiological measures recommended by Knaus et al. (1995). Next, we imputed a single dataset using \pkg{mice} with default settings. After imputation, we noted that the covariate for surrogate activities of daily living was not imputed. This is due to collinearity between the other two covariates for activities of daily living. Therefore, surrogate activities of daily living was removed.
+
+First we load the data:
+
+```{r, message = FALSE}
+data("support")
+# Using the matrix interface and log of time
+z <- model.matrix(death ~ . - d.time - 1, data = support)
+# y <- with(support, cbind(death, d.time))
+event <- support$death
+time <- support$d.time
+```
+
+We apply the Newton's method with Smoothing-spline:
+```{r, message = FALSE, results='hide', fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+fit.strata <- coxtv(z = z, event = event, time=time)
+```
+
+
+
