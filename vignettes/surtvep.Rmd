@@ -417,42 +417,25 @@ plot(fit.smoothspline, IC = "TIC", allinone = TRUE, ylim = c(-2,2))
 ```
 
 
+The optimal lambda was saved in the model term `lambda.selected`
 
+```{r}
+best_lambda=fit.pspline$lambda.selected
+best_lambda
+```
 
-<!-- The optimal lambda was saved in the model term `lambda.selected` -->
-
-<!-- ```{r} -->
-<!-- best_lambda=fit_penalized$lambda.selected -->
-<!-- best_lambda -->
-<!-- ``` -->
-
-<!-- From the result above, we noticed that with different selection criteria, the best lambda selected is quite different. -->
-<!-- Here, we use the AIC criteria which set `lambda=1000`. -->
-<!-- The result for this model was saved in related criteria model and could be called as below: -->
+From the result above, we noticed that with different selection criteria, the best lambda selected is different.
+Here, we use the AIC criteria which set `lambda=1000`.
+The result for this model was saved in related criteria model and could be called as below:
 
 <!-- ```{r} -->
 <!-- AIC_model  = fit_penalized$model.AIC -->
 <!-- summary(AIC_model) -->
 <!-- ``` -->
 
-<!-- We could also directly draw the plot using the following command: -->
+Compare with the non-penalized Model, we could see that the effect of "V1" was shrink to roughly linear in the penalized model.
 
-<!-- ```{r, fig.height = 3, fig.width = 7, fig.align = "center"} -->
-<!-- library(cowplot) -->
-<!-- x=seq(0,3,length.out=sum(event==1)) -->
-<!-- y1=1 -->
-<!-- y2=exp(-1.5*x) -->
-<!-- p1=coxtp.plot(fit_penalized,IC="AIC",coef="V1") + -->
-<!--     ggtitle("Penalized NR") + geom_line(aes(x=x,y=y1)) -->
-<!-- p2=coxtp.plot(fit,IC="AIC",coef="V1") + -->
-<!--     ggtitle("Non-Penalized NR")+ geom_line(aes(x=x,y=y1)) -->
-<!-- plot_grid(p1,p2) -->
-
-<!-- ``` -->
-
-<!-- Compare with the non-penalized Model, we could see that the effect of "V1" was shrink to roughly linear in the penalized model. -->
-
-<!-- The detail calculation of B-spline matrix, $\theta$ matrix and $\beta$ matrix was similar as that illustrate as 4.1.2.2. -->
+The detail calculation of B-spline matrix, $\theta$ matrix and $\beta$ matrix was similar as Newton's method.
 
 <!-- # 5. Other information -->
 
@@ -547,7 +530,7 @@ plot(fit.smoothspline, IC = "TIC", allinone = TRUE, ylim = c(-2,2))
 
 <!-- `coxtp(...,tol=1e-6,iter.max=20L,stop="ratch",fixedstep=FALSE)` -->
 
-## 5.3 Baseline estimation
+### Baseline estimation
 
 The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, where it takes the value \begin{align*}
     d\Lambda_0 = {d_i}\left\{\mathop{\sum}\limits_{\ell \in R(T_i)} \exp \{\boldsymbol{X}_{i' }^T \boldsymbol{\Theta}  \boldsymbol{B}(T_{i}) \}\right\}^{-1}.
