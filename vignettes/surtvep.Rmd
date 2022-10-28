@@ -923,14 +923,13 @@ First we load the data:
 data("support")
 # Using the matrix interface and log of time
 z <- model.matrix(death ~ . - d.time - 1, data = support)
-# y <- with(support, cbind(death, d.time))
 event <- support$death
 time <- support$d.time
 ```
 
 We apply the Newton's method with Smoothing-spline:
 ```{r, message = FALSE, results='hide', fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
-fit.strata <- coxtv(z = z, event = event, time=time)
+fit.support <- coxtv(z = z, event = event, time=time)
 ```
 
 
