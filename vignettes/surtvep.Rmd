@@ -920,7 +920,7 @@ hospital charges, patient ratio of costs to charge,s and patient micro-costs. Ne
 First we load the data:
 
 ```{r, message = FALSE}
-data("support")
+data(support)
 # Using the matrix interface and log of time
 z <- model.matrix(death ~ . - d.time - 1, data = support)
 event <- support$death
