@@ -1,7 +1,7 @@
 
-#' Cox Non-proportional Hazards model with penalization: 
+#' fit a cox Non-proportional Hazards model with P-spline or Smoothing-spline:
 #' 
-#' Descritpion (...)
+#' Fit a cox Non-proportional Hazards model via penalized maximum likelihood. 
 #' 
 #' @details put the link to the wesite()...
 #'
@@ -15,11 +15,11 @@
 #' @param ties Ways to deal with ties, default is **`ties="Breslow"`**:
 #' @param tol Convergence threshold. The default threshold is set as **`tol=1e-6`**
 #' @param iter.max Maximum Iteration number, default is **`iter.max=20L`**
-#' @param method Selecting Method used, default is **`method="Newton"`**
+#' @param method Selecting Method used, default is **`method="ProxN"`**
 #' @param lambda Parameter for Proximal Newton's Method. Default is **`lambda=1e8`**
-#' @param btr Backtracking line search approach, default is `btr="static"`:
-#' @param tau (Alpha or beta?) in the Newton's Method, Default is **`tau=0.5`**. Used to control for step size.
-#' @param stop Stopping rule, default is **`stop="ratch"`**:
+#' @param btr Backtracking line search approach, default is **`btr="dynamic"`**:
+#' @param tau In the Newton's Method, Default is **`tau=0.5`**. Used to control for step size.
+#' @param stop Stopping rule, default is **`stop="ratch"`**.
 #' @param parallel Parallel computation, Default is **`parallel=FALSE`**
 #' @param threads Parallel computation parameter(number of cores)Default is **`threads=1L`**
 #' @param degree Degree of smoothing spline. Default setting is **`degree=3L`**.

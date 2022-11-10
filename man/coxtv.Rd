@@ -2,13 +2,13 @@
 % Please edit documentation in R/coxtv.base.R
 \name{coxtv}
 \alias{coxtv}
-\title{Cox Non-proportional Hazards model:}
+\title{fit a cox Non-proportional Hazards model:}
 \usage{
 coxtv(
   event,
   z,
   time,
-  strata = c(),
+  strata = NULL,
   spline = "P-spline",
   nsplines = 8,
   ties = "Breslow",
@@ -57,8 +57,15 @@ Number related to the paper). Default setting is \strong{\code{spline="Smooth-sp
 \item{fixedstep}{There might be times when the stopping criteria not working, thus,
 the number of steps could be set manually. Default value is \strong{\code{fixedstep = FALSE}}, if it is true, will stop by \code{iter.max}}
 }
+\value{
+An object with S3 class \code{"coxtv"}.
+\item{ctrl.pts}{the estimated covariate coefficient}
+\item{theta.list}{the estimated covariate function across all iterations}
+\item{VarianceMatrix}{The variance matrix of the estimated function}
+\item{internal.knots}{The internal knot locations}
+}
 \description{
-Descritpion (...)
+Fit a cox Non-proportional Hazards model via maximum likelihood.
 }
 \details{
 put the link to the wesite()...
@@ -70,4 +77,8 @@ time <- ExampleData$time
 event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)
 
+}
+\seealso{
+\code{coef}, \code{plot}, \code{coef} and \code{plot} methods,
+and the \code{coxtp} function.
 }

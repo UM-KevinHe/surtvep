@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{Cox Non-proportional Hazards model with penalization:}
+\title{fit a cox Non-proportional Hazards model with P-spline or Smoothing-spline:}
 \usage{
 coxtp(
   event,
@@ -49,15 +49,15 @@ Number related to the paper). Default setting is \strong{\code{spline="Smooth-sp
 
 \item{iter.max}{Maximum Iteration number, default is \strong{\code{iter.max=20L}}}
 
-\item{method}{Selecting Method used, default is \strong{\code{method="Newton"}}}
+\item{method}{Selecting Method used, default is \strong{\code{method="ProxN"}}}
 
 \item{lambda}{Parameter for Proximal Newton's Method. Default is \strong{\code{lambda=1e8}}}
 
-\item{btr}{Backtracking line search approach, default is \code{btr="static"}:}
+\item{btr}{Backtracking line search approach, default is \strong{\code{btr="dynamic"}}:}
 
-\item{tau}{(Alpha or beta?) in the Newton's Method, Default is \strong{\code{tau=0.5}}. Used to control for step size.}
+\item{tau}{In the Newton's Method, Default is \strong{\code{tau=0.5}}. Used to control for step size.}
 
-\item{stop}{Stopping rule, default is \strong{\code{stop="ratch"}}:}
+\item{stop}{Stopping rule, default is \strong{\code{stop="ratch"}}.}
 
 \item{parallel}{Parallel computation, Default is \strong{\code{parallel=FALSE}}}
 
@@ -78,7 +78,7 @@ the number of steps could be set manually. Default value is \strong{\code{fixeds
 \item{ICLastOnly}{Only calculate the last information criteria if is TRUE. Default is \strong{\code{ICLastOnly=FALSE}}}
 }
 \description{
-Descritpion (...)
+Fit a cox Non-proportional Hazards model via penalized maximum likelihood.
 }
 \details{
 put the link to the wesite()...

@@ -922,15 +922,31 @@ First we load the data:
 ```{r, message = FALSE}
 data(support)
 # Using the matrix interface and log of time
-z <- model.matrix(death ~ . - d.time - 1, data = support)
+summary(support$age)
+```
+
+Instead of analzyi
+```{r}
+cut(support$age, quantile(support$age, c(0,1/4,1/2,3/4,1), na.rm = TRUE), 
+    labels = c(0,1,2,3), include.lowest = TRUE)
+    # labels = c("age_1","age_2","age_3", "age_4"), include.lowest = TRUE)
+```
+
+
+```{r}
+age_
+
+z <- model.matrix(death ~ sex + age + diabetes - d.time - 1, data = support)
 event <- support$death
 time <- support$d.time
 ```
 
+
 We apply the Newton's method with Smoothing-spline:
 ```{r, message = FALSE, results='hide', fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
-fit.support <- coxtv(z = z, event = event, time=time)
+fit.support <- coxtp(z = z, event = event, time=time, lambda_spline = c(0.1, 1, 10, 100))
 ```
+
 
 
 

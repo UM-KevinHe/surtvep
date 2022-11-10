@@ -1,7 +1,7 @@
 
-#' Cox Non-proportional Hazards model:
+#' fit a cox Non-proportional Hazards model:
 #' 
-#' Descritpion (...)
+#' Fit a cox Non-proportional Hazards model via maximum likelihood. 
 #' 
 #' @details put the link to the wesite()...
 #'
@@ -27,7 +27,38 @@
 #' @param fixedstep There might be times when the stopping criteria not working, thus, 
 #' the number of steps could be set manually. Default value is **`fixedstep = FALSE`**, if it is true, will stop by `iter.max`
 #'
-#' @return
+#' @return An object with S3 class \code{"coxtv"}. 
+#' \item{call}{the call that produced this object} 
+#' \item{a0}{Intercept sequence of length \code{length(lambda)}}
+#' \item{beta}{For \code{"elnet"}, \code{"lognet"}, \code{"fishnet"} and
+#' \code{"coxnet"} models, a \code{nvars x length(lambda)} matrix of
+#' coefficients, stored in sparse column format (\code{"CsparseMatrix"}). For
+#' \code{"multnet"} and \code{"mgaussian"}, a list of \code{nc} such matrices,
+#' one for each class.} \item{lambda}{The actual sequence of \code{lambda}
+#' values used. When \code{alpha=0}, the largest lambda reported does not quite
+#' give the zero coefficients reported (\code{lambda=inf} would in principle).
+#' Instead, the largest \code{lambda} for \code{alpha=0.001} is used, and the
+#' sequence of \code{lambda} values is derived from this.} \item{dev.ratio}{The
+#' fraction of (null) deviance explained (for \code{"elnet"}, this is the
+#' R-square). The deviance calculations incorporate weights if present in the
+#' model. The deviance is defined to be 2*(loglike_sat - loglike), where
+#' loglike_sat is the log-likelihood for the saturated model (a model with a
+#' free parameter per observation). Hence dev.ratio=1-dev/nulldev.}
+#' \item{nulldev}{Null deviance (per observation). This is defined to be
+#' 2*(loglike_sat -loglike(Null)); The NULL model refers to the intercept
+#' model, except for the Cox, where it is the 0 model.} \item{df}{The number of
+#' nonzero coefficients for each value of \code{lambda}. For \code{"multnet"},
+#' this is the number of variables with a nonzero coefficient for \emph{any}
+#' class.} \item{dfmat}{For \code{"multnet"} and \code{"mrelnet"} only. A
+#' matrix consisting of the number of nonzero coefficients per class}
+#' \item{dim}{dimension of coefficient matrix (ices)} \item{nobs}{number of
+#' observations} \item{npasses}{total passes over the data summed over all
+#' lambda values} \item{offset}{a logical variable indicating whether an offset
+#' was included in the model} \item{jerr}{error flag, for warnings and errors
+#' (largely for internal debugging).} \item{relaxed}{If \code{relax=TRUE}, this
+#' additional item is another glmnet object with different values for
+#' \code{beta} and \code{dev.ratio}}
+#'
 #' @export 
 #'
 #' @examples 
@@ -41,7 +72,7 @@
 #' @importFrom Rcpp evalCpp
 #' 
 #' 
-coxtv <- function(event , z , time ,strata=c(), spline="P-spline", nsplines=8, ties="Breslow", 
+coxtv <- function(event , z , time ,strata= NULL, spline="P-spline", nsplines=8, ties="Breslow", 
                      control, ...) {
   if (!ties%in%c("Breslow", "none")) stop("Invalid ties!")
   # pass ... args to coxtv.control
@@ -148,11 +179,8 @@ coxtv <- function(event , z , time ,strata=c(), spline="P-spline", nsplines=8, t
                                                   fixedstep = control$fixedstep,
                                                   difflambda = control$difflambda,
                                                   ICLastOnly = FALSE)
-      # row.names(fit$ctrl.pts) <- term.tv
-      # fit$internal.knots <- unname(knots)
       fit$uniqfailtimes <- uniqfailtimes.str
       fit$bases <- bases
-      # return(fit)
     } else if (ties=="none") {
       bases <- 
         splines::bs(data[,term.time], degree=degree, intercept=T, 
@@ -176,12 +204,8 @@ coxtv <- function(event , z , time ,strata=c(), spline="P-spline", nsplines=8, t
                                          difflambda = control$difflambda,
                                          ICLastOnly = control$ICLastOnly)
       
-      
-      # row.names(fit$ctrl.pts) <- term.tv
-      # fit$internal.knots <- unname(knots)
       fit$uniqfailtimes <- times
       fit$bases <- bases
-      # return(fit)
     }
   } else if (spline=="Smooth-spline"){
     if (ties=="Breslow"){
@@ -224,7 +248,6 @@ coxtv <- function(event , z , time ,strata=c(), spline="P-spline", nsplines=8, t
           for (j in 1:(p_diffm+1)) {
             W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] = 
               W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] + h_j[q]*W_tilde[i,j]/2
-            #W_matrix  <- W_matrix + W_q
           }
         }
       }
@@ -248,14 +271,10 @@ coxtv <- function(event , z , time ,strata=c(), spline="P-spline", nsplines=8, t
                                                   btr=control$btr, stop=control$stop, TIC_prox = FALSE,
                                                   fixedstep=control$fixedstep,
                                                   difflambda = control$difflambda,
-                                                  ICLastOnly = FALSE)
-      # row.names(fit$ctrl.pts) <- term.tv
-      # fit$internal.knots <- unname(knots)
+                                                  ICLastOnly = control$ICLastOnly)
       fit$uniqfailtimes <- uniqfailtimes.str
       fit$bases <- bases
       fit$knots <- knots
-      # return(fit)
-      
     } else if (ties == "none"){
       knots <- 
         quantile(data[data[,term.event]==1,term.time], 
@@ -294,7 +313,6 @@ coxtv <- function(event , z , time ,strata=c(), spline="P-spline", nsplines=8, t
           for (j in 1:(p_diffm+1)) {
             W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] = 
               W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] + h_j[q]*W_tilde[i,j]/2
-            #W_matrix  <- W_matrix + W_q
           }
         }
       }
@@ -321,33 +339,40 @@ coxtv <- function(event , z , time ,strata=c(), spline="P-spline", nsplines=8, t
       # fit$internal.knots <- unname(knots)
       fit$uniqfailtimes <- times
       fit$bases <- bases
-      # return(fit)
     }
     
   }
   
-  fit$times <- times
-  fit$ctrl.pts <- fit$theta_list[[length(fit$theta_list)]]
-  row.names(fit$ctrl.pts) <- term.tv
+  
+  res <- NULL
+  res$theta.list  <- fit$theta_list
+  res$SplineType  <- spline
+  res$VarianceMatrix <- fit$VarianceMatrix
+  res$times <- times
+  res$ctrl.pts <- fit$theta_list[[length(fit$theta_list)]]
+  row.names(res$ctrl.pts) <- term.tv
   # fit$tvef <- splines::bs(times, degree=degree, intercept=T, knots=knots,
   #                         Boundary.knots=range(fit$times))%*%t(fit$ctrl.pts)
   # rownames(fit$tvef) <- times
-  class(fit) <- "coxtv"
-  attr(fit, "spline") <- spline
+  class(res) <- "coxtv"
+  attr(res, "spline") <- spline
   if (length(term.ti)>0) {
-    fit$tief <- c(fit$tief)
-    names(fit$tief) <- term.ti
+    res$tief <- c(res$tief)
+    names(res$tief) <- term.ti
   }
-  # colnames(fit$info) <- rownames(fit$info) <-
+  # colnames(res$info) <- rownames(res$info) <-
   #   c(rep(term.tv, each=nsplines), term.ti)
-  attr(fit, "nsplines") <- nsplines
-  attr(fit, "degree.spline") <- degree
-  attr(fit, "control") <- control
-  attr(fit, "response") <- term.event
-  # fit$z_names           <- colnames(data)[c(3:(ncol(data)-1))]
-  fit$internal.knots    <- unname(knots)
-  return(fit)
+  attr(res, "nsplines") <- nsplines
+  attr(res, "degree.spline") <- degree
+  attr(res, "control") <- control
+  attr(res, "response") <- term.event
+  # res$z_names           <- colnames(data)[c(3:(ncol(data)-1))]
+  res$internal.knots    <- unname(knots)
+  return(res)
 }
+
+
+
 
 coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", lambda=1e8,
                              factor=10, btr="dynamic", sigma=1e-2, tau=0.6,
@@ -385,6 +410,9 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", lambda=1e8,
        TIC_prox = TIC_prox, lambda_spline= lambda_spline, ord = ord, fixedstep = fixedstep, difflambda = difflambda,
        effectsize = effectsize)
 }
+
+
+
 
 #' @export confint.surtiver confint.surtiver
 confint.surtiver <- function(fit, times, parm, level=0.95) {
