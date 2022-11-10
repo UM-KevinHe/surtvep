@@ -1,4 +1,3 @@
-
 #' fit a cox Non-proportional Hazards model:
 #' 
 #' Fit a cox Non-proportional Hazards model via maximum likelihood. 
@@ -27,39 +26,19 @@
 #' @param fixedstep There might be times when the stopping criteria not working, thus, 
 #' the number of steps could be set manually. Default value is **`fixedstep = FALSE`**, if it is true, will stop by `iter.max`
 #'
+#'
+#'
 #' @return An object with S3 class \code{"coxtv"}. 
-#' \item{call}{the call that produced this object} 
-#' \item{a0}{Intercept sequence of length \code{length(lambda)}}
-#' \item{beta}{For \code{"elnet"}, \code{"lognet"}, \code{"fishnet"} and
-#' \code{"coxnet"} models, a \code{nvars x length(lambda)} matrix of
-#' coefficients, stored in sparse column format (\code{"CsparseMatrix"}). For
-#' \code{"multnet"} and \code{"mgaussian"}, a list of \code{nc} such matrices,
-#' one for each class.} \item{lambda}{The actual sequence of \code{lambda}
-#' values used. When \code{alpha=0}, the largest lambda reported does not quite
-#' give the zero coefficients reported (\code{lambda=inf} would in principle).
-#' Instead, the largest \code{lambda} for \code{alpha=0.001} is used, and the
-#' sequence of \code{lambda} values is derived from this.} \item{dev.ratio}{The
-#' fraction of (null) deviance explained (for \code{"elnet"}, this is the
-#' R-square). The deviance calculations incorporate weights if present in the
-#' model. The deviance is defined to be 2*(loglike_sat - loglike), where
-#' loglike_sat is the log-likelihood for the saturated model (a model with a
-#' free parameter per observation). Hence dev.ratio=1-dev/nulldev.}
-#' \item{nulldev}{Null deviance (per observation). This is defined to be
-#' 2*(loglike_sat -loglike(Null)); The NULL model refers to the intercept
-#' model, except for the Cox, where it is the 0 model.} \item{df}{The number of
-#' nonzero coefficients for each value of \code{lambda}. For \code{"multnet"},
-#' this is the number of variables with a nonzero coefficient for \emph{any}
-#' class.} \item{dfmat}{For \code{"multnet"} and \code{"mrelnet"} only. A
-#' matrix consisting of the number of nonzero coefficients per class}
-#' \item{dim}{dimension of coefficient matrix (ices)} \item{nobs}{number of
-#' observations} \item{npasses}{total passes over the data summed over all
-#' lambda values} \item{offset}{a logical variable indicating whether an offset
-#' was included in the model} \item{jerr}{error flag, for warnings and errors
-#' (largely for internal debugging).} \item{relaxed}{If \code{relax=TRUE}, this
-#' additional item is another glmnet object with different values for
-#' \code{beta} and \code{dev.ratio}}
+#' \item{ctrl.pts}{the estimated covariate coefficient} 
+#' \item{theta.list}{the estimated covariate function across all iterations}
+#' \item{VarianceMatrix}{The variance matrix of the estimated function}
+#' \item{internal.knots}{The internal knot locations}
+#' \item{info}{The second order derivative}
 #'
 #' @export 
+#' 
+#' @seealso \code{coef}, \code{plot}, \code{coef} and \code{plot} methods,
+#' and the \code{coxtp} function.
 #'
 #' @examples 
 #' data(ExampleData)
@@ -346,28 +325,35 @@ coxtv <- function(event , z , time ,strata= NULL, spline="P-spline", nsplines=8,
   
   res <- NULL
   res$theta.list  <- fit$theta_list
-  res$SplineType  <- spline
   res$VarianceMatrix <- fit$VarianceMatrix
   res$times <- times
   res$ctrl.pts <- fit$theta_list[[length(fit$theta_list)]]
+  res$internal.knots    <- unname(knots)
+  res$uniqfailtimes     <- fit$uniqfailtimes.str
+  res$bases <- fit$bases
+
+  
   row.names(res$ctrl.pts) <- term.tv
-  # fit$tvef <- splines::bs(times, degree=degree, intercept=T, knots=knots,
+  
+  # res$tvef <- splines::bs(times, degree=degree, intercept=T, knots=knots,
   #                         Boundary.knots=range(fit$times))%*%t(fit$ctrl.pts)
   # rownames(fit$tvef) <- times
+  
   class(res) <- "coxtv"
   attr(res, "spline") <- spline
+  attr(res, "strata") <- strata
   if (length(term.ti)>0) {
     res$tief <- c(res$tief)
     names(res$tief) <- term.ti
   }
+  
   # colnames(res$info) <- rownames(res$info) <-
   #   c(rep(term.tv, each=nsplines), term.ti)
+  
   attr(res, "nsplines") <- nsplines
   attr(res, "degree.spline") <- degree
   attr(res, "control") <- control
   attr(res, "response") <- term.event
-  # res$z_names           <- colnames(data)[c(3:(ncol(data)-1))]
-  res$internal.knots    <- unname(knots)
   return(res)
 }
 
@@ -413,16 +399,31 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", lambda=1e8,
 
 
 
-
-#' @export confint.surtiver confint.surtiver
-confint.surtiver <- function(fit, times, parm, level=0.95) {
+#' get confidence interval from a 'coxtv' object
+#' 
+#' @param fit fitted \code{"coxtv"} model
+#' @param times the time interval to be estamtied. The default value is the time of the fitted model
+#' @param parm the names of parameter
+#' @param level the confidence level. Default is 0.95.
+#' 
+#' 
+#' @examples 
+#' data(ExampleData)
+#' z <- ExampleData$x
+#' time <- ExampleData$time
+#' event <- ExampleData$event
+#' fit <- coxtv(event = event, z = z, time = time)
+#' confit(fit)
+#' 
+#' @exportS3Method confint coxtv
+confint.coxtv <- function(fit, times, parm, level=0.95, ...) {
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtv") stop("Object fit is not of class 'coxtv'!")
-  # if (missing(times)) {
-  times <- fit$times
-  # } else {
-  #   if (!is.numeric(times) | min(times)<0) stop("Invalid times!")
-  # }
+  if (missing(times)) {
+    times <- fit$times
+  } else {
+    if (!is.numeric(times) | min(times)<0) stop("Invalid times!")
+  }
   if (!is.numeric(level) | level[1]>1 | level[1]<0) stop("Invalid level!")
   level <- level[1]
   times <- times[order(times)]

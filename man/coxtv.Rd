@@ -63,6 +63,7 @@ An object with S3 class \code{"coxtv"}.
 \item{theta.list}{the estimated covariate function across all iterations}
 \item{VarianceMatrix}{The variance matrix of the estimated function}
 \item{internal.knots}{The internal knot locations}
+\item{info}{The second order derivative}
 }
 \description{
 Fit a cox Non-proportional Hazards model via maximum likelihood.

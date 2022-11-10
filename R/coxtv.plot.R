@@ -1,12 +1,9 @@
-
-
-#' Plotting result from coxtp() function
+#' Plotting result from a `coxtv` object
 #'
 #' @param fit Model get from coxtv
 #'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
-#' @return
 #' @exportS3Method plot coxtv
 #' 
 #' @examples
