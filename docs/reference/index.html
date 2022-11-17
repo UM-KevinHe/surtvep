@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">surtvep</a>
 
@@ -63,9 +63,14 @@
 
       <dl><dt>
           
-          <code><a href="coxtp.base.html">coxtp.base()</a></code> 
+          <code><a href="confint.coxtp.html">confint(<i>&lt;coxtp&gt;</i>)</a></code> 
         </dt>
-        <dd>Cox Non-proportional Hazards model:</dd>
+        <dd>get confidence interval from a 'coxtp' object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="confint.coxtv.html">confint(<i>&lt;coxtv&gt;</i>)</a></code> 
+        </dt>
+        <dd>get confidence interval from a 'coxtv' object</dd>
       </dl><dl><dt>
           
           <code><a href="coxtp.baseline.html">coxtp.baseline()</a></code> 
@@ -80,42 +85,73 @@
           
           <code><a href="coxtp.html">coxtp()</a></code> 
         </dt>
-        <dd>Cox Non-proportional Hazards model with penalization:</dd>
+        <dd>fit a cox Non-proportional Hazards model with P-spline or Smoothing-spline:</dd>
+      </dl><dl><dt>
+          
+          <code><a href="coxtv.baseline.html">coxtv.baseline()</a></code> 
+        </dt>
+        <dd>Calculating Baseline hazard using the result from a <code>coxtv</code> object</dd>
       </dl><dl><dt>
           
           <code><a href="coxtv.html">coxtv()</a></code> 
         </dt>
-        <dd>Cox Non-proportional Hazards model:</dd>
+        <dd>fit a cox Non-proportional Hazards model:</dd>
+      </dl><dl><dt>
+          
+          <code><a href="cv.coxtp.html">cv.coxtp()</a></code> 
+        </dt>
+        <dd>fit a cox Non-proportional Hazards model with P-spline or Smoothing-spline, penalization coefficient is provided by cross validation</dd>
       </dl><dl><dt>
           
           <code><a href="ExampleData.html">ExampleData</a></code> 
         </dt>
-        <dd>Example Dataset</dd>
+        <dd>Example data for surtvep with 4000 observations of 2 variables:</dd>
       </dl><dl><dt>
           
-          <code><a href="plot.coxtp.all.html">plot(<i>&lt;coxtp.all&gt;</i>)</a></code> 
+          <code><a href="ExampleDataBinary.html">ExampleDataBinary</a></code> 
         </dt>
-        <dd>Plotting result from coxtp() function</dd>
+        <dd>Example data for surtvep with 2000 observations of 2 binary variables:</dd>
+      </dl><dl><dt>
+          
+          <code><a href="ic.coxtp.html">ic.coxtp()</a></code> 
+        </dt>
+        <dd>fit a cox Non-proportional Hazards model with P-spline or Smoothing-spline. Information criteria is also provided.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plot.coxtp.html">plot(<i>&lt;coxtp&gt;</i>)</a></code> 
+        </dt>
+        <dd>Plotting result from a <code>coxtp</code> object</dd>
       </dl><dl><dt>
           
           <code><a href="plot.coxtv.html">plot(<i>&lt;coxtv&gt;</i>)</a></code> 
         </dt>
-        <dd>Plotting result from coxtp() function</dd>
+        <dd>Plotting result from a <code>coxtv</code> object</dd>
       </dl><dl><dt>
           
-          <code><a href="sim_data.html">sim_data</a></code> 
+          <code><a href="plot.ic.coxtp.html">plot(<i>&lt;ic.coxtp&gt;</i>)</a></code> 
         </dt>
-        <dd>Example data for surtvep with 5000 observations of 4 variables:</dd>
+        <dd>Plotting result from a <code>ic.coxtp</code> object</dd>
       </dl><dl><dt>
           
-          <code><a href="sim_data_p5.html">sim_data_p5</a></code> 
+          <code><a href="StrataExample.html">StrataExample</a></code> 
         </dt>
-        <dd>Example data for surtvep with 5000 observations of 7 variables:</dd>
+        <dd>Example data for stratified model illustration</dd>
       </dl><dl><dt>
           
-          <code><a href="sim_data_p5_f5.html">sim_data_p5_f5</a></code> 
+          <code><a href="support.html">support</a></code> 
         </dt>
-        <dd>Example data for surtvep with 5000 observations of 8 variables(With strata):</dd>
+        <dd>Study to Understand Prognoses Preferences Outcomes and Risks of Treatment
+(SUPPORT)</dd>
+      </dl><dl><dt>
+          
+          <code><a href="tvef.ph.html">tvef.ph()</a></code> 
+        </dt>
+        <dd>test the proportional hazards assumption from a <code>coxtv</code> object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="tvef.zero.html">tvef.zero()</a></code> 
+        </dt>
+        <dd>test the significance of the covariates from a <code>coxtv</code> or <code>coxtp</code> object</dd>
       </dl></div>
   </main></div>
 

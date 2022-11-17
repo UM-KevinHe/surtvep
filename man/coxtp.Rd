@@ -23,10 +23,11 @@ coxtp(
   threads = 1L,
   degree = 3L,
   TIC_prox = FALSE,
-  lambda_spline = 0,
+  lambda.spline = 0,
   ord = 4,
   fixedstep = FALSE,
-  ICLastOnly = TRUE
+  InfoCrit = TRUE,
+  ...
 )
 }
 \arguments{
@@ -68,7 +69,7 @@ Number related to the paper). Default setting is \strong{\code{spline="Smooth-sp
 \item{TIC_prox}{When calculating information criteria, there might be numerical issue(second order derivative,
 Hessian matrix approximate is singular), thus we proposed to add a small term to the diagonal. Default \strong{\code{TIC_prox = FALSE}}}
 
-\item{lambda_spline}{Smoothing parameter lambda. Default is \strong{\code{lambda_spline = 0}} which refers to Newton's Method without penalization.}
+\item{lambda.spline}{Smoothing parameter lambda. Default is \strong{\code{lambda.spline = 0}} which refers to Newton's Method without penalization.}
 
 \item{ord}{Specify which derivative to penalize. Default setting is \strong{\code{ord=4}}.}
 
@@ -76,6 +77,14 @@ Hessian matrix approximate is singular), thus we proposed to add a small term to
 the number of steps could be set manually. Default value is \strong{\code{fixedstep = FALSE}}, if it is true, will stop by \code{iter.max}}
 
 \item{ICLastOnly}{Only calculate the last information criteria if is TRUE. Default is \strong{\code{ICLastOnly=FALSE}}}
+}
+\value{
+An object with S3 class \code{"coxtp"}.
+\item{ctrl.pts}{the estimated covariate coefficient}
+\item{theta.list}{the estimated covariate function across all iterations}
+\item{VarianceMatrix}{The variance matrix of the estimated function}
+\item{internal.knots}{The internal knot locations}
+\item{info}{The second order derivative}
 }
 \description{
 Fit a cox Non-proportional Hazards model via penalized maximum likelihood.
@@ -90,6 +99,6 @@ time  <- ExampleData$time
 event <- ExampleData$event
 
 lambda.spline  = c(0,1)
-fit   <- coxtp(event = event, z = z, time = time, lambda_spline=lambda.spline)
+fit   <- coxtp(event = event, z = z, time = time, lambda.spline=lambda.spline)
 
 }

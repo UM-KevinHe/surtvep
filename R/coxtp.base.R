@@ -1,35 +1,3 @@
-
-#' Cox Non-proportional Hazards model:
-#' 
-#' Descritpion (...)
-#' 
-#' @details put the link to the wesite()...
-#'
-#' @param event event vector, should be a vector containing 0 or 1
-#' @param z Covariate matrix
-#' @param time Time vector, should be a vector with non-negative numeric value
-#' @param strata stratification group defined in the data. If there exist stratification group, please enter as vector.
-#' @param spline The spline term for Penalized Newton's Method(Add section 
-#' Number related to the paper). Default setting is **`spline="Smooth-spline"`**
-#' @param nsplines Number of base functions in the B-splines, default is 8.
-#' @param ties Ways to deal with ties, default is **`ties="Breslow"`**:
-#' @param tol Convergence threshold. The default threshold is set as **`tol=1e-6`**
-#' @param iter.max Maximum Iteration number, default is **`iter.max=20L`**
-#' @param method Selecting Method used, default is **`method="Newton"`**
-#' @param lambda Parameter for Proximal Newton's Method. Default is **`lambda=1e8`**
-#' @param btr Backtracking line search approach, default is `btr="static"`:
-#' @param tau (Alpha or beta?) in the Newton's Method, Default is **`tau=0.5`**. Used to control for step size.
-#' @param stop Stopping rule, default is **`stop="ratch"`**:
-#' @param parallel Parallel computation, Default is **`parallel=FALSE`**
-#' @param threads Parallel computation parameter(number of cores)Default is **`threads=1L`**
-#' @param degree Degree of smoothing spline. Default setting is **`degree=3L`**.
-#' @param ord Specify which derivative to penalize. Default setting is **`ord=4`**.
-#' @param fixedstep There might be times when the stopping criteria not working, thus, 
-#' the number of steps could be set manually. Default value is **`fixedstep = FALSE`**, if it is true, will stop by `iter.max`
-#'
-#' @return
-#'
-#' @examples 
 coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="Breslow", 
                      control, ...) {
   if (!ties%in%c("Breslow", "none")) stop("Invalid ties!")
@@ -305,23 +273,39 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
     }
     
   }
-  fit$times <- times
-  fit$ctrl.pts <- fit$theta_list[[length(fit$theta_list)]]
-  row.names(fit$ctrl.pts) <- term.tv
-  attr(fit, "spline") <- spline
+  
+  res <- NULL
+  res$theta.list  <- fit$theta_list
+  res$VarianceMatrix <- fit$VarianceMatrix
+  res$times <- times
+  res$ctrl.pts <- fit$theta_list[[length(fit$theta_list)]]
+  res$internal.knots    <- unname(knots)
+  res$uniqfailtimes     <- fit$uniqfailtimes.str
+  res$bases <- fit$bases
+  res$AIC_all   <- fit$AIC_all
+  res$TIC_all   <- fit$TIC_all
+  res$GIC_all   <- fit$GIC_all
+  res$SplineType <- fit$SplineType
+  res$info <- fit$info
+  
+  class(res) <- "coxtp"
+
+  row.names(res$ctrl.pts) <- term.tv
+  
+  attr(res, "spline") <- spline
   # if (length(term.ti)>0) {
   #   fit$tief <- c(fit$tief)
   #   names(fit$tief) <- term.ti
   # }
   # colnames(fit$info) <- rownames(fit$info) <-
   #   c(rep(term.tv, each=nsplines), term.ti)
-  attr(fit, "nsplines") <- nsplines
-  attr(fit, "degree.spline") <- degree
-  attr(fit, "control") <- control
-  attr(fit, "response") <- term.event
-  attr(fit, "internal.knots")    <- unname(knots)
-  class(fit) <- "coxtp"
-  return(fit)
+  attr(res, "nsplines") <- nsplines
+  attr(res, "degree.spline") <- degree
+  attr(res, "control") <- control
+  attr(res, "response") <- term.event
+  attr(res, "internal.knots")    <- unname(knots)
+  class(res) <- "coxtp"
+  return(res)
 }
 
 coxtp.control <- function(tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
@@ -550,13 +534,26 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
   
   
   }
-  
-  
-  
 }
 
 
-
+#' get confidence interval from a 'coxtp' object
+#' 
+#' @param fit fitted \code{"coxtp"} model
+#' @param times the time interval to be estamtied. The default value is the time of the fitted model
+#' @param parm the names of parameter
+#' @param level the confidence level. Default is 0.95.
+#' 
+#' 
+#' @examples 
+#' data(ExampleData)
+#' z <- ExampleData$x
+#' time <- ExampleData$time
+#' event <- ExampleData$event
+#' fit <- coxtp(event = event, z = z, time = time)
+#' confit(fit)
+#' 
+#' @exportS3Method confint coxtp
 confint.coxtp <- function(fit, times, parm, level=0.95) {
   
   if (missing(fit)) stop ("Argument fit is required!")
@@ -583,11 +580,11 @@ confint.coxtp <- function(fit, times, parm, level=0.95) {
   # } else stop("Invalid parm!")
   rownames.info <- rep(term.tv, each=nsplines)
   if (method=="Newton") {
-    # invinfo <- solve(fit$VarianceMatrix)
-    invinfo <- fit$VarianceMatrix
+    invinfo <- solve(fit$info)
+    # invinfo <- fit$VarianceMatrix
   } else if (method=="ProxN") {
-    # invinfo <- solve(fit$VarianceMatrix+diag(sqrt(.Machine$double.eps),dim(fit$VarianceMatrix)[1]))
-    invinfo <- fit$VarianceMatrix
+    invinfo <- solve(fit$info+diag(sqrt(.Machine$double.eps),dim(fit$VarianceMatrix)[1]))
+    # invinfo <- fit$VarianceMatrix
   }
   # parm.ti <- intersect(parm, c(term.ti))
   parm.tv <- intersect(parm, c(term.tv))

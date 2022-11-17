@@ -17,6 +17,12 @@ coxtv.baseline(fit, event, z, time, strata = NULL, ...)
 
 \item{delta}{event vector, should be a vector containing 0 or 1}
 }
+\value{
+a list with components
+\item{time}{the unique event time points}
+\item{hazard}{the baseline hazard corresponding to each unqiue time point}
+\item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
+}
 \description{
 Calculating Baseline hazard using the result from a \code{coxtv} object
 }

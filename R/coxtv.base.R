@@ -331,7 +331,7 @@ coxtv <- function(event , z , time ,strata= NULL, spline="P-spline", nsplines=8,
   res$internal.knots    <- unname(knots)
   res$uniqfailtimes     <- fit$uniqfailtimes.str
   res$bases <- fit$bases
-
+  res$info <- fit$info
   
   row.names(res$ctrl.pts) <- term.tv
   

@@ -29,7 +29,7 @@ In this tutorial we introduce the use of `surtvep` through an example dataset.
 #Install the package, need to install the devtools packages:
 require("devtools")
 require("remotes")
-remotes::install_github("UM-KevinHe/surtvep", ref = "Lingfeng_test")
+remotes::install_github("UM-KevinHe/surtvep")
 
 #To install with Vignettes:
 # install.packages("devtools")
@@ -933,19 +933,19 @@ cut(support$age, quantile(support$age, c(0,1/4,1/2,3/4,1), na.rm = TRUE),
 ```
 
 
-```{r}
-age_
+<!-- ```{r} -->
+<!-- age_ -->
 
-z <- model.matrix(death ~ sex + age + diabetes - d.time - 1, data = support)
-event <- support$death
-time <- support$d.time
-```
+<!-- z <- model.matrix(death ~ sex + age + diabetes - d.time - 1, data = support) -->
+<!-- event <- support$death -->
+<!-- time <- support$d.time -->
+<!-- ``` -->
 
 
-We apply the Newton's method with Smoothing-spline:
-```{r, message = FALSE, results='hide', fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
-fit.support <- coxtp(z = z, event = event, time=time, lambda_spline = c(0.1, 1, 10, 100))
-```
+<!-- We apply the Newton's method with Smoothing-spline: -->
+<!-- ```{r, message = FALSE, results='hide', fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE} -->
+<!-- fit.support <- coxtp(z = z, event = event, time=time, lambda_spline = c(0.1, 1, 10, 100)) -->
+<!-- ``` -->
 
 
 

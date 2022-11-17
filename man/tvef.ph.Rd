@@ -2,17 +2,17 @@
 % Please edit documentation in R/tvef.ph.R
 \name{tvef.ph}
 \alias{tvef.ph}
-\title{get confidence interval from a \code{coxtv} object}
+\title{test the proportional hazards assumption from a \code{coxtv} object}
 \usage{
 tvef.ph(fit, parm)
 }
 \arguments{
-\item{fit}{fitted \code{"coxtv"} model}
+\item{fit}{fitted \code{"coxtv"} or \code{"coxtp"}  model}
 
 \item{parm}{the names of parameter to be tested}
 }
 \description{
-get confidence interval from a \code{coxtv} object
+test the proportional hazards assumption from a \code{coxtv} object
 }
 \examples{
 data(ExampleData)

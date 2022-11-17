@@ -1171,6 +1171,7 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
   arma::mat lambda_i_mat;
   //List VarianceMatrix, VarianceMatrix2, VarianceMatrix_I, VarianceMatrix_J;
   arma::mat VarianceMatrix;
+  arma::mat info;
 
   for (int i = 0; i < n_lambda; ++i)
   {
@@ -1205,7 +1206,7 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
                                     method, lambda, factor,
                                     parallel, threads, iter_max, tol, s, t, btr, stop, TIC_prox, fixedstep, ICLastOnly);
 
-    //mat info              = SplineUdpate["info"];
+    arma::mat info_tmp              = SplineUdpate["info"];
     double logplkd          = SplineUdpate["logplkd"];
     AIC_all                 = SplineUdpate["AIC_all"];
     TIC_all                 = SplineUdpate["TIC_all"];
@@ -1219,7 +1220,7 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
     logplkd_vec.push_back(logplkd);
     iter_NR_all.push_back(iter_tmp);
     VarianceMatrix = VarianceMatrix_tmp;
-
+    info           = info_tmp;
     //Variance matrix:
     // arma::mat VarianceMatrix_tmp = info_lambda_inv*J_p*info_lambda_inv;
     // arma::mat VarianceMatrix_tmp2 = info_lambda_inv*J*info_lambda_inv;     
@@ -1245,6 +1246,7 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
                       _["SplineType"]=SplineType,
                       _["iter_NR_all"]=iter_NR_all,
                       _["VarianceMatrix"]=VarianceMatrix,
+                      _["info"] = info,
                       _["grad_list"]=grad_list);
 }
 
@@ -1725,6 +1727,7 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
   arma::mat lambda_i_mat;
   // List VarianceMatrix, VarianceMatrix2, VarianceMatrix_I, VarianceMatrix_J;
   arma::mat VarianceMatrix;
+  arma::mat info;
 
   for (int i = 0; i < n_lambda; ++i)
   {
@@ -1758,7 +1761,7 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
                                             method, lambda, factor,
                                             parallel, threads, iter_max, tol, s, t, btr, stop, TIC_prox, fixedstep, ICLastOnly);
 
-    arma::mat info              = SplineUdpate["info"];
+    arma::mat info_tmp              = SplineUdpate["info"];
     arma::vec grad              = SplineUdpate["grad"];
     double logplkd        = SplineUdpate["logplkd"];
     AIC_all               = SplineUdpate["AIC_all"];
@@ -1775,6 +1778,7 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
     theta_all.slice(i)    = theta_ilambda;
     logplkd_vec.push_back(logplkd);
     VarianceMatrix = VarianceMatrix_tmp;
+    info = info_tmp;
     // Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
 
 
@@ -1794,7 +1798,8 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
                       _["GIC_trace"]=GIC_trace,
                       _["logplkd_vec"]=logplkd_vec,
                       _["SplineType"]=SplineType,
-                      _["VarianceMatrix"]=VarianceMatrix);
+                      _["VarianceMatrix"]=VarianceMatrix,
+                      _["info"]=info);
 }
 
 
