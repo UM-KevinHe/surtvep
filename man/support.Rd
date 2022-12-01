@@ -3,7 +3,7 @@
 \docType{data}
 \name{support}
 \alias{support}
-\title{Study to Understand Prognoses Preferences Outcomes and Risks of Treatment
+\title{study to Understand Prognoses Preferences Outcomes and Risks of Treatment
 (SUPPORT)}
 \format{
 A dataframe with 9104 observations and 34 variables after imputation

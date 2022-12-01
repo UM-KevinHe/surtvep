@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.plot.R
 \name{plot.coxtp}
 \alias{plot.coxtp}
-\title{Plotting result from a \code{coxtp} object}
+\title{plotting result from a \code{coxtp} object}
 \usage{
 \method{plot}{coxtp}(
   fit,
@@ -30,7 +30,7 @@
 \item{fit}{Model get from coxtp}
 }
 \description{
-Plotting result from a \code{coxtp} object
+plotting result from a \code{coxtp} object
 }
 \examples{
 data(ExampleData)

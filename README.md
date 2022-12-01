@@ -15,7 +15,7 @@ First you can install the 'surtvep' via:
     install.packages("devtools")
     remotes::install_github("UM-KevinHe/surtvep", ref = "openmp", build_vignettes =T)
     
-We recommend to start with [01 introduction](https://um-kevinhe.github.io/surtvep/articles/surtvep.html#introduction), which explains the general usage of the package in terms of data preprocessing, model training and evaluation procedure.
+We recommend to start with [01 introduction], which explains the general usage of the package in terms of data preprocessing, model training and evaluation procedure.
 
 Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature. However, there are no formal R packages for estimating the time-varying effect without pre-assuming the time-dependent function. However, in the real dataset, if we get the pre-assuming incorrect, the estimation could be largely influenced by the assumption. Thus, we decided to develop a time-varying model using spline terms with penalization which don't need pre-assumption for the true time-dependent function and implemented it in R.
 

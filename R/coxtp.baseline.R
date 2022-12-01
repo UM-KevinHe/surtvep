@@ -1,4 +1,4 @@
-#' Calculating Baseline hazard using the result from coxtp()
+#' calculating Baseline hazard using the result from coxtp()
 #'
 #' @param fit Model get from coxtp
 #' @param delta event vector, should be a vector containing 0 or 1

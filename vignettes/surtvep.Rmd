@@ -1,5 +1,5 @@
 ---
-title: "Introduction to surtvep"
+title: "surtvep"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{surtvep}
@@ -86,12 +86,12 @@ Next we fit the Newton's method combined with penalization method. We specify a 
 
 ```{r, fig = TRUE}
 lambda_all <- c(1)
-fit.penalize = coxtp(z = z, event = event, time=time, lambda_spline = lambda_all, method = "ProxN", btr = "static")
+fit.penalize = coxtp(z = z, event = event, time=time, lambda = lambda_all, method = "ProxN", btr = "static")
 ```
 
 
 ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
-plot(fit.penalize, IC = "TIC", ylim = c(-2,2))
+plot(fit.penalize, ylim = c(-2,2))
 ```
 
 
@@ -385,7 +385,7 @@ We denote the B-spline basis as of order $m_1$, and $m_1 = 3$ denotes a cubic sp
 \begin{align*}
     P_{\lambda} = \lambda \int_{0}^{T}\boldsymbol{\beta}^{[m_2]}(t)^2dt
 \end{align*}
-where $\bbeta^{[m_2]}(t)$ denotes the $m_2^{th}$ derivative of $\bbeta$ with respect to $t$. It is assumed that $m_2 \leq m_1$, otherwise it makes no sense that the penalty is formulated in terms of a derivative that is not properly defined for the basis functions. Similarly, $P_{\lambda}$ can be written as $\boldsymbol{\theta}^T\boldsymbol{S}\boldsymbol{\theta}$  where $\bS$ is a banded diagonal matrix of known coefficients. The algebraic expression of $\bS$ is complex, as discussed in \textbf{citet{wood2017p}}. However, this has little impact on the computation time. 
+where $\boldsymbol{\beta}^{[m_2]}(t)$ denotes the $m_2^{th}$ derivative of $\boldsymbol{\beta}$ with respect to $t$. It is assumed that $m_2 \leq m_1$, otherwise it makes no sense that the penalty is formulated in terms of a derivative that is not properly defined for the basis functions. Similarly, $P_{\lambda}$ can be written as $\boldsymbol{\theta}^T\boldsymbol{S}\boldsymbol{\theta}$  where $\boldsymbol{S}$ is a banded diagonal matrix of known coefficients. The algebraic expression of $\boldsymbol{S}$ is complex, as discussed in \textbf{citet{wood2017p}}. However, this has little impact on the computation time. 
 
 
 ###Usage
@@ -407,7 +407,7 @@ event <- ExampleDataBinary$event
 
 ```{r, message = FALSE, results='hide'}
 lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000)
-fit.pspline <- coxtp(event = event, z = z, time = time, lambda_spline=lambda_spline_all, spline = "P-spline")
+fit.pspline <- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")
 fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline=lambda_spline_all, spline = "Smooth-spline")
 ```
 
@@ -528,7 +528,35 @@ Thus, we could plot the survival function as follows:
 
 <!-- ``` -->
 
+## Hypothesis Tests for the model
+In this section we provide three tests for the model. The first is to test 
+
 ### Testing for time-varying effect
+To test whether the effects are time-varying, we use the constant property of B-splines, that is, if
+$\theta_{p1}=\cdots=\theta_{pK},$
+the corresponding covariate effect is time-independent.
+ Specify a matrix $\boldsymbol{C}_p$ such that
+ $\boldsymbol{C}_p\boldsymbol\theta=\textbf{0}$ corresponds to the contrast that $\theta_{p1}=\cdots=\theta_{pK}$. A Wald statistic can  be constructed by
+ \begin{align*}
+ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T \left[\boldsymbol{C}_p \{- \triangledown^2 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).s
+\end{align*}
+
+Under the null hypothesis that the effect is time-independent, $S_p$ is asymptotically chi-square distributed with $K-1$ degrees of freedom.
+
+### Testing for beta effect
+To test whether the effects are significant or not, we use the test statistic
+$\theta_{p1}=\cdots=\theta_{pK} = 0,$
+the corresponding covariate effect is time-independent.
+ Specify a matrix $\boldsymbol{C}_p^'$ such that
+ $\boldsymbol{C}_p\boldsymbol\theta=\textbf{0} = 0$ corresponds to the contrast that $\theta_{p1}=\cdots=\theta_{pK}$. A Wald statistic can  be constructed by
+ \begin{align*}
+ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T \left[\boldsymbol{C}_p \{- \triangledown^2 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
+\end{align*}
+
+Under the null hypothesis that the effect is time-independent, $S_p$ is asymptotically chi-square distributed with $K-1$ degrees of freedom.
+
+
+
 
 ## 5.6 Model prediction:
 
@@ -925,8 +953,8 @@ data(support)
 summary(support$age)
 ```
 
-Instead of analzyi
-```{r}
+We study the time-varying effects of age so a subset of the data is chosen as the illustration example.
+```{r, message = FALSE}
 cut(support$age, quantile(support$age, c(0,1/4,1/2,3/4,1), na.rm = TRUE), 
     labels = c(0,1,2,3), include.lowest = TRUE)
     # labels = c("age_1","age_2","age_3", "age_4"), include.lowest = TRUE)

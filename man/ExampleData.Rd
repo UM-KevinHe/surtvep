@@ -3,7 +3,7 @@
 \docType{data}
 \name{ExampleData}
 \alias{ExampleData}
-\title{Example data for surtvep with 4000 observations of 2 variables:}
+\title{example data for surtvep with 4000 observations of 2 variables:}
 \format{
 A List containing the following elements:
 \describe{

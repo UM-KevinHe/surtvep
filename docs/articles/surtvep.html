@@ -4,79 +4,95 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="surtvep">
-<title>Introduction to surtvep • surtvep</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>surtvep • surtvep</title>
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to surtvep">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><meta property="og:title" content="surtvep">
 <meta property="og:description" content="surtvep">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<![endif]--><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-54921687-5"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-54921687-5');
+</script>
 </head>
-<body>
-    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+<body data-spy="scroll" data-target="#toc">
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
-    
-    <a class="navbar-brand me-2" href="../index.html">surtvep</a>
+    <div class="container template-article">
+      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">surtvep</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
+      </span>
+    </div>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
-
-    
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto">
-<li class="active nav-item">
-  <a class="nav-link" href="../articles/surtvep.html">Get started</a>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../articles/surtvep.html">Get started</a>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
+<li>
+  <a href="../reference/index.html">Reference</a>
 </li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/Model_Parameters.html">Model Parameters</a>
-    <a class="dropdown-item" href="../articles/reference.html">Reference</a>
-  </div>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/Model_Parameters.html">Model Parameters</a>
+    </li>
+    <li>
+      <a href="../articles/reference.html">Reference</a>
+    </li>
+  </ul>
 </li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/UM-KevinHe/surtvep/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
 </div>
-
-    
+<!--/.nav-collapse -->
   </div>
-</nav><div class="container template-article">
+<!--/.container -->
+</div>
+<!--/.navbar -->
 
+      
 
-
-
-<div class="row">
-  <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Introduction to surtvep</h1>
+      </header><div class="row">
+  <div class="col-md-9 contents">
+    <div class="page-header toc-ignore">
+      <h1 data-toc-skip>surtvep</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/vignettes/surtvep.Rmd" class="external-link"><code>vignettes/surtvep.Rmd</code></a></small>
-      <div class="d-none name"><code>surtvep.Rmd</code></div>
+      <div class="hidden name"><code>surtvep.Rmd</code></div>
+
     </div>
 
     
@@ -162,15 +178,12 @@ range of penalization coefficients and how to choose the appropriate one
 will be discussed in section Information Criteria.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">fit.penalize</span> <span class="op">=</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, lambda_spline <span class="op">=</span> <span class="va">lambda_all</span>, method <span class="op">=</span> <span class="st">"ProxN"</span>, btr <span class="op">=</span> <span class="st">"static"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -3.3068888; Stopping crit = 1.7435312e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -3.2954100; Stopping crit = 3.7446678e-02;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span></span></code></pre></div>
+<span><span class="va">fit.penalize</span> <span class="op">=</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, lambda <span class="op">=</span> <span class="va">lambda_all</span>, method <span class="op">=</span> <span class="st">"ProxN"</span>, btr <span class="op">=</span> <span class="st">"static"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.2982771; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.2954717; Stopping crit = 9.1536366e-03;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.2954717; Stopping crit = 4.3470651e-15;</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.penalize</span>, IC <span class="op">=</span> <span class="st">"TIC"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.penalize</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>With the tools introduced so far, users are able to fit the
 time-varying model. There are many more arguments in the package that
@@ -549,12 +562,13 @@ functions and penalties.</p>
 = 3\)</span> denotes a cubic spline. Associated with the spline will be
 a derivative based penalty <span class="math display">\[\begin{align*}
     P_{\lambda} = \lambda \int_{0}^{T}\boldsymbol{\beta}^{[m_2]}(t)^2dt
-\end{align*}\]</span> where <span class="math inline">\(\bbeta^{[m_2]}(t)\)</span> denotes the <span class="math inline">\(m_2^{th}\)</span> derivative of <span class="math inline">\(\bbeta\)</span> with respect to <span class="math inline">\(t\)</span>. It is assumed that <span class="math inline">\(m_2 \leq m_1\)</span>, otherwise it makes no sense
+\end{align*}\]</span> where <span class="math inline">\(\boldsymbol{\beta}^{[m_2]}(t)\)</span> denotes the
+<span class="math inline">\(m_2^{th}\)</span> derivative of <span class="math inline">\(\boldsymbol{\beta}\)</span> with respect to <span class="math inline">\(t\)</span>. It is assumed that <span class="math inline">\(m_2 \leq m_1\)</span>, otherwise it makes no sense
 that the penalty is formulated in terms of a derivative that is not
 properly defined for the basis functions. Similarly, <span class="math inline">\(P_{\lambda}\)</span> can be written as <span class="math inline">\(\boldsymbol{\theta}^T\boldsymbol{S}\boldsymbol{\theta}\)</span>
-where <span class="math inline">\(\bS\)</span> is a banded diagonal
-matrix of known coefficients. The algebraic expression of <span class="math inline">\(\bS\)</span> is complex, as discussed in .
-However, this has little impact on the computation time.</p>
+where <span class="math inline">\(\boldsymbol{S}\)</span> is a banded
+diagonal matrix of known coefficients. The algebraic expression of <span class="math inline">\(\boldsymbol{S}\)</span> is complex, as discussed
+in . However, this has little impact on the computation time.</p>
 <p>###Usage The usage of Newton Method with penalization
 <code>coxtp</code> is very similar as <code>coxtv</code> introduced
 above. The main difference comes from the penalization parameter
@@ -575,7 +589,7 @@ penalization method.</p>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">event</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>,<span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">fit.pspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda_spline<span class="op">=</span><span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"P-spline"</span><span class="op">)</span></span>
+<span><span class="va">fit.pspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda<span class="op">=</span><span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"P-spline"</span><span class="op">)</span></span>
 <span><span class="va">fit.smoothspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda_spline<span class="op">=</span><span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"Smooth-spline"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.pspline</span>, IC <span class="op">=</span> <span class="st">"TIC"</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
@@ -587,9 +601,9 @@ penalization method.</p>
 <code class="sourceCode R"><span><span class="va">best_lambda</span><span class="op">=</span><span class="va">fit.pspline</span><span class="op">$</span><span class="va">lambda.selected</span></span>
 <span><span class="va">best_lambda</span></span>
 <span><span class="co">#&gt;     value</span></span>
-<span><span class="co">#&gt; AIC    10</span></span>
-<span><span class="co">#&gt; TIC    10</span></span>
-<span><span class="co">#&gt; GIC    10</span></span></code></pre></div>
+<span><span class="co">#&gt; AIC     0</span></span>
+<span><span class="co">#&gt; TIC     0</span></span>
+<span><span class="co">#&gt; GIC     0</span></span></code></pre></div>
 <p>From the result above, we noticed that with different selection
 criteria, the best lambda selected is different. Here, we use the AIC
 criteria which set <code>lambda=1000</code>. The result for this model
@@ -679,9 +693,45 @@ survival function as follows:</p>
 <!--   theme(plot.title = element_text(hjust = 0.5)) -->
 <!-- ``` -->
 </div>
+</div>
+<div class="section level3">
+<h3 id="hypothesis-tests-for-the-model">Hypothesis Tests for the model<a class="anchor" aria-label="anchor" href="#hypothesis-tests-for-the-model"></a>
+</h3>
+<p>In this section we provide three tests for the model. The first is to
+test</p>
 <div class="section level4">
 <h4 id="testing-for-time-varying-effect">Testing for time-varying effect<a class="anchor" aria-label="anchor" href="#testing-for-time-varying-effect"></a>
 </h4>
+<p>To test whether the effects are time-varying, we use the constant
+property of B-splines, that is, if <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK},\)</span> the
+corresponding covariate effect is time-independent. Specify a matrix
+<span class="math inline">\(\boldsymbol{C}_p\)</span> such that <span class="math inline">\(\boldsymbol{C}_p\boldsymbol\theta=\textbf{0}\)</span>
+corresponds to the contrast that <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK}\)</span>. A Wald
+statistic can be constructed by <span class="math display">\[\begin{align*}
+S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
+\left[\boldsymbol{C}_p \{- \triangledown^2
+\ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).s
+\end{align*}\]</span></p>
+<p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
+distributed with <span class="math inline">\(K-1\)</span> degrees of
+freedom.</p>
+</div>
+<div class="section level4">
+<h4 id="testing-for-beta-effect">Testing for beta effect<a class="anchor" aria-label="anchor" href="#testing-for-beta-effect"></a>
+</h4>
+<p>To test whether the effects are significant or not, we use the test
+statistic <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK} =
+0,\)</span> the corresponding covariate effect is time-independent.
+Specify a matrix <span class="math inline">\(\boldsymbol{C}_p^'\)</span> such that <span class="math inline">\(\boldsymbol{C}_p\boldsymbol\theta=\textbf{0} =
+0\)</span> corresponds to the contrast that <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK}\)</span>. A Wald
+statistic can be constructed by <span class="math display">\[\begin{align*}
+S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
+\left[\boldsymbol{C}_p \{- \triangledown^2
+\ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
+\end{align*}\]</span></p>
+<p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
+distributed with <span class="math inline">\(K-1\)</span> degrees of
+freedom.</p>
 </div>
 </div>
 <div class="section level3">
@@ -1046,7 +1096,8 @@ surrogate activities of daily living was removed.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
 <span><span class="co">#&gt;   18.04   52.80   64.86   62.65   74.00  101.85</span></span></code></pre></div>
-<p>Instead of analzyi</p>
+<p>We study the time-varying effects of age so a subset of the data is
+chosen as the illustration example.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">/</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
 <span>    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>, include.lowest <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1311,26 +1362,33 @@ surrogate activities of daily living was removed.</p>
 <!-- ``` -->
 </div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
-    </nav></aside>
+  </div>
+
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
+
 </div>
 
 
 
-    <footer><div class="pkgdown-footer-left">
+      <footer><div class="copyright">
   <p></p>
 <p>Developed by Lingfeng Luo, Wenbo Wu, Xueting Tao.</p>
 </div>
 
-<div class="pkgdown-footer-right">
+<div class="pkgdown">
   <p></p>
 <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
-    </footer>
+      </footer>
 </div>
 
   
+
 
   
 

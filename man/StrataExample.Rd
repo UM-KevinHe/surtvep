@@ -3,7 +3,7 @@
 \docType{data}
 \name{StrataExample}
 \alias{StrataExample}
-\title{Example data for stratified model illustration}
+\title{example data for stratified model illustration}
 \format{
 A List containing the following elements:
 \describe{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtv.baseline.R
 \name{coxtv.baseline}
 \alias{coxtv.baseline}
-\title{Calculating Baseline hazard using the result from a \code{coxtv} object}
+\title{calculating Baseline hazard using the result from a \code{coxtv} object}
 \usage{
 coxtv.baseline(fit, event, z, time, strata = NULL, ...)
 }
@@ -24,7 +24,7 @@ a list with components
 \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 }
 \description{
-Calculating Baseline hazard using the result from a \code{coxtv} object
+calculating Baseline hazard using the result from a \code{coxtv} object
 }
 \examples{
 data("ExampleDataBinary")

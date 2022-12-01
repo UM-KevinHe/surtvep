@@ -8,8 +8,10 @@ cv.coxtp(
   event,
   z,
   time,
-  strata = c(),
-  spline = "Smooth-spline",
+  strata = NULL,
+  nfolds = 5,
+  foldid = NULL,
+  penalty = "Smooth-spline",
   nsplines = 8,
   ties = "Breslow",
   tol = 1e-09,
@@ -22,66 +24,96 @@ cv.coxtp(
   parallel = FALSE,
   threads = 1L,
   degree = 3L,
-  TIC_prox = FALSE,
   lambda.spline = 0,
-  ord = 4,
   fixedstep = FALSE
 )
 }
 \arguments{
-\item{event}{event vector, should be a vector containing 0 or 1}
+\item{event}{response variable of length \code{nobs}, should be a vector containing 0 or 1}
 
-\item{z}{Covariate matrix}
+\item{z}{input covariate matrix, of dimension \code{nobs} * \code{nvars}; each row is an observation vector.}
 
-\item{time}{Time vector, should be a vector with non-negative numeric value}
+\item{time}{follow up time, should be a vector with non-negative numeric value}
 
-\item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.}
+\item{strata}{stratification group defined in the data. If there exists stratification group, please enter as vector.
+By default a non-stratified model would be implemented}
 
-\item{spline}{The spline term for Penalized Newton's Method(Add section
-Number related to the paper). Default setting is \strong{\code{spline="Smooth-spline"}}}
+\item{nfolds}{number of folds - default is 5. Although nfolds can be as large as the sample size (leave-one-out CV), it is not recommended for large datasets. Smallest value allowable is nfolds=3}
 
-\item{nsplines}{Number of base functions in the B-splines, default is 8.}
+\item{foldid}{an optional vector of values between 1 and nfold identifying what fold each observation is in. If supplied, nfold can be missing.}
 
-\item{ties}{Ways to deal with ties, default is \strong{\code{ties="Breslow"}}:}
+\item{penalty}{a character string specifying the spline term for Penalized Newton's Method.
+This term is added to the log-partial likelihood as the new objective function to control the model's smoothness.
 
-\item{tol}{Convergence threshold. The default threshold is set as \strong{\code{tol=1e-6}}}
+\code{P-spline} stands for "Penalized B-spline". It combines the B-spline basis with a discrete quadratic penalty on the basis coefficients between adjacent knots.
 
-\item{iter.max}{Maximum Iteration number, default is \strong{\code{iter.max=20L}}}
+\code{Smooth-spline} refers to the Smoothing-spline, the derivative based penalties combined with B-splines. Default value is \code{Smooth-spline}.}
 
-\item{method}{Selecting Method used, default is \strong{\code{method="ProxN"}}}
+\item{nsplines}{number of basis functions in the B-splines to span the time-varying effects, default value is 8.
+We use the r function \code{splines::bs} to generate the B-splines.}
 
-\item{lambda}{Parameter for Proximal Newton's Method. Default is \strong{\code{lambda=1e8}}}
+\item{ties}{a character string specifying the method for tie handling. If there are no tied
+death times, the methods are equivalent.  By default \strong{\code{ties="Breslow"}} uses the Breslow approximatio, this can be faster when many ties occured.}
 
-\item{btr}{Backtracking line search approach, default is \strong{\code{btr="dynamic"}}:}
+\item{tol}{convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
+The default value is  \code{1e-6}.}
 
-\item{tau}{In the Newton's Method, Default is \strong{\code{tau=0.5}}. Used to control for step size.}
+\item{iter.max}{maximum Iteration number, default value is  \code{20L}.}
 
-\item{stop}{Stopping rule, default is \strong{\code{stop="ratch"}}.}
+\item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.  If \code{"Newton"} then exact hessian is used,
+while default method \code{"ProxN"} implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+See details in Wu et al. (2022).}
 
-\item{parallel}{Parallel computation, Default is \strong{\code{parallel=FALSE}}}
+\item{lambda}{a user specified \code{lambda.spline} sequence as the penalization coefficients in front of the spline term specified by \code{spline}.
+This is the tuning parameter for penalization. Users can use \code{IC} to select the best tuning parameter based on the information criteria.
+Users can specify for larger values when the estimated time-varying effects are too high.
+Default is \code{0} which refers to Newton's Method without penalization.}
 
-\item{threads}{Parallel computation parameter(number of cores)Default is \strong{\code{threads=1L}}}
+\item{btr}{a character string specifying the backtracking line search approach. \code{"dynamic"} is typical way to perform backtracking linesearch.
+\code{"static"} limits the Newton's increment, and can achieve more stable results in some extreme cases such as ill-conditioned second-order information of the log-partial likelihood,
+which usually occur when some predictors are categorical with low frequency for some categories.
+Users should be careful with \code{static} as this may lead to underfitting.}
 
-\item{degree}{Degree of smoothing spline. Default setting is \strong{\code{degree=3L}}.}
+\item{tau}{a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is \code{0.5}.}
 
-\item{TIC_prox}{When calculating information criteria, there might be numerical issue(second order derivative,
-Hessian matrix approximate is singular), thus we proposed to add a small term to the diagonal. Default \strong{\code{TIC_prox = FALSE}}}
+\item{stop}{a character string specifying the stopping rule to determine convergence. Use \code{loglik(m)} to denote the log-partial likelihood at iteration step m.
+\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
+\code{"relch"} means we stop the algorithm when the \code{loglik(m)} divided by the  \code{loglik(0)} is less than the \code{tol}.
+\code{"ratch"} means we stop the algorithm when \code{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
+\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met. Default value is \code{ratch}.}
 
-\item{lambda.spline}{Smoothing parameter lambda. Default is \strong{\code{lambda.spline = 0}} which refers to Newton's Method without penalization.}
+\item{parallel}{if \code{TRUE} then parallel computation is enabled. The number of threads to be used is determined by \code{threads}.}
 
-\item{ord}{Specify which derivative to penalize. Default setting is \strong{\code{ord=4}}.}
+\item{threads}{an integer indicating the number of threads to be used for parallel computation. Default is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
 
-\item{fixedstep}{There might be times when the stopping criteria not working, thus,
-the number of steps could be set manually. Default value is \strong{\code{fixedstep = FALSE}}, if it is true, will stop by \code{iter.max}}
+\item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
+\code{degree = 2} results in the quadratic B-spline basis functions.
 
-\item{ICLastOnly}{Only calculate the last information criteria if is TRUE. Default is \strong{\code{ICLastOnly=FALSE}}}
+If \code{penalty} is \code{Smooth-spline}, different choices of \code{degree} give different results.
+When \code{degree=3}, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term.
+When \code{degree=2}, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant. See Wood (2016) for details.
+Default is \code{degree=2}.}
+
+\item{fixedstep}{if \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
+
+\item{knots}{the internal knot locations (breakpoints) that define the B-splines.
+The number of the internal knots should be \eqn{`nsplines`-`degree`-1}.
+If \code{NULL}, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
+Users can specify the internal knot locations by themselves.}
+
+\item{gamma}{parameter for Proximal Newton's Method \code{"ProxN"}. Default value is \code{1e8}.}
 }
 \value{
 \item{model.cv}{a \code{"coxtp"} object with penalization coefficient chosen based on cross validation}
-\item{lambda.selected}{The selected penalization coefficients for different information criteria}
+\item{lambda.spline}{the values of \code{lambda.spline} used in the fits.}
+\item{cv.loglik}{The mean log-partial likelihood on each fold after based on the model trained on remaining folds - a vector of length length(lambda.spline).}
+\item{lambda.selected}{Value of \code{lambda.spline} that gives maximum cv.loglik}
 }
 \description{
 Fit a cox Non-proportional Hazards model via penalized maximum likelihood.
+}
+\details{
+The function runs \code{coxtp} \code{nfolds} times; each is to compute the fit with each of the folds omitted.
 }
 \examples{
 data(ExampleData)
@@ -90,5 +122,5 @@ time  <- ExampleData$time
 event <- ExampleData$event
 
 lambda.spline  = c(0,1)
-fit   <- ic.coxtp(event = event, z = z, time = time, lambda.spline=lambda.spline)
+fit   <- cv.coxtp(event = event, z = z, time = time, lambda=lambda.spline, nfolds = 5)
 }

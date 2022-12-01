@@ -17,59 +17,73 @@ coxtv(
 )
 }
 \arguments{
-\item{event}{event vector, should be a vector containing 0 or 1}
+\item{event}{response variable of length \code{nobs}, should be a vector containing 0 or 1}
 
-\item{z}{Covariate matrix}
+\item{z}{input covariate matrix, of dimension \code{nobs} * \code{nvars}; each row is an observation vector.}
 
-\item{time}{Time vector, should be a vector with non-negative numeric value}
+\item{time}{follow up time, should be a vector with non-negative numeric value}
 
-\item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.}
+\item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.
+Otherwise a non-stratified model would be implemented}
 
-\item{spline}{The spline term for Penalized Newton's Method(Add section
-Number related to the paper). Default setting is \strong{\code{spline="Smooth-spline"}}}
+\item{nsplines}{Number of basis functions in the B-splines, default value is 8.}
 
-\item{nsplines}{Number of base functions in the B-splines, default is 8.}
+\item{ties}{a character string specifying the method for tie handling. If there are no tied
+death times, the methods are equivalent.  \strong{\code{ties="Breslow"}} uses the Breslow approximation.}
 
-\item{ties}{Ways to deal with ties, default is \strong{\code{ties="Breslow"}}:}
+\item{stop}{a character string specifying the stopping rule to determine convergence. Use \code{loglik(m)} to denote the log-partial likelihood at iteration step m.
+\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
+\code{"relch"} means we stop the algorithm when the \code{loglik(m)} divided by the  \code{loglik(0)} is less than the \code{tol}.
+\code{"ratch"} means we stop the algorithm when \code{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
+\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met. Default value is \code{ratch}.}
 
-\item{tol}{Convergence threshold. The default threshold is set as \strong{\code{tol=1e-6}}}
+\item{tol}{Convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
+The default value is  \code{1e-6}.}
 
-\item{iter.max}{Maximum Iteration number, default is \strong{\code{iter.max=20L}}}
+\item{iter.max}{maximum Iteration number, default value is  \code{20L}.}
 
-\item{method}{Selecting Method used, default is \strong{\code{method="Newton"}}}
+\item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.  If \code{"Newton"} then exact hessian is used,
+while default method \code{"ProxN"} implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+See details in Wu et al. (2022).}
 
-\item{lambda}{Parameter for Proximal Newton's Method. Default is \strong{\code{lambda=1e8}}}
+\item{gamma}{parameter for Proximal Newton's Method \code{"ProxN"}. Default value is \code{1e8}.}
 
-\item{btr}{Backtracking line search approach, default is \code{btr="static"}:}
+\item{btr}{a character string specifying the backtracking line search approach. \code{"dynamic"} is typical way to perform backtracking linesearch.
+\code{"static"} limits the Newton's increment, and can achieve more stable results in some extreme cases.}
 
-\item{tau}{(Alpha or beta?) in the Newton's Method, Default is \strong{\code{tau=0.5}}. Used to control for step size.}
+\item{tau}{a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is \code{0.5}.}
 
-\item{stop}{Stopping rule, default is \strong{\code{stop="ratch"}}:}
+\item{parallel}{If \code{TRUE} then parallel computation is enabled. The number of threads to be used is determined by \code{threads}.}
 
-\item{parallel}{Parallel computation, Default is \strong{\code{parallel=FALSE}}}
+\item{threads}{an integer indicating the number of threads to be used for parallel computation. Default is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
 
-\item{threads}{Parallel computation parameter(number of cores)Default is \strong{\code{threads=1L}}}
+\item{degree}{degree of the piecewise polynomial---default is 3 for cubic splines.}
 
-\item{degree}{Degree of smoothing spline. Default setting is \strong{\code{degree=3L}}.}
+\item{ord}{a positive integer giving the order of the spline function.
+This is the number of coefficients in each piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.}
 
-\item{ord}{Specify which derivative to penalize. Default setting is \strong{\code{ord=4}}.}
-
-\item{fixedstep}{There might be times when the stopping criteria not working, thus,
-the number of steps could be set manually. Default value is \strong{\code{fixedstep = FALSE}}, if it is true, will stop by \code{iter.max}}
+\item{fixedstep}{If \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
 }
 \value{
 An object with S3 class \code{"coxtv"}.
-\item{ctrl.pts}{the estimated covariate coefficient}
-\item{theta.list}{the estimated covariate function across all iterations}
-\item{VarianceMatrix}{The variance matrix of the estimated function}
-\item{internal.knots}{The internal knot locations}
-\item{info}{The second order derivative}
+\item{call}{the call that produced this object}
+\item{beta}{estimated coefficient matrix of dimension \code{len_unique_t} * \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
+Each row represents the coefficients at the corresponding input follow-up time}
+\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension is \code{nvars} * \code{nsplines};
+if \code{ties="Breslow"}, the dimension is \code{len_unique_t} * \code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
+\item{ctrl.pts}{estimated coefficient matrix of dimension \code{nvars} * \code{nsplines}.
+Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
+\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} multiplied by \code{nsplines * nvars}.}
+\item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
+\item{nobs}{number of observations}
+\item{theta.list}{a list of \code{ctrl.pts} of length \code{m}, contains the updated \code{ctrl.pts} after each algorithm iteration.}
+\item{VarianceMatrix}{The variance matrix of the estimated function, which is the inverse of the negative \code{Hessian} matrix.}
 }
 \description{
 Fit a cox Non-proportional Hazards model via maximum likelihood.
 }
 \details{
-put the link to the wesite()...
+The model is fit by Newton's method (Proximal Newton's method).
 }
 \examples{
 data(ExampleData)
@@ -78,6 +92,23 @@ time <- ExampleData$time
 event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)
 
+}
+\references{
+Gray, R.~J.
+\emph{Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis. (1992), Journal of the American Statistical Association, Vol. 87, 942--951}.
+\cr
+
+Gray, R.~J.
+\emph{Spline-based tests in survival analysis. (1994), Biometrics, Vol. 50, 640--652}.
+\cr
+
+Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor
+\emph{Using Information Criteria to Select Smoothing Parameters when Analyzing Survival Data with Time-Varying Coefficient Hazard Models (2022)}.
+\cr
+
+Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He.
+\emph{Scalable proximal Methods for cause-specific hazard modeling with time-varying coefficients (2022), Lifetime Data Analysis, Vol. 28(2), 194-218}.
+\cr
 }
 \seealso{
 \code{coef}, \code{plot}, \code{coef} and \code{plot} methods,

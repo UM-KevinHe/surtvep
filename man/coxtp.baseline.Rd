@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.baseline.R
 \name{coxtp.baseline}
 \alias{coxtp.baseline}
-\title{Calculating Baseline hazard using the result from coxtp()}
+\title{calculating Baseline hazard using the result from coxtp()}
 \usage{
 coxtp.baseline(fit, delta, z, time, strata = c())
 }
@@ -18,5 +18,5 @@ coxtp.baseline(fit, delta, z, time, strata = c())
 \item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.}
 }
 \description{
-Calculating Baseline hazard using the result from coxtp()
+calculating Baseline hazard using the result from coxtp()
 }

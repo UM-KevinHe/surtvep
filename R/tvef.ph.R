@@ -1,4 +1,4 @@
-#' test the proportional hazards assumption from a `coxtv` object
+#' test the proportional hazards assumption from a `coxtv` or `coxtp` object
 #' 
 #' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model
 #' @param parm the names of parameter to be tested

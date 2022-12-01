@@ -1,4 +1,4 @@
-#' Example data for surtvep with 4000 observations of 2 variables:
+#' example data for surtvep with 4000 observations of 2 variables:
 #' 
 #' A simulated data set containing two 2 variables. 
 #' @name ExampleData
@@ -14,7 +14,7 @@
 "ExampleData"
 
 
-#' Example data for surtvep with 2000 observations of 2 binary variables:
+#' example data for surtvep with 2000 observations of 2 binary variables:
 #' 
 #' A simulated data set containing two 2 variables. 
 #' @name ExampleDataBinary
@@ -31,7 +31,7 @@
 "ExampleDataBinary"
 
 
-#' Example data for stratified model illustration
+#' example data for stratified model illustration
 #' 
 #' A simulated data set containing two 2 variables. 
 #' @name StrataExample
@@ -48,7 +48,7 @@
 "StrataExample"
 
 
-#' Study to Understand Prognoses Preferences Outcomes and Risks of Treatment
+#' study to Understand Prognoses Preferences Outcomes and Risks of Treatment
 #' (SUPPORT)
 #'
 #' @description The SUPPORT dataset tracks four response variables: hospital

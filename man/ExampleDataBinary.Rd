@@ -3,7 +3,7 @@
 \docType{data}
 \name{ExampleDataBinary}
 \alias{ExampleDataBinary}
-\title{Example data for surtvep with 2000 observations of 2 binary variables:}
+\title{example data for surtvep with 2000 observations of 2 binary variables:}
 \format{
 A List containing the following elements:
 \describe{
