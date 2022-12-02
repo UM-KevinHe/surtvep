@@ -101,7 +101,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>event</dt>
-<dd><p>failure events response variable of length <code>nobs</code>, where <code>nobs</code> denotes the number of observations. should be a vector containing 0 or 1</p></dd>
+<dd><p>failure events response variable of length <code>nobs</code>, where <code>nobs</code> denotes the number of observations. It should be a vector containing 0 or 1</p></dd>
 
 
 <dt>z</dt>
@@ -109,12 +109,13 @@
 
 
 <dt>time</dt>
-<dd><p>obeserved event time, should be a vector with non-negative numeric value</p></dd>
+<dd><p>observed event time, should be a vector with non-negative numeric values.</p></dd>
 
 
 <dt>strata</dt>
-<dd><p>stratification group defined in the data used for stratified model. If there exists stratification group, please enter as vector.
-By default a non-stratified model would be implemented</p></dd>
+<dd><p>stratification group defined in the data used for the stratified model.
+If there exists a stratification group, please enter it as a vector.
+By default, a non-stratified model would be implemented.</p></dd>
 
 
 <dt>penalty</dt>
@@ -124,43 +125,43 @@ Default is <code>P-spline</code>. Three options are <code>P-spline</code>, <code
 will be set as 0.</p>
 <p><code>P-spline</code> stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
 When <code>lambda</code> goes to infinity, the time-varying effects are encouraged to be constant.</p>
-<p><code>Smooth-spline</code> refers to the Smoothing-spline, the derivative based penalties combined with B-splines. See <code>degree</code> for different choices.
-When <code>degree=3</code>, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when <code>lambda</code> goes to infinity.
-When <code>degree=2</code>, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.</p>
+<p><code>Smooth-spline</code> refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See <code>degree</code> for different choices.
+When <code>degree=3</code>, we use the cubic B-spline penalizing the second-order derivative, which reduces to a linear term when <code>lambda</code> goes to infinity.
+When <code>degree=2</code>, we use the quadratic B-spline penalizing first-order derivative, which reduces to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.</p>
 <p>If <code>P-spline</code> or <code>Smooth-spline</code>, then <code>lambda</code> is initialized as (0.1, 1, 10). Users can modify <code>lambda</code>. See details in <code>lambda</code>.</p></dd>
 
 
 <dt>nsplines</dt>
-<dd><p>number of basis functions in the B-splines to span the time-varying effects, default value is 8.
+<dd><p>number of basis functions in the B-splines to span the time-varying effects, the default value is 8.
 We use the r function <code><a href="https://rdrr.io/r/splines/bs.html" class="external-link">splines::bs</a></code> to generate the B-splines.</p></dd>
 
 
 <dt>lambda</dt>
-<dd><p>a user specified <code>lambda.spline</code> sequence as the penalization coefficients in front of the spline term specified by <code>spline</code>.
+<dd><p>a user-specified <code>lambda</code> sequence as the penalization coefficients in front of the spline term specified by <code>spline</code>.
 This is the tuning parameter for penalization. Users can use <code>IC</code> to select the best tuning parameter based on the information criteria.
-Users can specify for larger values when the estimated time-varying effects are too high.
-Default is <code>0</code> which refers to Newton's Method without penalization.</p></dd>
+Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
+Default is <code>0</code>, which refers to Newton's Method without penalization.</p></dd>
 
 
 <dt>degree</dt>
 <dd><p>degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 <code>degree = 2</code> results in the quadratic B-spline basis functions.</p>
 <p>If <code>penalty</code> is <code>Smooth-spline</code>, different choices of <code>degree</code> give different results.
-When <code>degree=3</code>, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when <code>lambda</code> goes to infinity.
-When <code>degree=2</code>, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.
+When <code>degree=3</code>, we use the cubic B-spline penalizing the second-order derivative, which reduces to a linear term when <code>lambda</code> goes to infinity.
+When <code>degree=2</code>, we use the quadratic B-spline penalizing first-order derivative, which reduces to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.
 Default is <code>degree=2</code>.</p></dd>
 
 
 <dt>knots</dt>
 <dd><p>the internal knot locations (breakpoints) that define the B-splines.
 The number of the internal knots should be <code>nsplines</code>-<code>degree</code>-1.
-If <code>NULL</code>, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
+If <code>NULL</code>, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.
 Users can specify the internal knot locations by themselves.</p></dd>
 
 
 <dt>ties</dt>
 <dd><p>a character string specifying the method for tie handling. If there are no tied
-death times, the methods are equivalent.  By default <code>"Breslow"</code> uses the Breslow approximatio, this can be faster when many ties occured.</p></dd>
+death times, the methods are equivalent.  By default <code>"Breslow"</code> uses the Breslow approximation, which can be faster when many ties occur.</p></dd>
 
 
 <dt>tol</dt>
@@ -169,7 +170,7 @@ The default value is  <code>1e-6</code>.</p></dd>
 
 
 <dt>iter.max</dt>
-<dd><p>maximum Iteration number if the stopping criteria specified by <code>stop</code> is not satisfied. default value is  <code>20</code>.</p></dd>
+<dd><p>maximum Iteration number if the stopping criteria specified by <code>stop</code> is not satisfied. Default value is  <code>20</code>.</p></dd>
 
 
 <dt>method</dt>
@@ -179,18 +180,18 @@ See details in Wu et al. (2022).</p></dd>
 
 
 <dt>gamma</dt>
-<dd><p>parameter for Proximal Newton's Method <code>"ProxN"</code>. Default value is <code>1e8</code>.</p></dd>
+<dd><p>parameter for Proximal Newton's Method <code>"ProxN"</code>. The default value is <code>1e8</code>.</p></dd>
 
 
 <dt>btr</dt>
-<dd><p>a character string specifying the backtracking line search approach. <code>"dynamic"</code> is typical way to perform backtracking linesearch.
-<code>"static"</code> limits the Newton's increment, and can achieve more stable results in some extreme cases such as ill-conditioned second-order information of the log-partial likelihood,
-which usually occur when some predictors are categorical with low frequency for some categories.
-Users should be careful with <code>static</code> as this may lead to underfitting.</p></dd>
+<dd><p>a character string specifying the backtracking line-search approach. <code>"dynamic"</code> is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+<code>"static"</code> limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
+which usually occurs when some predictors are categorical with low frequency for some categories.
+Users should be careful with <code>static</code> as this may lead to under-fitting.</p></dd>
 
 
 <dt>tau</dt>
-<dd><p>a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is <code>0.5</code>.</p></dd>
+<dd><p>a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is <code>0.5</code>.</p></dd>
 
 
 <dt>stop</dt>
@@ -199,11 +200,11 @@ Users should be careful with <code>static</code> as this may lead to underfittin
 <code>"relch"</code> means we stop the algorithm when the \(loglik(m)\) divided by the  \(loglik(0)\) is less than the <code>tol</code>.
 <code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
 <code>"all"</code> means we stop the algorithm when all the stopping rules <code>"incre"</code>, <code>"relch"</code> and <code>"ratch"</code> is met.
-Default value is <code>ratch</code>. If maximum iteration steps <code>iter.max</code> is achieved, the algorithm stops before the stopping rule is met.</p></dd>
+Default value is <code>ratch</code>. If the maximum iteration steps <code>iter.max</code> is achieved, the algorithm stops before the stopping rule is met.</p></dd>
 
 
 <dt>parallel</dt>
-<dd><p>if <code>TRUE</code> then parallel computation is enabled. The number of threads to be used is determined by <code>threads</code>.</p></dd>
+<dd><p>if <code>TRUE</code>, then the parallel computation is enabled. The number of threads in use is determined by <code>threads</code>.</p></dd>
 
 
 <dt>threads</dt>
@@ -258,7 +259,7 @@ Each row represents a covariate's coefficient on the <code>nsplines</code> dimen
     <h2>Details</h2>
     <p>The sequence of models implied by <code>lambda.spline</code> is fit by Newton's method (Proximal Newton's method). The objective function is
 $$loglik - P_{\lambda}$$,
-where P_lambda can be <code>P-spline</code> or <code>Smooth-spline</code>. The \(`\lambda`\) is the tuning  parameter \(`\lambda`\). The initial sequence can be defined by user.
+where P_lambda can be <code>P-spline</code> or <code>Smooth-spline</code>. The \(`\lambda`\) is the tuning  parameter \(`\lambda`\). Users can define the initial sequence.
 <code>IC</code>provides different information criteria to choose the tuning parameter \(`\lambda`\). <code>cv.coxtp</code> uses  the cross validation to choose the tuning parameter.</p>
     </div>
     <div id="references">

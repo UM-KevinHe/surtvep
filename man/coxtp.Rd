@@ -30,14 +30,15 @@ coxtp(
 )
 }
 \arguments{
-\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. should be a vector containing 0 or 1}
+\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1}
 
 \item{z}{input covariate matrix, of dimension \code{nobs} x \code{nvars}; each row is an observation vector.}
 
-\item{time}{obeserved event time, should be a vector with non-negative numeric value}
+\item{time}{observed event time, should be a vector with non-negative numeric values.}
 
-\item{strata}{stratification group defined in the data used for stratified model. If there exists stratification group, please enter as vector.
-By default a non-stratified model would be implemented}
+\item{strata}{stratification group defined in the data used for the stratified model.
+If there exists a stratification group, please enter it as a vector.
+By default, a non-stratified model would be implemented.}
 
 \item{penalty}{a character string specifying the spline term for Penalized Newton's Method.
 This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
@@ -47,62 +48,62 @@ will be set as 0.
 \code{P-spline} stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
 When \code{lambda} goes to infinity, the time-varying effects are encouraged to be constant.
 
-\code{Smooth-spline} refers to the Smoothing-spline, the derivative based penalties combined with B-splines. See \code{degree} for different choices.
-When \code{degree=3}, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when \code{lambda} goes to infinity.
-When \code{degree=2}, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
+\code{Smooth-spline} refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See \code{degree} for different choices.
+When \code{degree=3}, we use the cubic B-spline penalizing the second-order derivative, which reduces to a linear term when \code{lambda} goes to infinity.
+When \code{degree=2}, we use the quadratic B-spline penalizing first-order derivative, which reduces to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
 
 If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as (0.1, 1, 10). Users can modify \code{lambda}. See details in \code{lambda}.}
 
-\item{nsplines}{number of basis functions in the B-splines to span the time-varying effects, default value is 8.
+\item{nsplines}{number of basis functions in the B-splines to span the time-varying effects, the default value is 8.
 We use the r function \code{splines::bs} to generate the B-splines.}
 
-\item{lambda}{a user specified \code{lambda.spline} sequence as the penalization coefficients in front of the spline term specified by \code{spline}.
+\item{lambda}{a user-specified \code{lambda} sequence as the penalization coefficients in front of the spline term specified by \code{spline}.
 This is the tuning parameter for penalization. Users can use \code{IC} to select the best tuning parameter based on the information criteria.
-Users can specify for larger values when the estimated time-varying effects are too high.
-Default is \code{0} which refers to Newton's Method without penalization.}
+Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
+Default is \code{0}, which refers to Newton's Method without penalization.}
 
 \item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 \code{degree = 2} results in the quadratic B-spline basis functions.
 
 If \code{penalty} is \code{Smooth-spline}, different choices of \code{degree} give different results.
-When \code{degree=3}, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when \code{lambda} goes to infinity.
-When \code{degree=2}, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
+When \code{degree=3}, we use the cubic B-spline penalizing the second-order derivative, which reduces to a linear term when \code{lambda} goes to infinity.
+When \code{degree=2}, we use the quadratic B-spline penalizing first-order derivative, which reduces to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
 Default is \code{degree=2}.}
 
 \item{knots}{the internal knot locations (breakpoints) that define the B-splines.
 The number of the internal knots should be \code{nsplines}-\code{degree}-1.
-If \code{NULL}, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
+If \code{NULL}, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.
 Users can specify the internal knot locations by themselves.}
 
 \item{ties}{a character string specifying the method for tie handling. If there are no tied
-death times, the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximatio, this can be faster when many ties occured.}
+death times, the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties occur.}
 
 \item{tol}{convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
 The default value is  \code{1e-6}.}
 
-\item{iter.max}{maximum Iteration number if the stopping criteria specified by \code{stop} is not satisfied. default value is  \code{20}.}
+\item{iter.max}{maximum Iteration number if the stopping criteria specified by \code{stop} is not satisfied. Default value is  \code{20}.}
 
 \item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.  If \code{"Newton"} then exact hessian is used,
 while default method \code{"ProxN"} implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 See details in Wu et al. (2022).}
 
-\item{gamma}{parameter for Proximal Newton's Method \code{"ProxN"}. Default value is \code{1e8}.}
+\item{gamma}{parameter for Proximal Newton's Method \code{"ProxN"}. The default value is \code{1e8}.}
 
-\item{btr}{a character string specifying the backtracking line search approach. \code{"dynamic"} is typical way to perform backtracking linesearch.
-\code{"static"} limits the Newton's increment, and can achieve more stable results in some extreme cases such as ill-conditioned second-order information of the log-partial likelihood,
-which usually occur when some predictors are categorical with low frequency for some categories.
-Users should be careful with \code{static} as this may lead to underfitting.}
+\item{btr}{a character string specifying the backtracking line-search approach. \code{"dynamic"} is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+\code{"static"} limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
+which usually occurs when some predictors are categorical with low frequency for some categories.
+Users should be careful with \code{static} as this may lead to under-fitting.}
 
-\item{tau}{a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is \code{0.5}.}
+\item{tau}{a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is \code{0.5}.}
 
 \item{stop}{a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.
 \code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
 \code{"relch"} means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the \code{tol}.
 \code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
 \code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met.
-Default value is \code{ratch}. If maximum iteration steps \code{iter.max} is achieved, the algorithm stops before the stopping rule is met.}
+Default value is \code{ratch}. If the maximum iteration steps \code{iter.max} is achieved, the algorithm stops before the stopping rule is met.}
 
-\item{parallel}{if \code{TRUE} then parallel computation is enabled. The number of threads to be used is determined by \code{threads}.}
+\item{parallel}{if \code{TRUE}, then the parallel computation is enabled. The number of threads in use is determined by \code{threads}.}
 
 \item{threads}{an integer indicating the number of threads to be used for parallel computation. Default is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
 
@@ -131,7 +132,7 @@ Fit a cox Non-proportional Hazards model via penalized maximum likelihood.
 \details{
 The sequence of models implied by \code{lambda.spline} is fit by Newton's method (Proximal Newton's method). The objective function is
 \deqn{loglik - P_{\lambda}},
-where P_{lambda} can be \code{P-spline} or \code{Smooth-spline}. The \eqn{`\lambda`} is the tuning  parameter \eqn{`\lambda`}. The initial sequence can be defined by user.
+where P_{lambda} can be \code{P-spline} or \code{Smooth-spline}. The \eqn{`\lambda`} is the tuning  parameter \eqn{`\lambda`}. Users can define the initial sequence.
 \code{IC}provides different information criteria to choose the tuning parameter \eqn{`\lambda`}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
 }
 \examples{

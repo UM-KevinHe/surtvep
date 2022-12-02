@@ -3,11 +3,13 @@
 #' Fit a cox Non-proportional Hazards model via penalized maximum likelihood. 
 #' 
 #'
-#' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. should be a vector containing 0 or 1
+#' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1
 #' @param z input covariate matrix, of dimension `nobs` x `nvars`; each row is an observation vector. 
-#' @param time obeserved event time, should be a vector with non-negative numeric value
-#' @param strata stratification group defined in the data used for stratified model. If there exists stratification group, please enter as vector. 
-#' By default a non-stratified model would be implemented
+#' @param time observed event time, should be a vector with non-negative numeric values.
+#' @param strata stratification group defined in the data used for the stratified model. 
+#' If there exists a stratification group, please enter it as a vector. 
+#' By default, a non-stratified model would be implemented.
+#' 
 #' @param penalty a character string specifying the spline term for Penalized Newton's Method. 
 #' This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
 #' Default is `P-spline`. Three options are `P-spline`, `Smooth-spline` and `NULL`. If `NULL`, the method will be the same as `coxtv` and `lambda` 
@@ -16,56 +18,57 @@
 #' `P-spline` stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots. 
 #' When `lambda` goes to infinity, the time-varying effects are encouraged to be constant. 
 #' 
-#' `Smooth-spline` refers to the Smoothing-spline, the derivative based penalties combined with B-splines. See `degree` for different choices.
-#' When `degree=3`, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when `lambda` goes to infinity.
-#' When `degree=2`, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when `lambda` goes to infinity. See Wood (2016) for details.
+#' `Smooth-spline` refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See `degree` for different choices.
+#' When `degree=3`, we use the cubic B-spline penalizing the second-order derivative, which reduces to a linear term when `lambda` goes to infinity.
+#' When `degree=2`, we use the quadratic B-spline penalizing first-order derivative, which reduces to a constant when `lambda` goes to infinity. See Wood (2016) for details.
 #' 
 #' If `P-spline` or `Smooth-spline`, then `lambda` is initialized as (0.1, 1, 10). Users can modify `lambda`. See details in `lambda`.
 #' 
-#' @param lambda a user specified `lambda.spline` sequence as the penalization coefficients in front of the spline term specified by `spline`. 
+#' @param lambda a user-specified `lambda` sequence as the penalization coefficients in front of the spline term specified by `spline`. 
 #' This is the tuning parameter for penalization. Users can use `IC` to select the best tuning parameter based on the information criteria. 
-#' Users can specify for larger values when the estimated time-varying effects are too high.
-#' Default is `0` which refers to Newton's Method without penalization. 
+#' Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
+#' Default is `0`, which refers to Newton's Method without penalization. 
 #' 
-#' @param nsplines number of basis functions in the B-splines to span the time-varying effects, default value is 8. 
+#' @param nsplines number of basis functions in the B-splines to span the time-varying effects, the default value is 8. 
 #' We use the r function `splines::bs` to generate the B-splines. 
+#' 
 #' @param knots the internal knot locations (breakpoints) that define the B-splines.
 #' The number of the internal knots should be `nsplines`-`degree`-1.
-#' If `NULL`, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
+#' If `NULL`, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.
 #' Users can specify the internal knot locations by themselves.
 #' 
 #' @param degree degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
 #' `degree = 2` results in the quadratic B-spline basis functions.
 #' 
 #' If `penalty` is `Smooth-spline`, different choices of `degree` give different results.
-#' When `degree=3`, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when `lambda` goes to infinity.
-#' When `degree=2`, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when `lambda` goes to infinity. See Wood (2016) for details.
+#' When `degree=3`, we use the cubic B-spline penalizing the second-order derivative, which reduces to a linear term when `lambda` goes to infinity.
+#' When `degree=2`, we use the quadratic B-spline penalizing first-order derivative, which reduces to a constant when `lambda` goes to infinity. See Wood (2016) for details.
 #' Default is `degree=2`.
 #' 
 #' @param ties a character string specifying the method for tie handling. If there are no tied
-#' death times, the methods are equivalent.  By default `"Breslow"` uses the Breslow approximatio, this can be faster when many ties occured.
+#' death times, the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties occur.
 #' 
 #' @param stop a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.  
 #' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
 #' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
 #' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. 
-#' Default value is `ratch`. If maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
+#' Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
 #' 
 #' @param tol convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
 #'  The default value is  `1e-6`.
-#' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. default value is  `20`. 
+#' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is  `20`. 
 #' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, 
 #' while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
 #' 
-#' @param gamma parameter for Proximal Newton's Method `"ProxN"`. Default value is `1e8`.
-#' @param btr a character string specifying the backtracking line search approach. `"dynamic"` is typical way to perform backtracking linesearch. 
-#' `"static"` limits the Newton's increment, and can achieve more stable results in some extreme cases such as ill-conditioned second-order information of the log-partial likelihood, 
-#' which usually occur when some predictors are categorical with low frequency for some categories. 
-#' Users should be careful with `static` as this may lead to underfitting.
-#' @param tau a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is `0.5`.
-#' @param parallel if `TRUE` then parallel computation is enabled. The number of threads to be used is determined by `threads`.
+#' @param gamma parameter for Proximal Newton's Method `"ProxN"`. The default value is `1e8`.
+#' @param btr a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+#' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
+#' which usually occurs when some predictors are categorical with low frequency for some categories. 
+#' Users should be careful with `static` as this may lead to under-fitting.
+#' @param tau a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is `0.5`.
+#' @param parallel if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
 #' @param threads an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
 #' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
 #'
@@ -89,7 +92,7 @@
 #' @details 
 #' The sequence of models implied by `lambda.spline` is fit by Newton's method (Proximal Newton's method). The objective function is
 #' \deqn{loglik - P_{\lambda}},
-#' where P_{lambda} can be `P-spline` or `Smooth-spline`. The \eqn{`\lambda`} is the tuning  parameter \eqn{`\lambda`}. The initial sequence can be defined by user.
+#' where P_{lambda} can be `P-spline` or `Smooth-spline`. The \eqn{`\lambda`} is the tuning  parameter \eqn{`\lambda`}. Users can define the initial sequence.
 #' `IC`provides different information criteria to choose the tuning parameter \eqn{`\lambda`}. `cv.coxtp` uses  the cross validation to choose the tuning parameter.
 #'
 #' @seealso \code{coef}, \code{plot}, \code{IC} and \code{cv.coxtp}.
