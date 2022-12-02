@@ -2,87 +2,162 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{Cox Non-proportional Hazards model with penalization: Main function}
+\title{fit a cox Non-proportional Hazards model with P-spline or Smoothing-spline. Penalization tuning parameter}
 \usage{
 coxtp(
   event,
   z,
   time,
-  strata = c(),
-  spline = "Smooth-spline",
+  strata = NULL,
+  penalty = "Smooth-spline",
   nsplines = 8,
+  lambda = 0,
+  degree = 3L,
+  knots = NULL,
   ties = "Breslow",
   tol = 1e-09,
   iter.max = 20L,
-  method = "Newton",
-  lambda = 1e+08,
-  btr = "static",
+  method = "ProxN",
+  gamma = 1e+08,
+  btr = "dynamic",
   tau = 0.5,
   stop = "ratch",
   parallel = FALSE,
   threads = 1L,
-  degree = 3L,
-  TIC = FALSE,
-  TIC_prox = FALSE,
-  lambda_spline = 0,
-  ord = 4,
   fixedstep = FALSE,
-  ICLastOnly = TRUE,
-  penalizestop = FALSE
+  InfoCrit = FALSE,
+  ...
 )
 }
 \arguments{
-\item{event}{event vector, should be a vector containing 0 or 1}
+\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. should be a vector containing 0 or 1}
 
-\item{z}{Covariate matrix}
+\item{z}{input covariate matrix, of dimension \code{nobs} * \code{nvars}; each row is an observation vector.}
 
-\item{time}{Time vector, should be a vector with non-negative numeric value}
+\item{time}{obeserved event time, should be a vector with non-negative numeric value}
 
-\item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.}
+\item{strata}{stratification group defined in the data used for stratified model. If there exists stratification group, please enter as vector.
+By default a non-stratified model would be implemented}
 
-\item{spline}{The spline term for Penalized Newton's Method(Add section
-Number related to the paper). Default setting is \strong{\code{spline="Smooth-spline"}}}
+\item{penalty}{a character string specifying the spline term for Penalized Newton's Method.
+This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
 
-\item{nsplines}{Number of base functions in the B-splines, default is 8.}
+\code{P-spline} stands for "Penalized B-spline". It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
 
-\item{ties}{Ways to deal with ties, default is \strong{\code{ties="Breslow"}}:}
+\code{Smooth-spline} refers to the Smoothing-spline, the derivative based penalties combined with B-splines. Default value is \code{Smooth-spline}.}
 
-\item{tol}{Convergence threshold. The default threshold is set as \strong{\code{tol=1e-6}}}
+\item{nsplines}{number of basis functions in the B-splines to span the time-varying effects, default value is 8.
+We use the r function \code{splines::bs} to generate the B-splines.}
 
-\item{iter.max}{Maximum Iteration number, default is \strong{\code{iter.max=20L}}}
+\item{lambda}{a user specified \code{lambda.spline} sequence as the penalization coefficients in front of the spline term specified by \code{spline}.
+This is the tuning parameter for penalization. Users can use \code{IC} to select the best tuning parameter based on the information criteria.
+Users can specify for larger values when the estimated time-varying effects are too high.
+Default is \code{0} which refers to Newton's Method without penalization.}
 
-\item{method}{Selecting Method used, default is \strong{\code{method="Newton"}}}
+\item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
+\code{degree = 2} results in the quadratic B-spline basis functions.
 
-\item{lambda}{Parameter for Proximal Newton's Method. Default is \strong{\code{lambda=1e8}}}
+If \code{penalty} is \code{Smooth-spline}, different choices of \code{degree} give different results.
+When \code{degree=3}, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term.
+When \code{degree=2}, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant. See Wood (2016) for details.
+Default is \code{degree=2}.}
 
-\item{btr}{Backtracking line search approach, default is \code{btr="static"}:}
+\item{knots}{the internal knot locations (breakpoints) that define the B-splines.
+The number of the internal knots should be \eqn{`nsplines`-`degree`-1}.
+If \code{NULL}, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
+Users can specify the internal knot locations by themselves.}
 
-\item{tau}{(Alpha or beta?) in the Newton's Method, Default is \strong{\code{tau=0.5}}. Used to control for step size.}
+\item{ties}{a character string specifying the method for tie handling. If there are no tied
+death times, the methods are equivalent.  By default \strong{\code{ties="Breslow"}} uses the Breslow approximatio, this can be faster when many ties occured.}
 
-\item{stop}{Stopping rule, default is \strong{\code{stop="ratch"}}:}
+\item{tol}{convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
+The default value is  \code{1e-6}.}
 
-\item{parallel}{Parallel computation, Default is \strong{\code{parallel=FALSE}}}
+\item{iter.max}{maximum Iteration number, default value is  \code{20L}.}
 
-\item{threads}{Parallel computation parameter(number of cores)Default is \strong{\code{threads=1L}}}
+\item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.  If \code{"Newton"} then exact hessian is used,
+while default method \code{"ProxN"} implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+See details in Wu et al. (2022).}
 
-\item{degree}{Degree of smoothing spline. Default setting is \strong{\code{degree=3L}}.}
+\item{gamma}{parameter for Proximal Newton's Method \code{"ProxN"}. Default value is \code{1e8}.}
 
-\item{TIC}{}
+\item{btr}{a character string specifying the backtracking line search approach. \code{"dynamic"} is typical way to perform backtracking linesearch.
+\code{"static"} limits the Newton's increment, and can achieve more stable results in some extreme cases such as ill-conditioned second-order information of the log-partial likelihood,
+which usually occur when some predictors are categorical with low frequency for some categories.
+Users should be careful with \code{static} as this may lead to underfitting.}
 
-\item{TIC_prox}{When calculating information criteria, there might be numerical issue(second order derivative,
-Hessian matrix approximate is singular), thus we proposed to add a small term to the diagonal. Default \strong{\code{TIC_prox = FALSE}}}
+\item{tau}{a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is \code{0.5}.}
 
-\item{lambda_spline}{Smoothing parameter lambda. Default is \strong{\code{lambda_spline = 0}} which refers to Newton's Method without penalization.}
+\item{stop}{a character string specifying the stopping rule to determine convergence. Use \code{loglik(m)} to denote the log-partial likelihood at iteration step m.
+\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
+\code{"relch"} means we stop the algorithm when the \code{loglik(m)} divided by the  \code{loglik(0)} is less than the \code{tol}.
+\code{"ratch"} means we stop the algorithm when \code{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
+\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met. Default value is \code{ratch}.}
 
-\item{ord}{Specify which derivative to penalize. Default setting is \strong{\code{ord=4}}.}
+\item{parallel}{if \code{TRUE} then parallel computation is enabled. The number of threads to be used is determined by \code{threads}.}
 
-\item{fixedstep}{There might be times when the stopping criteria not working, thus,
-the number of steps could be set manually. Default value is \strong{\code{fixedstep = FALSE}}, if it is true, will stop by \code{iter.max}}
+\item{threads}{an integer indicating the number of threads to be used for parallel computation. Default is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
 
-\item{ICLastOnly}{Only calculate the last information criteria if is TRUE. Default is \strong{\code{ICLastOnly=FALSE}}}
-
-\item{penalizestop}{}
+\item{fixedstep}{if \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
+}
+\value{
+An object with S3 class \code{"coxtp"}.
+\item{call}{the call that produced this object}
+\item{beta}{estimated coefficient matrix of dimension \code{len_unique_t} * \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
+Each row represents the coefficients at the corresponding input follow-up time}
+\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension is \code{nvars} * \code{nsplines};
+if \code{ties="Breslow"}, the dimension is \code{len_unique_t} * \code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
+\item{ctrl.pts}{estimated coefficient matrix of dimension \code{nvars} * \code{nsplines}.
+Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
+\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} multiplied by \code{nsplines * nvars}.}
+\item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
+\item{nobs}{number of observations}
+\item{spline}{the spline type user specified.}
+\item{theta.list}{a list of \code{ctrl.pts} of length \code{m}, contains the updated \code{ctrl.pts} after each algorithm iteration.}
+\item{VarianceMatrix}{the variance matrix of the estimated function, which is the inverse of the negative \code{Hessian} matrix.}
 }
 \description{
-Cox Non-proportional Hazards model with penalization: Main function
+Fit a cox Non-proportional Hazards model via penalized maximum likelihood.
+}
+\details{
+The sequence of models implied by \code{lambda.spline} is fit by Newton's method (Proximal Newton's method). The objective function is
+\deqn{loglik - P_{\lambda}},
+where P_{lambda} can be \code{P-spline} or \code{Smooth-spline}. The \eqn{`\lambda`} is the tuning  parameter \eqn{`\lambda`}. The initial sequence can be defined by user.
+\code{IC}provides different information criteria to choose the tuning parameter \eqn{`\lambda`}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
+}
+\examples{
+data(ExampleData)
+z <- ExampleData$x
+time  <- ExampleData$time
+event <- ExampleData$event
+
+lambda  = c(0,1)
+fit   <- coxtp(event = event, z = z, time = time, lambda=lambda)
+
+
+
+}
+\references{
+Gray, R.~J.
+\emph{Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis. (1992), Journal of the American Statistical Association, Vol. 87, 942--951}.
+\cr
+
+Gray, R.~J.
+\emph{Spline-based tests in survival analysis. (1994), Biometrics, Vol. 50, 640--652}.
+\cr
+
+Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor
+\emph{Using Information Criteria to Select Smoothing Parameters when Analyzing Survival Data with Time-Varying Coefficient Hazard Models (2022)}.
+\cr
+
+Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He.
+\emph{Scalable proximal Methods for cause-specific hazard modeling with time-varying coefficients (2022), Lifetime Data Analysis, Vol. 28(2), 194-218}.
+\cr
+
+Wood, Simon N.
+\emph{P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data. (2017)
+Statistics and Computing, Vol. 27(4), 985-989}.
+}
+\seealso{
+\code{coef}, \code{plot}, \code{IC} and \code{cv.coxtp}.
 }
