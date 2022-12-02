@@ -4,16 +4,23 @@
 #' 
 #'
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. should be a vector containing 0 or 1
-#' @param z input covariate matrix, of dimension `nobs` * `nvars`; each row is an observation vector. 
+#' @param z input covariate matrix, of dimension `nobs` \code{x} `nvars`; each row is an observation vector. 
 #' @param time obeserved event time, should be a vector with non-negative numeric value
 #' @param strata stratification group defined in the data used for stratified model. If there exists stratification group, please enter as vector. 
 #' By default a non-stratified model would be implemented
 #' @param penalty a character string specifying the spline term for Penalized Newton's Method. 
 #' This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
+#' Default is `P-spline`. Three options are `P-spline`, `Smooth-spline` and `NULL`. If `NULL`, the method will be the same as `coxtv` and `lambda` 
+#' will be set as 0.
 #' 
-#' `P-spline` stands for "Penalized B-spline". It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
+#' `P-spline` stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots. 
+#' When `lambda` goes to infinity, the time-varying effects are encouraged to be constant. 
 #' 
-#' `Smooth-spline` refers to the Smoothing-spline, the derivative based penalties combined with B-splines. Default value is `Smooth-spline`.
+#' `Smooth-spline` refers to the Smoothing-spline, the derivative based penalties combined with B-splines. See `degree` for different choices.
+#' When `degree=3`, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when `lambda` goes to infinity.
+#' When `degree=2`, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when `lambda` goes to infinity. See Wood (2016) for details.
+#' 
+#' If `P-spline` or `Smooth-spline`, then `lambda` is initialized as (0.1, 1, 10). Users can modify `lambda`. See details in `lambda`.
 #' 
 #' @param lambda a user specified `lambda.spline` sequence as the penalization coefficients in front of the spline term specified by `spline`. 
 #' This is the tuning parameter for penalization. Users can use `IC` to select the best tuning parameter based on the information criteria. 
@@ -23,15 +30,15 @@
 #' @param nsplines number of basis functions in the B-splines to span the time-varying effects, default value is 8. 
 #' We use the r function `splines::bs` to generate the B-splines. 
 #' @param knots the internal knot locations (breakpoints) that define the B-splines.
-#' The number of the internal knots should be \eqn{`nsplines`-`degree`-1}.
+#' The number of the internal knots should be `nsplines`-`degree`-1.
 #' If `NULL`, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
 #' Users can specify the internal knot locations by themselves.
 #' @param degree degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
 #' `degree = 2` results in the quadratic B-spline basis functions.
 #' 
 #' If `penalty` is `Smooth-spline`, different choices of `degree` give different results.
-#' When `degree=3`, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term.
-#' When `degree=2`, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant. See Wood (2016) for details.
+#' When `degree=3`, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when `lambda` goes to infinity.
+#' When `degree=2`, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when `lambda` goes to infinity. See Wood (2016) for details.
 #' Default is `degree=2`.
 #' 
 #' @param ties a character string specifying the method for tie handling. If there are no tied

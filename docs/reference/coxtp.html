@@ -105,7 +105,7 @@
 
 
 <dt>z</dt>
-<dd><p>input covariate matrix, of dimension <code>nobs</code> * <code>nvars</code>; each row is an observation vector.</p></dd>
+<dd><p>input covariate matrix, of dimension <code>nobs</code> x <code>nvars</code>; each row is an observation vector.</p></dd>
 
 
 <dt>time</dt>
@@ -119,9 +119,15 @@ By default a non-stratified model would be implemented</p></dd>
 
 <dt>penalty</dt>
 <dd><p>a character string specifying the spline term for Penalized Newton's Method.
-This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.</p>
-<p><code>P-spline</code> stands for "Penalized B-spline". It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.</p>
-<p><code>Smooth-spline</code> refers to the Smoothing-spline, the derivative based penalties combined with B-splines. Default value is <code>Smooth-spline</code>.</p></dd>
+This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
+Default is <code>P-spline</code>. Three options are <code>P-spline</code>, <code>Smooth-spline</code> and <code>NULL</code>. If <code>NULL</code>, the method will be the same as <code>coxtv</code> and <code>lambda</code>
+will be set as 0.</p>
+<p><code>P-spline</code> stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
+When <code>lambda</code> goes to infinity, the time-varying effects are encouraged to be constant.</p>
+<p><code>Smooth-spline</code> refers to the Smoothing-spline, the derivative based penalties combined with B-splines. See <code>degree</code> for different choices.
+When <code>degree=3</code>, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when <code>lambda</code> goes to infinity.
+When <code>degree=2</code>, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.</p>
+<p>If <code>P-spline</code> or <code>Smooth-spline</code>, then <code>lambda</code> is initialized as (0.1, 1, 10). Users can modify <code>lambda</code>. See details in <code>lambda</code>.</p></dd>
 
 
 <dt>nsplines</dt>
@@ -140,21 +146,21 @@ Default is <code>0</code> which refers to Newton's Method without penalization.<
 <dd><p>degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 <code>degree = 2</code> results in the quadratic B-spline basis functions.</p>
 <p>If <code>penalty</code> is <code>Smooth-spline</code>, different choices of <code>degree</code> give different results.
-When <code>degree=3</code>, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term.
-When <code>degree=2</code>, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant. See Wood (2016) for details.
+When <code>degree=3</code>, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when <code>lambda</code> goes to infinity.
+When <code>degree=2</code>, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.
 Default is <code>degree=2</code>.</p></dd>
 
 
 <dt>knots</dt>
 <dd><p>the internal knot locations (breakpoints) that define the B-splines.
-The number of the internal knots should be \(`nsplines`-`degree`-1\).
+The number of the internal knots should be <code>nsplines</code>-<code>degree</code>-1.
 If <code>NULL</code>, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
 Users can specify the internal knot locations by themselves.</p></dd>
 
 
 <dt>ties</dt>
 <dd><p>a character string specifying the method for tie handling. If there are no tied
-death times, the methods are equivalent.  By default <strong><code>ties="Breslow"</code></strong> uses the Breslow approximatio, this can be faster when many ties occured.</p></dd>
+death times, the methods are equivalent.  By default <code>"Breslow"</code> uses the Breslow approximatio, this can be faster when many ties occured.</p></dd>
 
 
 <dt>tol</dt>
@@ -163,7 +169,7 @@ The default value is  <code>1e-6</code>.</p></dd>
 
 
 <dt>iter.max</dt>
-<dd><p>maximum Iteration number, default value is  <code>20L</code>.</p></dd>
+<dd><p>maximum Iteration number if the stopping criteria specified by <code>stop</code> is not satisfied. default value is  <code>20</code>.</p></dd>
 
 
 <dt>method</dt>
@@ -188,11 +194,12 @@ Users should be careful with <code>static</code> as this may lead to underfittin
 
 
 <dt>stop</dt>
-<dd><p>a character string specifying the stopping rule to determine convergence. Use <code>loglik(m)</code> to denote the log-partial likelihood at iteration step m.
+<dd><p>a character string specifying the stopping rule to determine convergence. Use \(loglik(m)\) to denote the log-partial likelihood at iteration step m.
 <code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>.
-<code>"relch"</code> means we stop the algorithm when the <code>loglik(m)</code> divided by the  <code>loglik(0)</code> is less than the <code>tol</code>.
-<code>"ratch"</code> means we stop the algorithm when <code>(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))</code> is less than the <code>tol</code>.
-<code>"all"</code> means we stop the algorithm when all the stopping rules <code>"incre"</code>, <code>"relch"</code> and <code>"ratch"</code> is met. Default value is <code>ratch</code>.</p></dd>
+<code>"relch"</code> means we stop the algorithm when the \(loglik(m)\) divided by the  \(loglik(0)\) is less than the <code>tol</code>.
+<code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
+<code>"all"</code> means we stop the algorithm when all the stopping rules <code>"incre"</code>, <code>"relch"</code> and <code>"ratch"</code> is met.
+Default value is <code>ratch</code>. If maximum iteration steps <code>iter.max</code> is achieved, the algorithm stops before the stopping rule is met.</p></dd>
 
 
 <dt>parallel</dt>
@@ -213,28 +220,29 @@ Users should be careful with <code>static</code> as this may lead to underfittin
 
 <p>An object with S3 class <code>"coxtp"</code>.</p>
 <dl><dt>call</dt>
-<dd><p>the call that produced this object</p></dd>
+<dd><p>the call that produced this object.</p></dd>
 
 <dt>beta</dt>
-<dd><p>estimated coefficient matrix of dimension <code>len_unique_t</code> * <code>nvars</code>, where <code>len_unique_t</code> is the length of unique follow-up <code>time</code>.
-Each row represents the coefficients at the corresponding input follow-up time</p></dd>
+<dd><p>the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension <code>len_unique_t</code> x <code>nvars</code>, where <code>len_unique_t</code> is the length of unique follow-up <code>time</code>.
+Each row represents the coefficients at the corresponding input observation time.</p></dd>
+
 
 <dt>bases</dt>
-<dd><p>the basis matrix used in model fitting. If <code>ties="None"</code>, the dimension is <code>nvars</code> * <code>nsplines</code>;
-if <code>ties="Breslow"</code>, the dimension is <code>len_unique_t</code> * <code>nsplines</code>. The matrix is constructed using <code>bs::splines</code> function.</p></dd>
+<dd><p>the basis matrix used in model fitting. If <code>ties="None"</code>, the dimension is <code>nvars</code> x <code>nsplines</code>;
+if <code>ties="Breslow"</code>, the dimension is <code>len_unique_t</code> x <code>nsplines</code>. The matrix is constructed using <code>bs::splines</code> function.</p></dd>
 
 <dt>ctrl.pts</dt>
-<dd><p>estimated coefficient matrix of dimension <code>nvars</code> * <code>nsplines</code>.
+<dd><p>estimated coefficient of the basis matrix of dimension <code>nvars</code> x <code>nsplines</code>.
 Each row represents a covariate's coefficient on the <code>nsplines</code> dimensional basis functions.</p></dd>
 
 <dt>Hessian</dt>
-<dd><p>the Hessian matrix of the log-partial likelihood, of which the dimension is <code>nsplines * nvars</code> multiplied by <code>nsplines * nvars</code>.</p></dd>
+<dd><p>the Hessian matrix of the log-partial likelihood, of which the dimension is <code>nsplines * nvars</code> x <code>nsplines * nvars</code>.</p></dd>
 
 <dt>internal.knots</dt>
 <dd><p>the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.</p></dd>
 
 <dt>nobs</dt>
-<dd><p>number of observations</p></dd>
+<dd><p>number of observations.</p></dd>
 
 <dt>spline</dt>
 <dd><p>the spline type user specified.</p></dd>
@@ -243,7 +251,7 @@ Each row represents a covariate's coefficient on the <code>nsplines</code> dimen
 <dd><p>a list of <code>ctrl.pts</code> of length <code>m</code>, contains the updated <code>ctrl.pts</code> after each algorithm iteration.</p></dd>
 
 <dt>VarianceMatrix</dt>
-<dd><p>the variance matrix of the estimated function, which is the inverse of the negative <code>Hessian</code> matrix.</p></dd>
+<dd><p>the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative <code>Hessian</code> matrix.</p></dd>
 
 </dl></div>
     <div id="details">
@@ -290,6 +298,11 @@ Statistics and Computing, Vol. 27(4), 985-989</em>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2916034; Stopping crit = 8.0884492e-05;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2916034; Stopping crit = 1.8232153e-09;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2916034; Stopping crit = 2.2895367e-14;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2954100; Stopping crit = 2.0664261e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>

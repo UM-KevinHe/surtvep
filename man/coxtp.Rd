@@ -32,7 +32,7 @@ coxtp(
 \arguments{
 \item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. should be a vector containing 0 or 1}
 
-\item{z}{input covariate matrix, of dimension \code{nobs} * \code{nvars}; each row is an observation vector.}
+\item{z}{input covariate matrix, of dimension \code{nobs} x \code{nvars}; each row is an observation vector.}
 
 \item{time}{obeserved event time, should be a vector with non-negative numeric value}
 
@@ -41,10 +41,17 @@ By default a non-stratified model would be implemented}
 
 \item{penalty}{a character string specifying the spline term for Penalized Newton's Method.
 This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
+Default is \code{P-spline}. Three options are \code{P-spline}, \code{Smooth-spline} and \code{NULL}. If \code{NULL}, the method will be the same as \code{coxtv} and \code{lambda}
+will be set as 0.
 
-\code{P-spline} stands for "Penalized B-spline". It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
+\code{P-spline} stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
+When \code{lambda} goes to infinity, the time-varying effects are encouraged to be constant.
 
-\code{Smooth-spline} refers to the Smoothing-spline, the derivative based penalties combined with B-splines. Default value is \code{Smooth-spline}.}
+\code{Smooth-spline} refers to the Smoothing-spline, the derivative based penalties combined with B-splines. See \code{degree} for different choices.
+When \code{degree=3}, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when \code{lambda} goes to infinity.
+When \code{degree=2}, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
+
+If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as (0.1, 1, 10). Users can modify \code{lambda}. See details in \code{lambda}.}
 
 \item{nsplines}{number of basis functions in the B-splines to span the time-varying effects, default value is 8.
 We use the r function \code{splines::bs} to generate the B-splines.}
@@ -58,22 +65,22 @@ Default is \code{0} which refers to Newton's Method without penalization.}
 \code{degree = 2} results in the quadratic B-spline basis functions.
 
 If \code{penalty} is \code{Smooth-spline}, different choices of \code{degree} give different results.
-When \code{degree=3}, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term.
-When \code{degree=2}, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant. See Wood (2016) for details.
+When \code{degree=3}, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when \code{lambda} goes to infinity.
+When \code{degree=2}, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
 Default is \code{degree=2}.}
 
 \item{knots}{the internal knot locations (breakpoints) that define the B-splines.
-The number of the internal knots should be \eqn{`nsplines`-`degree`-1}.
+The number of the internal knots should be \code{nsplines}-\code{degree}-1.
 If \code{NULL}, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
 Users can specify the internal knot locations by themselves.}
 
 \item{ties}{a character string specifying the method for tie handling. If there are no tied
-death times, the methods are equivalent.  By default \strong{\code{ties="Breslow"}} uses the Breslow approximatio, this can be faster when many ties occured.}
+death times, the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximatio, this can be faster when many ties occured.}
 
 \item{tol}{convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
 The default value is  \code{1e-6}.}
 
-\item{iter.max}{maximum Iteration number, default value is  \code{20L}.}
+\item{iter.max}{maximum Iteration number if the stopping criteria specified by \code{stop} is not satisfied. default value is  \code{20}.}
 
 \item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.  If \code{"Newton"} then exact hessian is used,
 while default method \code{"ProxN"} implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
@@ -88,11 +95,12 @@ Users should be careful with \code{static} as this may lead to underfitting.}
 
 \item{tau}{a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is \code{0.5}.}
 
-\item{stop}{a character string specifying the stopping rule to determine convergence. Use \code{loglik(m)} to denote the log-partial likelihood at iteration step m.
+\item{stop}{a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.
 \code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
-\code{"relch"} means we stop the algorithm when the \code{loglik(m)} divided by the  \code{loglik(0)} is less than the \code{tol}.
-\code{"ratch"} means we stop the algorithm when \code{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
-\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met. Default value is \code{ratch}.}
+\code{"relch"} means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the \code{tol}.
+\code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
+\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met.
+Default value is \code{ratch}. If maximum iteration steps \code{iter.max} is achieved, the algorithm stops before the stopping rule is met.}
 
 \item{parallel}{if \code{TRUE} then parallel computation is enabled. The number of threads to be used is determined by \code{threads}.}
 
@@ -102,19 +110,20 @@ Users should be careful with \code{static} as this may lead to underfitting.}
 }
 \value{
 An object with S3 class \code{"coxtp"}.
-\item{call}{the call that produced this object}
-\item{beta}{estimated coefficient matrix of dimension \code{len_unique_t} * \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
-Each row represents the coefficients at the corresponding input follow-up time}
-\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension is \code{nvars} * \code{nsplines};
-if \code{ties="Breslow"}, the dimension is \code{len_unique_t} * \code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
-\item{ctrl.pts}{estimated coefficient matrix of dimension \code{nvars} * \code{nsplines}.
+\item{call}{the call that produced this object.}
+\item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension \code{len_unique_t} x \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
+Each row represents the coefficients at the corresponding input observation time.}
+
+\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension is \code{nvars} x \code{nsplines};
+if \code{ties="Breslow"}, the dimension is \code{len_unique_t} x \code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
+\item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars} x \code{nsplines}.
 Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
-\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} multiplied by \code{nsplines * nvars}.}
+\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} x \code{nsplines * nvars}.}
 \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
-\item{nobs}{number of observations}
+\item{nobs}{number of observations.}
 \item{spline}{the spline type user specified.}
 \item{theta.list}{a list of \code{ctrl.pts} of length \code{m}, contains the updated \code{ctrl.pts} after each algorithm iteration.}
-\item{VarianceMatrix}{the variance matrix of the estimated function, which is the inverse of the negative \code{Hessian} matrix.}
+\item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative \code{Hessian} matrix.}
 }
 \description{
 Fit a cox Non-proportional Hazards model via penalized maximum likelihood.
