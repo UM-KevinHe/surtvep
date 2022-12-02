@@ -4,16 +4,23 @@
 #' 
 #'
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. should be a vector containing 0 or 1
-#' @param z input covariate matrix, of dimension `nobs` * `nvars`; each row is an observation vector. 
+#' @param z input covariate matrix, of dimension `nobs` x `nvars`; each row is an observation vector. 
 #' @param time obeserved event time, should be a vector with non-negative numeric value
 #' @param strata stratification group defined in the data used for stratified model. If there exists stratification group, please enter as vector. 
 #' By default a non-stratified model would be implemented
 #' @param penalty a character string specifying the spline term for Penalized Newton's Method. 
 #' This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
+#' Default is `P-spline`. Three options are `P-spline`, `Smooth-spline` and `NULL`. If `NULL`, the method will be the same as `coxtv` and `lambda` 
+#' will be set as 0.
 #' 
-#' `P-spline` stands for "Penalized B-spline". It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
+#' `P-spline` stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots. 
+#' When `lambda` goes to infinity, the time-varying effects are encouraged to be constant. 
 #' 
-#' `Smooth-spline` refers to the Smoothing-spline, the derivative based penalties combined with B-splines. Default value is `Smooth-spline`.
+#' `Smooth-spline` refers to the Smoothing-spline, the derivative based penalties combined with B-splines. See `degree` for different choices.
+#' When `degree=3`, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when `lambda` goes to infinity.
+#' When `degree=2`, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when `lambda` goes to infinity. See Wood (2016) for details.
+#' 
+#' If `P-spline` or `Smooth-spline`, then `lambda` is initialized as (0.1, 1, 10). Users can modify `lambda`. See details in `lambda`.
 #' 
 #' @param lambda a user specified `lambda.spline` sequence as the penalization coefficients in front of the spline term specified by `spline`. 
 #' This is the tuning parameter for penalization. Users can use `IC` to select the best tuning parameter based on the information criteria. 
@@ -23,27 +30,31 @@
 #' @param nsplines number of basis functions in the B-splines to span the time-varying effects, default value is 8. 
 #' We use the r function `splines::bs` to generate the B-splines. 
 #' @param knots the internal knot locations (breakpoints) that define the B-splines.
-#' The number of the internal knots should be \eqn{`nsplines`-`degree`-1}.
+#' The number of the internal knots should be `nsplines`-`degree`-1.
 #' If `NULL`, the locations of knots are chosen to include an equal number of events within each time interval. This leads to more stable results in most cases.
 #' Users can specify the internal knot locations by themselves.
+#' 
 #' @param degree degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
 #' `degree = 2` results in the quadratic B-spline basis functions.
 #' 
 #' If `penalty` is `Smooth-spline`, different choices of `degree` give different results.
-#' When `degree=3`, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term.
-#' When `degree=2`, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant. See Wood (2016) for details.
+#' When `degree=3`, we use the cubic B-spline penalizing the second order derivative, which reduces to a linear term when `lambda` goes to infinity.
+#' When `degree=2`, we use the quadratic B-spline penalizing first order derivative, which reduces to a constant when `lambda` goes to infinity. See Wood (2016) for details.
 #' Default is `degree=2`.
 #' 
 #' @param ties a character string specifying the method for tie handling. If there are no tied
-#' death times, the methods are equivalent.  By default **`ties="Breslow"`** uses the Breslow approximatio, this can be faster when many ties occured.
-#' @param stop a character string specifying the stopping rule to determine convergence. Use `loglik(m)` to denote the log-partial likelihood at iteration step m.  
+#' death times, the methods are equivalent.  By default `"Breslow"` uses the Breslow approximatio, this can be faster when many ties occured.
+#' 
+#' @param stop a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.  
 #' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
-#' `"relch"` means we stop the algorithm when the `loglik(m)` divided by the  `loglik(0)` is less than the `tol`.
-#' `"ratch"` means we stop the algorithm when `(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))` is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. Default value is `ratch`.
+#' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
+#' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
+#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. 
+#' Default value is `ratch`. If maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
+#' 
 #' @param tol convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
 #'  The default value is  `1e-6`.
-#' @param iter.max maximum Iteration number, default value is  `20L`.
+#' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. default value is  `20`. 
 #' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, 
 #' while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
@@ -59,19 +70,20 @@
 #' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
 #'
 #' @return An object with S3 class \code{"coxtp"}. 
-#' \item{call}{the call that produced this object}
-#' \item{beta}{estimated coefficient matrix of dimension `len_unique_t` * `nvars`, where `len_unique_t` is the length of unique follow-up `time`.
-#' Each row represents the coefficients at the corresponding input follow-up time}
-#' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension is `nvars` * `nsplines`; 
-#' if `ties="Breslow"`, the dimension is `len_unique_t` * `nsplines`. The matrix is constructed using `bs::splines` function.}
-#' \item{ctrl.pts}{estimated coefficient matrix of dimension `nvars` * `nsplines`. 
+#' \item{call}{the call that produced this object.}
+#' \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension `len_unique_t` x `nvars`, where `len_unique_t` is the length of unique follow-up `time`.
+#' Each row represents the coefficients at the corresponding input observation time.}
+#' 
+#' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension is `nvars` x `nsplines`; 
+#' if `ties="Breslow"`, the dimension is `len_unique_t` x `nsplines`. The matrix is constructed using `bs::splines` function.}
+#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars` x `nsplines`. 
 #' Each row represents a covariate's coefficient on the `nsplines` dimensional basis functions.} 
-#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` multiplied by `nsplines * nvars`.}
+#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` x `nsplines * nvars`.}
 #' \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
-#' \item{nobs}{number of observations}
+#' \item{nobs}{number of observations.}
 #' \item{spline}{the spline type user specified.}
 #' \item{theta.list}{a list of `ctrl.pts` of length `m`, contains the updated `ctrl.pts` after each algorithm iteration.}
-#' \item{VarianceMatrix}{the variance matrix of the estimated function, which is the inverse of the negative `Hessian` matrix.}
+#' \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative `Hessian` matrix.}
 #'
 #'
 #' @details 
