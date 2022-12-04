@@ -29,7 +29,7 @@ In this tutorial we introduce the use of `surtvep` through an example dataset.
 #Install the package, need to install the devtools packages:
 require("devtools")
 require("remotes")
-remotes::install_github("UM-KevinHe/surtvep")
+remotes::install_github("UM-KevinHe/surtvep", ref = "Lingfeng_test")
 
 #To install with Vignettes:
 # install.packages("devtools")
@@ -89,9 +89,8 @@ lambda_all <- c(1)
 fit.penalize = coxtp(z = z, event = event, time=time, lambda = lambda_all, method = "ProxN", btr = "static")
 ```
 
-
 ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
-plot(fit.penalize, ylim = c(-2,2))
+plot(fit.penalize$lambda1, ylim = c(-2,2))
 ```
 
 
@@ -340,7 +339,7 @@ As a result, $\beta$ is a 2487\*2 matrix(we are using the "Breslow" ties, thus t
 
 We could also get the 95%CI for the estimation by the ``confint.surtiver``
 ```{r}
-CI <- confint.surtiver(fit.proxN)
+CI <- confint(fit.proxN)
 head(CI$tvef$X1)
 ```
 
@@ -417,7 +416,7 @@ event <- ExampleDataBinary$event
 
 First we fit the penalized model with `"Smooth-spline"`.
 ```{r, message = FALSE, results='hide'}
-lambda_spline_all=c(0.01,0.1,1,10,100)
+lambda_spline_all=c(0.01,0.1,1,10)
 # fit.pspline <- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")
 fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline=lambda_spline_all, spline = "Smooth-spline")
 ```

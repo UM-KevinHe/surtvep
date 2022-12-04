@@ -7,7 +7,7 @@
 coxtp.baseline(fit, delta, z, time, strata = c())
 }
 \arguments{
-\item{fit}{Model get from coxtp}
+\item{fit}{model get from \code{coxtp} or \code{coxtv}}
 
 \item{delta}{event vector, should be a vector containing 0 or 1}
 

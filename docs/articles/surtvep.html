@@ -115,7 +115,7 @@ dataset.</p>
 <code class="sourceCode R"><span><span class="co">#Install the package, need to install the devtools packages:</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span>, ref <span class="op">=</span> <span class="st">"Lingfeng_test"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#To install with Vignettes:</span></span>
 <span><span class="co"># install.packages("devtools")</span></span>
@@ -179,11 +179,14 @@ will be discussed in section Information Criteria.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">fit.penalize</span> <span class="op">=</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, lambda <span class="op">=</span> <span class="va">lambda_all</span>, method <span class="op">=</span> <span class="st">"ProxN"</span>, btr <span class="op">=</span> <span class="st">"static"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -3.2982771; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -3.2954717; Stopping crit = 9.1536366e-03;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -3.2954717; Stopping crit = 4.3470651e-15;</span></span></code></pre></div>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3068888; Stopping crit = 1.7435312e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.2954100; Stopping crit = 3.7446678e-02;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span></span>
+<span><span class="co">#&gt; Iter 6: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.penalize</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.penalize</span><span class="op">$</span><span class="va">lambda1</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>With the tools introduced so far, users are able to fit the
 time-varying model. There are many more arguments in the package that
@@ -249,46 +252,72 @@ first and second derivative of the log partial likelihood.</p>
 <p><code>coxtp</code> provides various arguments for users to customize
 the fit: we introduce some commonly used arguments here.</p>
 <ul>
-<li><p><code>strata</code> is for the stratified cox model.
-stratification group defined in the data. If there exist stratification
-group, please enter as vector.</p></li>
-<li><p><code>nsplines</code> is for the number of basis functions in the
-B-splines, denoted as <span class="math inline">\(K\)</span> in our
-model introduction.</p></li>
-<li><p><code>ties</code> is for dealing with ties, default is
-<strong><code>ties="Breslow"</code></strong>, which uses brewslow
-approximation.</p></li>
-<li><p><code>tol</code> is the convergence threshold. The default
-threshold is set as <strong><code>tol=1e-6</code></strong>.</p></li>
-<li><p><code>iter.max</code> is the maximum Iteration number, default is
-<strong><code>iter.max=20L</code></strong></p></li>
-<li><p><code>method</code> is for selecting two variants if Newton’s
-Method. <strong><code>method="Newton"</code></strong> uses the classical
-Newton’s method. <strong><code>method="ProxN"</code></strong> is the
-default method, which uses the proximal Newton’s methods.</p></li>
-<li><p><code>lambda</code> is the parameter for Proximal Newton’s
-Method. Default is <strong><code>lambda=1e8</code></strong></p></li>
-<li><p><code>btr</code> is for selecting backtracking line search
-approach, default is <code>btr="dynamic"</code>. When predictors are
-presented with low frequency, <code>btr="static"</code> can be used to
-improve stability.</p></li>
-<li><p><code>tau</code> is a parameter in the backtracking line search
-to control the step size. Default is
-<strong><code>tau=0.5</code></strong>.</p></li>
-<li><p><code>stop</code> is for selecting stopping rule, default is
-<strong><code>stop="ratch"</code></strong>:</p></li>
-<li><p><code>parallel</code> is a logical flag for parallel computation,
-Default is <strong><code>parallel=FALSE</code></strong>.</p></li>
-<li><p><code>threads</code> is the number of threads used when parallel
-computation is enabled
-(<strong><code>parallel=TRUE</code></strong>).</p></li>
-<li><p><code>degree</code></p></li>
-<li><p><code>ord</code></p></li>
-<li><p><code>fixedstep</code> is a logical flag for fixed iteration
-steps. Default value is <strong><code>fixedstep = FALSE</code></strong>.
-If <strong><code>fixedstep = FALSE</code></strong>, the algorithm will
-be stopped by <code>iter.max</code> regardless the <code>stop</code>
-criteria is used.</p></li>
+<li><p><code>strata</code> is for stratification group defined in the
+data used for the stratified model. If there exists a stratification
+group, please enter it as a vector. By default, a non-stratified model
+would be implemented.</p></li>
+<li><p><code>nsplines</code> number of basis functions in the B-splines
+to span the time-varying effects, the default value is 8. We use the r
+function <code><a href="https://rdrr.io/r/splines/bs.html" class="external-link">splines::bs</a></code> to generate the B-splines. Denoted as
+<span class="math inline">\(k\)</span> in our model
+introduction.</p></li>
+<li><p><code>ties</code> is specifying the method for tie handling. If
+there are no tied death times, the methods are equivalent. By default
+<code>"Breslow"</code> uses the Breslow approximation, which can be
+faster when many ties occur.</p></li>
+<li><p><code>tol</code> convergence threshold for Newton’s method. The
+algorithm continues until the method selected using <code>stop</code>
+converges. The default value is <code>1e-6</code>.</p></li>
+<li><p><code>iter.max</code> maximum Iteration number if the stopping
+criteria specified by <code>stop</code> is not satisfied. Default value
+is 20.</p></li>
+<li><p><code>degree</code> degree of the piecewise polynomial for
+generating the B-spline basis functions—default is 3 for cubic splines.
+<code>degree = 2</code> results in the quadratic B-spline basis
+functions.</p></li>
+<li><p><code>method</code> a character string specifying whether to use
+Newton’s method or Proximal Newton’s method. If <code>"Newton"</code>
+then exact hessian is used, while default method <code>"ProxN"</code>
+implementing the proximal method which can be faster and more stable
+when there exists ill-conditioned second-order information of the
+log-partial likelihood.</p></li>
+<li><p><code>gammma</code> parameter for Proximal Newton’s Method
+<code>"ProxN"</code>. Default value is <code>1e8</code>.</p></li>
+<li><p><code>btr</code> a character string specifying the backtracking
+line-search approach. <code>"dynamic"</code> is a typical way to perform
+backtracking line-search. See details in Convex Optimization by Boyd and
+Vandenberghe (2009). <code>"static"</code> limits Newton’s increment and
+can achieve more stable results in some extreme cases, such as
+ill-conditioned second-order information of the log-partial likelihood,
+which usually occurs when some predictors are categorical with low
+frequency for some categories. Users should be careful with
+<code>static</code> as this may lead to under-fitting.</p></li>
+<li><p><code>tau</code> a scalar in (0,1) used to control the step size
+inside the backtracking line-search. The default value is 0.5.</p></li>
+<li><p><code>stop</code> a character string specifying the stopping rule
+to determine convergence. Use <span class="math inline">\(loglik(m)\)</span> to denote the log-partial
+likelihood at iteration step m.<br><code>"incre"</code> means we stop the algorithm when Newton’s increment
+is less than the <code>tol</code>. <code>"relch"</code> means we stop
+the algorithm when the <span class="math inline">\(loglik(m)\)</span>
+divided by the <span class="math inline">\(loglik(0)\)</span> is less
+than the <code>tol</code>. <code>"ratch"</code> means we stop the
+algorithm when <span class="math inline">\((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\)</span>
+is less than the <code>tol</code>. <code>"all"</code> means we stop the
+algorithm when all the stopping rules <code>"incre"</code>,
+<code>"relch"</code> and <code>"ratch"</code> is met. Default value is
+<code>ratch</code>. If the maximum iteration steps <code>iter.max</code>
+is achieved, the algorithm stops before the stopping rule is
+met.</p></li>
+<li><p><code>parallel</code> if <code>TRUE</code>, then the parallel
+computation is enabled. The number of threads in use is determined by
+<code>threads</code>.</p></li>
+<li><p><code>threads</code> an integer indicating the number of threads
+to be used for parallel computation. Default is <code>2</code>. If
+<code>parallel</code> is false, then the value of <code>threads</code>
+has no effect.</p></li>
+<li><p><code>fixedstep</code> fixedstep if <code>TRUE</code>, the
+algorithm will be forced to run <code>iter.max</code> steps regardless
+of the stopping criterion specified.</p></li>
 </ul>
 <p>In the following sections we brefily describe these useful arguments
 when calling <code>coxtv</code>.</p>
@@ -487,7 +516,7 @@ link)).</p>
 <p>We could also get the 95%CI for the estimation by the
 <code>confint.surtiver</code></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">CI</span> <span class="op">&lt;-</span> <span class="fu">confint.surtiver</span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">CI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">CI</span><span class="op">$</span><span class="va">tvef</span><span class="op">$</span><span class="va">X1</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                           est     2.5%    97.5%</span></span>
 <span><span class="co">#&gt; 0.000201305374503136 1.915036 1.094259 2.735813</span></span>
@@ -571,39 +600,46 @@ diagonal matrix of known coefficients. The algebraic expression of <span class="
 in . However, this has little impact on the computation time.</p>
 <p>###Usage The usage of Newton Method with penalization
 <code>coxtp</code> is very similar as <code>coxtv</code> introduced
-above. The main difference comes from the penalization parameter
+above. The main difference comes from the penalization tuning parameter
 selection.</p>
-<p>We use the smooth spline here for penalization(default). You could
-also use <code>spline="P-spline"</code>. For lambda_spline, you could
-either enter a numeric number or a vector of numbers. If
-<code>lambda_spline</code> was entered as a vector of numbers, the best
-lambda was selected based on different criteria(AIC, TIC or GIC).
-Following is a model fit with the <code>lambda_spline</code> as a vector
-for different illustration purposes. We use the relatively harsh setting
-<code>ExampleDataBinary</code> to illustrate the useage of ‘coxtp’, the
-penalization method.</p>
+<p>We use the smooth spline here for penalization (default). You could
+also use <code>spline="P-spline"</code>. For tuning parameter
+<code>lambda</code>, you could either enter a numeric number or a vector
+of numbers. If <code>lambda</code> was entered as a vector of numbers,
+the tuning parameter can be selected based on different criteria(AIC,
+TIC or GIC) using function <code>IC</code>. Or users can use
+<code>cv.coxtp</code> to select the tuning parameter based on cross
+validation. Following is a model fit with the <code>lambda</code> as a
+vector for different illustration purposes. We use the relatively harsh
+setting <code>ExampleDataBinary</code> to illustrate the useage of
+‘coxtp’, ‘IC’ and ‘cv.coxtp’, the penalization method. This setting
+contains binary predictors with low frequency, which may have
+ill-conditioned second-order information of the log-partial likelihood.
+Penalization plays an important role here as it helps to smooth the
+time-varying effects.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleDataBinary</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">time</span></span>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">event</span></span></code></pre></div>
+<p>First we fit the penalized model with
+<code>"Smooth-spline"</code>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>,<span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">fit.pspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda<span class="op">=</span><span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"P-spline"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co"># fit.pspline &lt;- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")</span></span>
 <span><span class="va">fit.smoothspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda_spline<span class="op">=</span><span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"Smooth-spline"</span><span class="op">)</span></span></code></pre></div>
+<p>Then we use the <code>IC</code> function to select the tuning
+parameter.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.pspline</span>, IC <span class="op">=</span> <span class="st">"TIC"</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.smoothspline</span>, IC <span class="op">=</span> <span class="st">"TIC"</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-18-1.png" width="40%" height="44%"><img src="surtvep_files/figure-html/unnamed-chunk-18-2.png" width="40%" height="44%"></p>
-<p>The optimal lambda was saved in the model term
-<code>lambda.selected</code></p>
+<code class="sourceCode R"><span><span class="va">IC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.smoothspline</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">AIC</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">TIC</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">GIC</span><span class="op">)</span></span></code></pre></div>
+<p>We can directly call the <code>plot</code> function to give the
+estimation plot.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">best_lambda</span><span class="op">=</span><span class="va">fit.pspline</span><span class="op">$</span><span class="va">lambda.selected</span></span>
-<span><span class="va">best_lambda</span></span>
-<span><span class="co">#&gt;     value</span></span>
-<span><span class="co">#&gt; AIC     0</span></span>
-<span><span class="co">#&gt; TIC     0</span></span>
-<span><span class="co">#&gt; GIC     0</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">model.AIC</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-19-1.png" width="40%" height="44%"></p>
 <p>From the result above, we noticed that with different selection
 criteria, the best lambda selected is different. Here, we use the AIC
 criteria which set <code>lambda=1000</code>. The result for this model
