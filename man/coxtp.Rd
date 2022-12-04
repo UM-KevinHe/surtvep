@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{fit a cox Non-proportional Hazards model with P-spline or Smoothing-spline. Penalization tuning parameter}
+\title{fit a Cox Non-proportional Hazards Model with P-spline or Smoothing-spline, penalization tuning parameter can be chosen by information criteria or cross-validation.}
 \usage{
 coxtp(
   event,
@@ -11,7 +11,7 @@ coxtp(
   strata = NULL,
   penalty = "Smooth-spline",
   nsplines = 8,
-  lambda = 0,
+  lambda = c(0.1, 1, 10),
   degree = 3L,
   knots = NULL,
   ties = "Breslow",
@@ -81,7 +81,7 @@ death times, the methods are equivalent.  By default \code{"Breslow"} uses the B
 \item{tol}{convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
 The default value is  \code{1e-6}.}
 
-\item{iter.max}{maximum Iteration number if the stopping criteria specified by \code{stop} is not satisfied. Default value is  \code{20}.}
+\item{iter.max}{maximum Iteration number if the stopping criteria specified by \code{stop} is not satisfied. Default value is  20.}
 
 \item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.  If \code{"Newton"} then exact hessian is used,
 while default method \code{"ProxN"} implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
@@ -94,7 +94,7 @@ See details in Wu et al. (2022).}
 which usually occurs when some predictors are categorical with low frequency for some categories.
 Users should be careful with \code{static} as this may lead to under-fitting.}
 
-\item{tau}{a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is \code{0.5}.}
+\item{tau}{a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.}
 
 \item{stop}{a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.
 \code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
@@ -110,7 +110,7 @@ Default value is \code{ratch}. If the maximum iteration steps \code{iter.max} is
 \item{fixedstep}{if \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
 }
 \value{
-An object with S3 class \code{"coxtp"}.
+A list of objects with S3 class \code{"coxtp"}. The length is the same as \code{lambda}, each represents the model with the tuning parameter \code{lambda}.
 \item{call}{the call that produced this object.}
 \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension \code{len_unique_t} x \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
 Each row represents the coefficients at the corresponding input observation time.}
@@ -127,7 +127,7 @@ Each row represents a covariate's coefficient on the \code{nsplines} dimensional
 \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative \code{Hessian} matrix.}
 }
 \description{
-Fit a cox Non-proportional Hazards model via penalized maximum likelihood.
+Fit a Cox Non-proportional Hazards model via penalized maximum likelihood.
 }
 \details{
 The sequence of models implied by \code{lambda.spline} is fit by Newton's method (Proximal Newton's method). The objective function is
@@ -167,6 +167,10 @@ Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jian
 Wood, Simon N.
 \emph{P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data. (2017)
 Statistics and Computing, Vol. 27(4), 985-989}.
+
+Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen.
+\emph{A fast routine for fitting Cox models with time varying effects of the covariates (2006), Computer methods and programs in biomedicine, Vol. 81.2 154-161}.
+\cr
 }
 \seealso{
 \code{coef}, \code{plot}, \code{IC} and \code{cv.coxtp}.

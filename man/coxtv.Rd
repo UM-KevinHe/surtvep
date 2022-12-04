@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtv.base.R
 \name{coxtv}
 \alias{coxtv}
-\title{fit a cox Non-proportional Hazards model:}
+\title{fit a Cox Non-proportional Hazards model:}
 \usage{
 coxtv(
   event,
@@ -17,30 +17,41 @@ coxtv(
 )
 }
 \arguments{
-\item{event}{response variable of length \code{nobs}, should be a vector containing 0 or 1}
+\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1}
 
-\item{z}{input covariate matrix, of dimension \code{nobs} * \code{nvars}; each row is an observation vector.}
+\item{z}{input covariate matrix, of dimension \code{nobs} x \code{nvars}; each row is an observation vector.}
 
-\item{time}{follow up time, should be a vector with non-negative numeric value}
+\item{time}{observed event time, should be a vector with non-negative numeric values.}
 
-\item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.
-Otherwise a non-stratified model would be implemented}
+\item{strata}{stratification group defined in the data used for the stratified model.
+If there exists a stratification group, please enter it as a vector.
+By default, a non-stratified model would be implemented.}
 
-\item{nsplines}{Number of basis functions in the B-splines, default value is 8.}
+\item{nsplines}{number of basis functions in the B-splines to span the time-varying effects, the default value is 8.
+We use the r function \code{splines::bs} to generate the B-splines.}
 
 \item{ties}{a character string specifying the method for tie handling. If there are no tied
-death times, the methods are equivalent.  \strong{\code{ties="Breslow"}} uses the Breslow approximation.}
+death times, the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties occur.}
 
-\item{stop}{a character string specifying the stopping rule to determine convergence. Use \code{loglik(m)} to denote the log-partial likelihood at iteration step m.
+\item{knots}{the internal knot locations (breakpoints) that define the B-splines.
+The number of the internal knots should be \code{nsplines}-\code{degree}-1.
+If \code{NULL}, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.
+Users can specify the internal knot locations by themselves.}
+
+\item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
+\code{degree = 2} results in the quadratic B-spline basis functions.}
+
+\item{stop}{a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.
 \code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
-\code{"relch"} means we stop the algorithm when the \code{loglik(m)} divided by the  \code{loglik(0)} is less than the \code{tol}.
-\code{"ratch"} means we stop the algorithm when \code{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
-\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met. Default value is \code{ratch}.}
+\code{"relch"} means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the \code{tol}.
+\code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
+\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met.
+Default value is \code{ratch}. If the maximum iteration steps \code{iter.max} is achieved, the algorithm stops before the stopping rule is met.}
 
-\item{tol}{Convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
+\item{tol}{convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
 The default value is  \code{1e-6}.}
 
-\item{iter.max}{maximum Iteration number, default value is  \code{20L}.}
+\item{iter.max}{maximum Iteration number if the stopping criteria specified by \code{stop} is not satisfied. Default value is  20.}
 
 \item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.  If \code{"Newton"} then exact hessian is used,
 while default method \code{"ProxN"} implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
@@ -48,39 +59,37 @@ See details in Wu et al. (2022).}
 
 \item{gamma}{parameter for Proximal Newton's Method \code{"ProxN"}. Default value is \code{1e8}.}
 
-\item{btr}{a character string specifying the backtracking line search approach. \code{"dynamic"} is typical way to perform backtracking linesearch.
-\code{"static"} limits the Newton's increment, and can achieve more stable results in some extreme cases.}
+\item{btr}{a character string specifying the backtracking line-search approach. \code{"dynamic"} is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+\code{"static"} limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
+which usually occurs when some predictors are categorical with low frequency for some categories.
+Users should be careful with \code{static} as this may lead to under-fitting.}
 
-\item{tau}{a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is \code{0.5}.}
+\item{tau}{a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.}
 
-\item{parallel}{If \code{TRUE} then parallel computation is enabled. The number of threads to be used is determined by \code{threads}.}
+\item{parallel}{if \code{TRUE}, then the parallel computation is enabled. The number of threads in use is determined by \code{threads}.}
 
 \item{threads}{an integer indicating the number of threads to be used for parallel computation. Default is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
 
-\item{degree}{degree of the piecewise polynomial---default is 3 for cubic splines.}
-
-\item{ord}{a positive integer giving the order of the spline function.
-This is the number of coefficients in each piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.}
-
-\item{fixedstep}{If \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
+\item{fixedstep}{if \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
 }
 \value{
 An object with S3 class \code{"coxtv"}.
-\item{call}{the call that produced this object}
-\item{beta}{estimated coefficient matrix of dimension \code{len_unique_t} * \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
-Each row represents the coefficients at the corresponding input follow-up time}
+\item{call}{the call that produced this object.}
+\item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension \code{len_unique_t} x \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
+Each row represents the coefficients at the corresponding input observation time.}
+
 \item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension is \code{nvars} * \code{nsplines};
 if \code{ties="Breslow"}, the dimension is \code{len_unique_t} * \code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
-\item{ctrl.pts}{estimated coefficient matrix of dimension \code{nvars} * \code{nsplines}.
+\item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars} x \code{nsplines}.
 Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
-\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} multiplied by \code{nsplines * nvars}.}
+\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} x \code{nsplines * nvars}.}
 \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
-\item{nobs}{number of observations}
+\item{nobs}{number of observations.}
 \item{theta.list}{a list of \code{ctrl.pts} of length \code{m}, contains the updated \code{ctrl.pts} after each algorithm iteration.}
-\item{VarianceMatrix}{The variance matrix of the estimated function, which is the inverse of the negative \code{Hessian} matrix.}
+\item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative \code{Hessian} matrix.}
 }
 \description{
-Fit a cox Non-proportional Hazards model via maximum likelihood.
+Fit a Cox Non-proportional Hazards model via maximum likelihood.
 }
 \details{
 The model is fit by Newton's method (Proximal Newton's method).
@@ -109,8 +118,11 @@ Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor
 Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He.
 \emph{Scalable proximal Methods for cause-specific hazard modeling with time-varying coefficients (2022), Lifetime Data Analysis, Vol. 28(2), 194-218}.
 \cr
+
+Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen.
+\emph{A fast routine for fitting Cox models with time varying effects of the covariates (2006), Computer methods and programs in biomedicine, Vol. 81.2 154-161}.
+\cr
 }
 \seealso{
-\code{coef}, \code{plot}, \code{coef} and \code{plot} methods,
-and the \code{coxtp} function.
+\code{coef}, \code{plot}, and the \code{coxtp} function.
 }

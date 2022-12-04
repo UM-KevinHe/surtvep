@@ -2,12 +2,12 @@
 % Please edit documentation in R/IC.r
 \name{IC}
 \alias{IC}
-\title{calculating Information Criteria from a \code{coxtp} object}
+\title{calculating information criteria from a \code{coxtp} object}
 \usage{
 IC(fit, IC.prox, ...)
 }
 \arguments{
-\item{fit}{model get from coxtp}
+\item{fit}{model from \code{coxtp}.}
 
 \item{IC.prox}{when calculating information criteria, there might be numerical issue(second order derivative,
 Hessian matrix approximate is singular). In such cases warnings will be given.
@@ -18,12 +18,12 @@ Default is \code{FALSE}.}
 \item{model.AIC}{an object with S3 class \code{"coxtp"} using AIC to select the tunning parameter.}
 \item{model.TIC}{an object with S3 class \code{"coxtp"} using TIC to select the tunning parameter.}
 \item{model.GIC}{an object with S3 class \code{"coxtp"} using GIC to select the tunning parameter.}
-\item{AIC}{a sequence of AIC values for the different tuning parameters \code{lambda.spline} from \code{"coxtp"}.}
-\item{TIC}{a sequence of AIC values for the different tuning parameters \code{lambda.spline} from \code{"coxtp"}.}
-\item{GIC}{a sequence of AIC values for the different tuning parameters \code{lambda.spline} from \code{"coxtp"}.}
+\item{AIC}{a sequence of AIC values for the different tuning parameters \code{lambda} from \code{"coxtp"}.}
+\item{TIC}{a sequence of AIC values for the different tuning parameters \code{lambda} from \code{"coxtp"}.}
+\item{GIC}{a sequence of AIC values for the different tuning parameters \code{lambda} from \code{"coxtp"}.}
 }
 \description{
-calculating Information Criteria from a \code{coxtp} object
+This function is to calculate information criteria from a \code{coxtp} object to select the penalization tuning paramter.
 }
 \details{
 In order to select the proper smoothing parameter, we utilize the idea of information criteria.

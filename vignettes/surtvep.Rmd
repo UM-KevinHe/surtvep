@@ -150,35 +150,45 @@ and $\nu$ is a step size adjusted by backtracking linesearch. $\nabla \ell(\bold
 
 `coxtp` provides various arguments for users to customize the fit: we introduce some commonly used arguments here.
 
-* `strata` is for the stratified cox model. stratification group defined in the data. If there exist stratification group, please enter as vector.
+* `strata` is for stratification group defined in the data used for the stratified model. 
+If there exists a stratification group, please enter it as a vector. 
+By default, a non-stratified model would be implemented.
 
-* `nsplines` is for the number of basis functions in the B-splines, denoted as $K$ in our model introduction.
+* `nsplines` number of basis functions in the B-splines to span the time-varying effects, the default value is 8. We use the r function `splines::bs` to generate the B-splines. Denoted as $k$ in our model introduction.
 
-* `ties` is for dealing with ties, default is **`ties="Breslow"`**, which uses brewslow approximation.
+* `ties` is specifying the method for tie handling. If there are no tied
+death times, the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties occur.
 
-* `tol` is the convergence threshold. The default threshold is set as **`tol=1e-6`**.
+* `tol` convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges. The default value is  `1e-6`.
 
-* `iter.max` is the maximum Iteration number, default is **`iter.max=20L`**
+* `iter.max` maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is 20.
 
-* `method` is for selecting two variants if Newton's Method. **`method="Newton"`** uses the classical Newton's method. **`method="ProxN"`** is the default method, which uses the proximal Newton's methods.
+* `degree` degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
+`degree = 2` results in the quadratic B-spline basis functions.
 
-* `lambda` is the parameter for Proximal Newton's Method. Default is **`lambda=1e8`**
+* `method` a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 
-* `btr` is for selecting backtracking line search approach, default is `btr="dynamic"`. When predictors are presented with low frequency, `btr="static"` can be used to improve stability.
+* `gammma` parameter for Proximal Newton's Method `"ProxN"`. Default value is `1e8`.
 
-* `tau` is a parameter in the backtracking line search to control the step size. Default is **`tau=0.5`**.
+* `btr` a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+`"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
+which usually occurs when some predictors are categorical with low frequency for some categories. 
+Users should be careful with `static` as this may lead to under-fitting.
 
-* `stop` is for selecting stopping rule, default is **`stop="ratch"`**:
+* `tau` a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.
 
-* `parallel` is a logical flag for parallel computation, Default is **`parallel=FALSE`**.
+* `stop` a character string specifying the stopping rule to determine convergence. Use $loglik(m)$ to denote the log-partial likelihood at iteration step m.  
+`"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
+`"relch"` means we stop the algorithm when the $loglik(m)$ divided by the  $loglik(0)$ is less than the `tol`.
+`"ratch"` means we stop the algorithm when $(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))$ is less than the `tol`.
+`"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. 
+Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
 
-* `threads` is the number of threads used when parallel computation is enabled (**`parallel=TRUE`**).
+* `parallel` if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
 
-* `degree`
+* `threads` an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
 
-* `ord`
-
-* `fixedstep` is a logical flag for fixed iteration steps. Default value is **`fixedstep = FALSE`**. If **`fixedstep = FALSE`**, the algorithm will be stopped by `iter.max` regardless the `stop` criteria is used.
+* `fixedstep` fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
 
 In the following sections we brefily describe these useful arguments when calling `coxtv`.
 
@@ -389,13 +399,13 @@ where $\boldsymbol{\beta}^{[m_2]}(t)$ denotes the $m_2^{th}$ derivative of $\bol
 
 
 ###Usage
-The usage of Newton Method with penalization `coxtp` is very similar as `coxtv` introduced above. The main difference comes from the penalization parameter selection.
+The usage of Newton Method with penalization `coxtp` is very similar as `coxtv` introduced above. The main difference comes from the penalization tuning parameter selection.
 
-We use the smooth spline here for penalization(default).
+We use the smooth spline here for penalization (default).
 You could also use `spline="P-spline"`.
-For lambda_spline, you could either enter a numeric number or a vector of numbers.
-If `lambda_spline` was entered as a vector of numbers, the best lambda was selected based on different criteria(AIC, TIC or GIC).
-Following is a model fit with the `lambda_spline` as a vector for different illustration purposes. We use the relatively harsh setting `ExampleDataBinary` to illustrate the useage of 'coxtp', the penalization method.
+For tuning parameter `lambda`, you could either enter a numeric number or a vector of numbers.
+If `lambda` was entered as a vector of numbers, the tuning parameter can be selected based on different criteria(AIC, TIC or GIC) using function `IC`. Or users can use `cv.coxtp` to select the tuning parameter based on cross validation.
+Following is a model fit with the `lambda` as a vector for different illustration purposes. We use the relatively harsh setting `ExampleDataBinary` to illustrate the useage of 'coxtp', 'IC' and 'cv.coxtp', the penalization method. This setting contains binary predictors with low frequency, which may have ill-conditioned second-order information of the log-partial likelihood. Penalization plays an important role here as it helps to smooth the time-varying effects.
 
 ```{r}
 data(ExampleDataBinary)
@@ -405,24 +415,26 @@ event <- ExampleDataBinary$event
 ```
 
 
+First we fit the penalized model with `"Smooth-spline"`.
 ```{r, message = FALSE, results='hide'}
-lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000)
-fit.pspline <- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")
+lambda_spline_all=c(0.01,0.1,1,10,100)
+# fit.pspline <- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")
 fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline=lambda_spline_all, spline = "Smooth-spline")
 ```
 
+Then we use the `IC` function to select the tuning parameter.
+```{r, message = FALSE, results='hide'}
+IC <- IC(fit.smoothspline)
+print(IC$AIC)
+print(IC$TIC)
+print(IC$GIC)
+```
+
+We can directly call the `plot` function to give the estimation plot.
 ```{r,  fig.ncol = 1, fig.show="hold", out.width="40%",out.height="44%", message = FALSE, warning=FALSE}
-plot(fit.pspline, IC = "TIC", allinone = TRUE, ylim = c(-2,2))
-plot(fit.smoothspline, IC = "TIC", allinone = TRUE, ylim = c(-2,2))
+plot(IC$model.AIC)
 ```
 
-
-The optimal lambda was saved in the model term `lambda.selected`
-
-```{r}
-best_lambda=fit.pspline$lambda.selected
-best_lambda
-```
 
 From the result above, we noticed that with different selection criteria, the best lambda selected is different.
 Here, we use the AIC criteria which set `lambda=1000`.

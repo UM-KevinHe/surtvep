@@ -1,59 +1,68 @@
-#' fit a cox Non-proportional Hazards model:
+#' fit a Cox Non-proportional Hazards model:
 #' 
-#' Fit a cox Non-proportional Hazards model via maximum likelihood. 
+#' Fit a Cox Non-proportional Hazards model via maximum likelihood. 
 #' 
-#'
-#' @param event response variable of length `nobs`, should be a vector containing 0 or 1
-#' @param z input covariate matrix, of dimension `nobs` * `nvars`; each row is an observation vector. 
-#' @param time follow up time, should be a vector with non-negative numeric value
-#' @param strata stratification group defined in the data. If there exist stratification group, please enter as vector. 
-#' Otherwise a non-stratified model would be implemented
-#' @param nsplines Number of basis functions in the B-splines, default value is 8.  
+#' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1
+#' @param z input covariate matrix, of dimension `nobs` x `nvars`; each row is an observation vector. 
+#' @param time observed event time, should be a vector with non-negative numeric values.
+#' @param strata stratification group defined in the data used for the stratified model. 
+#' If there exists a stratification group, please enter it as a vector. 
+#' By default, a non-stratified model would be implemented.
+#' @param nsplines number of basis functions in the B-splines to span the time-varying effects, the default value is 8. 
+#' We use the r function `splines::bs` to generate the B-splines. 
+#' 
+#' @param knots the internal knot locations (breakpoints) that define the B-splines.
+#' The number of the internal knots should be `nsplines`-`degree`-1.
+#' If `NULL`, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.
+#' Users can specify the internal knot locations by themselves.
+#' @param degree degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
+#' `degree = 2` results in the quadratic B-spline basis functions.
 #' @param ties a character string specifying the method for tie handling. If there are no tied
-#' death times, the methods are equivalent.  **`ties="Breslow"`** uses the Breslow approximation.
-#' @param stop a character string specifying the stopping rule to determine convergence. Use `loglik(m)` to denote the log-partial likelihood at iteration step m.  
+#' death times, the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties occur.
+#' @param stop a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.  
 #' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
-#' `"relch"` means we stop the algorithm when the `loglik(m)` divided by the  `loglik(0)` is less than the `tol`.
-#' `"ratch"` means we stop the algorithm when `(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))` is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. Default value is `ratch`.
-#' @param tol Convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
+#' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
+#' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
+#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. 
+#' Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
+#' 
+#' @param tol convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
 #'  The default value is  `1e-6`.
-#' @param iter.max maximum Iteration number, default value is  `20L`.
+#' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is  20.
 #' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, 
 #' while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
 
 #' @param gamma parameter for Proximal Newton's Method `"ProxN"`. Default value is `1e8`.
-#' @param btr a character string specifying the backtracking line search approach. `"dynamic"` is typical way to perform backtracking linesearch. 
-#' `"static"` limits the Newton's increment, and can achieve more stable results in some extreme cases.
-#' @param tau a scalar in (0,1) used to control the step size inside the back tracking linesearch. Default value is `0.5`.
-#' @param parallel If `TRUE` then parallel computation is enabled. The number of threads to be used is determined by `threads`.
+#' @param btr a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+#' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
+#' which usually occurs when some predictors are categorical with low frequency for some categories. 
+#' Users should be careful with `static` as this may lead to under-fitting.
+#' @param tau a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.
+#' @param parallel if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
 #' @param threads an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
-#' @param degree degree of the piecewise polynomial---default is 3 for cubic splines.
-#' @param ord a positive integer giving the order of the spline function. 
-#' This is the number of coefficients in each piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.
-#' @param fixedstep If `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
+#' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
 #'
 #'
 #'
 #' @return An object with S3 class \code{"coxtv"}. 
-#' \item{call}{the call that produced this object}
-#' \item{beta}{estimated coefficient matrix of dimension `len_unique_t` * `nvars`, where `len_unique_t` is the length of unique follow-up `time`.
-#' Each row represents the coefficients at the corresponding input follow-up time}
+#' \item{call}{the call that produced this object.}
+#' \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension `len_unique_t` x `nvars`, where `len_unique_t` is the length of unique follow-up `time`.
+#' Each row represents the coefficients at the corresponding input observation time.}
+#' 
 #' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension is `nvars` * `nsplines`; 
 #' if `ties="Breslow"`, the dimension is `len_unique_t` * `nsplines`. The matrix is constructed using `bs::splines` function.}
-#' \item{ctrl.pts}{estimated coefficient matrix of dimension `nvars` * `nsplines`. 
-#' Each row represents a covariate's coefficient on the `nsplines` dimensional basis functions.} 
-#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` multiplied by `nsplines * nvars`.}
+#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars` x `nsplines`. 
+#' Each row represents a covariate's coefficient on the `nsplines` dimensional basis functions.}
+#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` x `nsplines * nvars`.}
 #' \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
-#' \item{nobs}{number of observations}
+#' \item{nobs}{number of observations.}
 #' \item{theta.list}{a list of `ctrl.pts` of length `m`, contains the updated `ctrl.pts` after each algorithm iteration.}
-#' \item{VarianceMatrix}{The variance matrix of the estimated function, which is the inverse of the negative `Hessian` matrix.}
+#' \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative `Hessian` matrix.}
 #'
 #' @export 
 #' 
-#' @seealso \code{coef}, \code{plot}, \code{coef} and \code{plot} methods,
-#' and the \code{coxtp} function.
+#' @seealso \code{coef}, \code{plot}, and the \code{coxtp} function.
 #'
 #' @examples 
 #' data(ExampleData)
@@ -85,6 +94,10 @@
 #' 
 #' Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. 
 #' \emph{Scalable proximal Methods for cause-specific hazard modeling with time-varying coefficients (2022), Lifetime Data Analysis, Vol. 28(2), 194-218}.
+#' \cr
+#' 
+#' Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. 
+#' \emph{A fast routine for fitting Cox models with time varying effects of the covariates (2006), Computer methods and programs in biomedicine, Vol. 81.2 154-161}.
 #' \cr
 #' 
 #' 

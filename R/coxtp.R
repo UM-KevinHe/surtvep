@@ -1,6 +1,6 @@
-#' fit a cox Non-proportional Hazards model with P-spline or Smoothing-spline. Penalization tuning parameter
+#' fit a Cox Non-proportional Hazards Model with P-spline or Smoothing-spline, penalization tuning parameter can be chosen by information criteria or cross-validation.
 #' 
-#' Fit a cox Non-proportional Hazards model via penalized maximum likelihood. 
+#' Fit a Cox Non-proportional Hazards model via penalized maximum likelihood. 
 #' 
 #'
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1
@@ -57,7 +57,7 @@
 #' 
 #' @param tol convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
 #'  The default value is  `1e-6`.
-#' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is  `20`. 
+#' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is  20.
 #' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, 
 #' while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
@@ -67,12 +67,12 @@
 #' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
 #' which usually occurs when some predictors are categorical with low frequency for some categories. 
 #' Users should be careful with `static` as this may lead to under-fitting.
-#' @param tau a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is `0.5`.
+#' @param tau a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.
 #' @param parallel if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
 #' @param threads an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
 #' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
-#'
-#' @return An object with S3 class \code{"coxtp"}. 
+#' 
+#' @return A list of objects with S3 class \code{"coxtp"}. The length is the same as `lambda`, each represents the model with the tuning parameter `lambda`.
 #' \item{call}{the call that produced this object.}
 #' \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension `len_unique_t` x `nvars`, where `len_unique_t` is the length of unique follow-up `time`.
 #' Each row represents the coefficients at the corresponding input observation time.}
@@ -132,11 +132,13 @@
 #' \emph{P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data. (2017) 
 #' Statistics and Computing, Vol. 27(4), 985-989}.
 #' 
-#' 
+#' Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. 
+#' \emph{A fast routine for fitting Cox models with time varying effects of the covariates (2006), Computer methods and programs in biomedicine, Vol. 81.2 154-161}.
+#' \cr
 #' 
 #' 
 coxtp <- function(event , z , time ,strata=NULL ,penalty="Smooth-spline", nsplines=8, 
-                  lambda = 0, degree=3L,
+                  lambda = c(0.1,1,10), degree=3L,
                   knots = NULL,
                   ties="Breslow",
                   tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
@@ -164,15 +166,43 @@ coxtp <- function(event , z , time ,strata=NULL ,penalty="Smooth-spline", nsplin
   fmla <- formula(paste0("Surv(time, event)~",
                          paste(c(paste0("tv(", Z.char, ")"), "strata(strata)"), collapse="+")))
   
-  fit <- coxtp.base(fmla, data_NR, nsplines=nsplines, spline=spline, ties=ties, stop=stop,
-                    method = method, btr = btr,
-                    lambda_spline = lambda.spline,TIC_prox = TIC_prox, ord = ord, degree = degree,
-                    tol = tol, iter.max = iter.max, tau= tau, parallel = parallel, threads = threads,
-                    fixedstep = fixedstep,
-                    ICLastOnly = ICLastOnly)
+  
+  res <- vector(mode = "list", length = length(lambda))
+  for(lambda_i in c(1:length(lambda))) {
+    res[[lambda_i]] <- coxtp.base(fmla, data_NR, nsplines=nsplines, spline=spline, ties=ties, stop=stop,
+                               method = method, btr = btr,
+                               lambda_spline = lambda[lambda_i], TIC_prox = TIC_prox, ord = ord, degree = degree,
+                               tol = tol, iter.max = iter.max, tau= tau, parallel = parallel, threads = threads,
+                               fixedstep = fixedstep,
+                               ICLastOnly = InfoCrit)
+    
+    names(res)[lambda_i] <- paste0("lambda",lambda_i)
+  }
+  
+  res$lambda.list <- lambda
+  attr(res, "class") <- c("list", "coxtp")
+  attr(res, "fmla") <- fmla
+  attr(res, "data_NR") <- data_NR
+  attr(res, "nsplines") <- nsplines
+  attr(res, "spline") <- spline
+  attr(res, "ties") <- ties
+  attr(res, "stop") <- stop
+  attr(res, "method") <- method
+  attr(res, "btr") <- btr
+  attr(res, "TIC_prox") <- TIC_prox
+  attr(res, "ord") <- ord
+  attr(res, "degree") <- degree
+  attr(res, "tol") <- tol
+  attr(res, "iter.max") <- iter.max
+  attr(res, "tau") <- tau
+  attr(res, "parallel") <- parallel
+  attr(res, "threads")  <- threads
+  attr(res, "tau") <- tau
+  attr(res, "fixedstep") <- fixedstep
+  attr(res, "InfoCrit") <- InfoCrit
   
   
-  return(fit)
+  return(res)
   
   
 }
