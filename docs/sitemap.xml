@@ -16,13 +16,16 @@
     <loc>https://um-kevinhe.github.io/surtvep/articles/surtvep.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/articles/surtvep_temp.html</loc>
-  </url>
-  <url>
     <loc>https://um-kevinhe.github.io/surtvep/authors.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/index.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/confint.coxtp.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/confint.coxtv.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.baseline.html</loc>
@@ -31,21 +34,45 @@
     <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.plot.html</loc>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.predict.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtp.predict.html</loc>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtv.baseline.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/coxtv.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/cv.coxtp.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/ExampleData.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/ExampleDataBinary.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/IC.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/sim_data.html</loc>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/plot.coxtp.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/sim_data_p5.html</loc>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/plot.coxtv.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/sim_data_p5_f5.html</loc>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/StrataExample.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/support.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/tvef.ph.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/tvef.zero.html</loc>
   </url>
 </urlset>

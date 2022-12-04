@@ -5,9 +5,9 @@ URL: https://github.com/UM-KevinHe/surtvep,
     https://um-kevinhe.github.io/surtvep/
 BugReports: https://github.com/UM-KevinHe/surtvep/issues
 Authors@R: c(
-    person("Xueting","Tao",role=c("aut","cre"), email="xuetao@umich.edu"),
     person("Lingfeng","Luo",role=c("aut"),email="lfluo@umich.edu"),
-    person("Wenbo","Wu",role=c("aut"),email="wenbowu@umich.edu")
+    person("Wenbo","Wu",role=c("aut"),email="wenbowu@umich.edu"),
+    person("Xueting","Tao",role=c("aut","cre"), email="xuetao@umich.edu")
   )
 Description: Surtvep is an R package for fitting penalized Newton's method 
   for the time-varying effects model using mAIC, TIC, GIC as information criteria, 
@@ -17,7 +17,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 LinkingTo:
     Rcpp,
     RcppArmadillo
@@ -28,11 +28,10 @@ Imports:
     survival,
     ggplot2,
     ggrepel,
-    splines2
+    splines2,
+    ggpubr
 Depends:
-    R (>= 3.5),
-    ggplot2,
-    splines2
+    R (>= 3.5)
 Suggests:
     knitr,
     rmarkdown

@@ -17,9 +17,6 @@ coxtp.predict(fit, baseline, newdata = c(), strata = FALSE, out_seq = NULL)
 
 \item{out_seq}{Output time sequence. Default is out_seq=NULL. When default, will output the time sequence according to input fit}
 }
-\value{
-
-}
 \description{
 Title
 }

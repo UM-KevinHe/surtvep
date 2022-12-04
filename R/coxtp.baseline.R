@@ -1,6 +1,6 @@
-#' Calculating Baseline hazard using the result from coxtp()
+#' calculating Baseline hazard using the result from coxtp()
 #'
-#' @param fit Model get from coxtp
+#' @param fit model get from `coxtp` or `coxtv`
 #' @param delta event vector, should be a vector containing 0 or 1
 #' @param z Covariate matrix
 #' @param time Time vector, should be a vector with non-negative numeric value

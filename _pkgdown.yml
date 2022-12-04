@@ -1,4 +1,38 @@
 url: https://um-kevinhe.github.io/surtvep/
 template:
-  bootstrap: 5
+  params:
+    bootswatch: lumen
+    ganalytics: UA-54921687-5
+reference:
+- title: Main Fitting Functions
+  desc: The main function to fit the Cox-non proportional hazards model
+  contents:
+  - coxtv
+  - coxtp
+  - cv.coxtp
+- title: Information Criteria
+  desc: Calculating the Information Criteria to select the tunning paratmeter for
+    the penalized methods
+  contents: IC
+- title: Tests of Cox-non proportional hazards model
+  contents:
+  - tvef.ph
+  - tvef.zero
+- title: Helper functions
+  contents:
+  - confint.coxtp
+  - confint.coxtv
+  - plot.coxtp
+  - plot.coxtv
+  - coxtp.baseline
+  - coxtp.predict
+  - coxtp.baseline
+  - coxtv.baseline
+  - coxtp.predict
+- title: Package data sets
+  contents:
+  - ExampleData
+  - ExampleDataBinary
+  - StrataExample
+  - support
 

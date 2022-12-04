@@ -24,8 +24,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // surtiver_fixtra_fit_penalizestop
-List surtiver_fixtra_fit_penalizestop(const arma::vec& event, const IntegerVector& count_strata, const arma::mat& Z_tv, const arma::mat& B_spline, const arma::mat& theta_init, const arma::mat& Z_ti, const arma::vec& beta_ti_init, const arma::vec& lambda_spline, const arma::mat& SmoothMatrix, const arma::vec& effectsize, const std::string& SplineType, const std::string& method, const double lambda, const double& factor, const bool& parallel, const unsigned int& threads, const double& tol, const unsigned int& iter_max, const double& s, const double& t, const std::string& btr, const std::string& stop, const bool& TIC_prox, const bool& fixedstep, const bool& difflambda, const bool& penalizestop, const bool& ICLastOnly);
-RcppExport SEXP _surtvep_surtiver_fixtra_fit_penalizestop(SEXP eventSEXP, SEXP count_strataSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP theta_initSEXP, SEXP Z_tiSEXP, SEXP beta_ti_initSEXP, SEXP lambda_splineSEXP, SEXP SmoothMatrixSEXP, SEXP effectsizeSEXP, SEXP SplineTypeSEXP, SEXP methodSEXP, SEXP lambdaSEXP, SEXP factorSEXP, SEXP parallelSEXP, SEXP threadsSEXP, SEXP tolSEXP, SEXP iter_maxSEXP, SEXP sSEXP, SEXP tSEXP, SEXP btrSEXP, SEXP stopSEXP, SEXP TIC_proxSEXP, SEXP fixedstepSEXP, SEXP difflambdaSEXP, SEXP penalizestopSEXP, SEXP ICLastOnlySEXP) {
+List surtiver_fixtra_fit_penalizestop(const arma::vec& event, const IntegerVector& count_strata, const arma::mat& Z_tv, const arma::mat& B_spline, const arma::mat& theta_init, const arma::mat& Z_ti, const arma::vec& beta_ti_init, const arma::vec& lambda_spline, const arma::mat& SmoothMatrix, const arma::vec& effectsize, const std::string& SplineType, const std::string& method, const double lambda, const double& factor, const bool& parallel, const unsigned int& threads, const double& tol, const unsigned int& iter_max, const double& s, const double& t, const std::string& btr, const std::string& stop, const bool& TIC_prox, const bool& fixedstep, const bool& difflambda, const bool& ICLastOnly);
+RcppExport SEXP _surtvep_surtiver_fixtra_fit_penalizestop(SEXP eventSEXP, SEXP count_strataSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP theta_initSEXP, SEXP Z_tiSEXP, SEXP beta_ti_initSEXP, SEXP lambda_splineSEXP, SEXP SmoothMatrixSEXP, SEXP effectsizeSEXP, SEXP SplineTypeSEXP, SEXP methodSEXP, SEXP lambdaSEXP, SEXP factorSEXP, SEXP parallelSEXP, SEXP threadsSEXP, SEXP tolSEXP, SEXP iter_maxSEXP, SEXP sSEXP, SEXP tSEXP, SEXP btrSEXP, SEXP stopSEXP, SEXP TIC_proxSEXP, SEXP fixedstepSEXP, SEXP difflambdaSEXP, SEXP ICLastOnlySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -54,15 +54,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool& >::type TIC_prox(TIC_proxSEXP);
     Rcpp::traits::input_parameter< const bool& >::type fixedstep(fixedstepSEXP);
     Rcpp::traits::input_parameter< const bool& >::type difflambda(difflambdaSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type penalizestop(penalizestopSEXP);
     Rcpp::traits::input_parameter< const bool& >::type ICLastOnly(ICLastOnlySEXP);
-    rcpp_result_gen = Rcpp::wrap(surtiver_fixtra_fit_penalizestop(event, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType, method, lambda, factor, parallel, threads, tol, iter_max, s, t, btr, stop, TIC_prox, fixedstep, difflambda, penalizestop, ICLastOnly));
+    rcpp_result_gen = Rcpp::wrap(surtiver_fixtra_fit_penalizestop(event, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType, method, lambda, factor, parallel, threads, tol, iter_max, s, t, btr, stop, TIC_prox, fixedstep, difflambda, ICLastOnly));
     return rcpp_result_gen;
 END_RCPP
 }
 // surtiver_fixtra_fit_penalizestop_bresties
-List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec& event, const arma::vec& time, const IntegerVector& count_strata, const arma::mat& Z_tv, const arma::mat& B_spline, const arma::mat& theta_init, const arma::mat& Z_ti, const arma::vec& beta_ti_init, const arma::vec& lambda_spline, const arma::mat& SmoothMatrix, const arma::vec& effectsize, const std::string& SplineType, const std::string& method, const double& lambda, const double& factor, const bool& parallel, const unsigned int& threads, const double& tol, const unsigned int& iter_max, const double& s, const double& t, const std::string& btr, const std::string& stop, const bool& TIC_prox, const bool& fixedstep, const bool& difflambda, const bool& penalizestop, const bool& ICLastOnly);
-RcppExport SEXP _surtvep_surtiver_fixtra_fit_penalizestop_bresties(SEXP eventSEXP, SEXP timeSEXP, SEXP count_strataSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP theta_initSEXP, SEXP Z_tiSEXP, SEXP beta_ti_initSEXP, SEXP lambda_splineSEXP, SEXP SmoothMatrixSEXP, SEXP effectsizeSEXP, SEXP SplineTypeSEXP, SEXP methodSEXP, SEXP lambdaSEXP, SEXP factorSEXP, SEXP parallelSEXP, SEXP threadsSEXP, SEXP tolSEXP, SEXP iter_maxSEXP, SEXP sSEXP, SEXP tSEXP, SEXP btrSEXP, SEXP stopSEXP, SEXP TIC_proxSEXP, SEXP fixedstepSEXP, SEXP difflambdaSEXP, SEXP penalizestopSEXP, SEXP ICLastOnlySEXP) {
+List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec& event, const arma::vec& time, const IntegerVector& count_strata, const arma::mat& Z_tv, const arma::mat& B_spline, const arma::mat& theta_init, const arma::mat& Z_ti, const arma::vec& beta_ti_init, const arma::vec& lambda_spline, const arma::mat& SmoothMatrix, const arma::vec& effectsize, const std::string& SplineType, const std::string& method, const double& lambda, const double& factor, const bool& parallel, const unsigned int& threads, const double& tol, const unsigned int& iter_max, const double& s, const double& t, const std::string& btr, const std::string& stop, const bool& TIC_prox, const bool& fixedstep, const bool& difflambda, const bool& ICLastOnly);
+RcppExport SEXP _surtvep_surtiver_fixtra_fit_penalizestop_bresties(SEXP eventSEXP, SEXP timeSEXP, SEXP count_strataSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP theta_initSEXP, SEXP Z_tiSEXP, SEXP beta_ti_initSEXP, SEXP lambda_splineSEXP, SEXP SmoothMatrixSEXP, SEXP effectsizeSEXP, SEXP SplineTypeSEXP, SEXP methodSEXP, SEXP lambdaSEXP, SEXP factorSEXP, SEXP parallelSEXP, SEXP threadsSEXP, SEXP tolSEXP, SEXP iter_maxSEXP, SEXP sSEXP, SEXP tSEXP, SEXP btrSEXP, SEXP stopSEXP, SEXP TIC_proxSEXP, SEXP fixedstepSEXP, SEXP difflambdaSEXP, SEXP ICLastOnlySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -92,9 +91,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool& >::type TIC_prox(TIC_proxSEXP);
     Rcpp::traits::input_parameter< const bool& >::type fixedstep(fixedstepSEXP);
     Rcpp::traits::input_parameter< const bool& >::type difflambda(difflambdaSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type penalizestop(penalizestopSEXP);
     Rcpp::traits::input_parameter< const bool& >::type ICLastOnly(ICLastOnlySEXP);
-    rcpp_result_gen = Rcpp::wrap(surtiver_fixtra_fit_penalizestop_bresties(event, time, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType, method, lambda, factor, parallel, threads, tol, iter_max, s, t, btr, stop, TIC_prox, fixedstep, difflambda, penalizestop, ICLastOnly));
+    rcpp_result_gen = Rcpp::wrap(surtiver_fixtra_fit_penalizestop_bresties(event, time, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType, method, lambda, factor, parallel, threads, tol, iter_max, s, t, btr, stop, TIC_prox, fixedstep, difflambda, ICLastOnly));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -164,8 +162,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // surtiver_fixtra_fit_penalizestop_lambdafromlarge
-List surtiver_fixtra_fit_penalizestop_lambdafromlarge(const arma::vec& event, const IntegerVector& count_strata, const arma::mat& Z_tv, const arma::mat& B_spline, const arma::mat& theta_init, const arma::mat& Z_ti, const arma::vec& beta_ti_init, const arma::vec& lambda_spline, const arma::mat& SmoothMatrix, const arma::vec& effectsize, const std::string& SplineType, const std::string& method, const double lambda, const double& factor, const bool& parallel, const unsigned int& threads, const double& tol, const unsigned int& iter_max, const double& s, const double& t, const std::string& btr, const std::string& stop, const bool& TIC_prox, const bool& fixedstep, const bool& difflambda, const bool& penalizestop, const bool& ICLastOnly);
-RcppExport SEXP _surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge(SEXP eventSEXP, SEXP count_strataSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP theta_initSEXP, SEXP Z_tiSEXP, SEXP beta_ti_initSEXP, SEXP lambda_splineSEXP, SEXP SmoothMatrixSEXP, SEXP effectsizeSEXP, SEXP SplineTypeSEXP, SEXP methodSEXP, SEXP lambdaSEXP, SEXP factorSEXP, SEXP parallelSEXP, SEXP threadsSEXP, SEXP tolSEXP, SEXP iter_maxSEXP, SEXP sSEXP, SEXP tSEXP, SEXP btrSEXP, SEXP stopSEXP, SEXP TIC_proxSEXP, SEXP fixedstepSEXP, SEXP difflambdaSEXP, SEXP penalizestopSEXP, SEXP ICLastOnlySEXP) {
+List surtiver_fixtra_fit_penalizestop_lambdafromlarge(const arma::vec& event, const IntegerVector& count_strata, const arma::mat& Z_tv, const arma::mat& B_spline, const arma::mat& theta_init, const arma::mat& Z_ti, const arma::vec& beta_ti_init, const arma::vec& lambda_spline, const arma::mat& SmoothMatrix, const arma::vec& effectsize, const std::string& SplineType, const std::string& method, const double lambda, const double& factor, const bool& parallel, const unsigned int& threads, const double& tol, const unsigned int& iter_max, const double& s, const double& t, const std::string& btr, const std::string& stop, const bool& TIC_prox, const bool& fixedstep, const bool& difflambda, const bool& ICLastOnly);
+RcppExport SEXP _surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge(SEXP eventSEXP, SEXP count_strataSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP theta_initSEXP, SEXP Z_tiSEXP, SEXP beta_ti_initSEXP, SEXP lambda_splineSEXP, SEXP SmoothMatrixSEXP, SEXP effectsizeSEXP, SEXP SplineTypeSEXP, SEXP methodSEXP, SEXP lambdaSEXP, SEXP factorSEXP, SEXP parallelSEXP, SEXP threadsSEXP, SEXP tolSEXP, SEXP iter_maxSEXP, SEXP sSEXP, SEXP tSEXP, SEXP btrSEXP, SEXP stopSEXP, SEXP TIC_proxSEXP, SEXP fixedstepSEXP, SEXP difflambdaSEXP, SEXP ICLastOnlySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -194,9 +192,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool& >::type TIC_prox(TIC_proxSEXP);
     Rcpp::traits::input_parameter< const bool& >::type fixedstep(fixedstepSEXP);
     Rcpp::traits::input_parameter< const bool& >::type difflambda(difflambdaSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type penalizestop(penalizestopSEXP);
     Rcpp::traits::input_parameter< const bool& >::type ICLastOnly(ICLastOnlySEXP);
-    rcpp_result_gen = Rcpp::wrap(surtiver_fixtra_fit_penalizestop_lambdafromlarge(event, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType, method, lambda, factor, parallel, threads, tol, iter_max, s, t, btr, stop, TIC_prox, fixedstep, difflambda, penalizestop, ICLastOnly));
+    rcpp_result_gen = Rcpp::wrap(surtiver_fixtra_fit_penalizestop_lambdafromlarge(event, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType, method, lambda, factor, parallel, threads, tol, iter_max, s, t, btr, stop, TIC_prox, fixedstep, difflambda, ICLastOnly));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -219,12 +216,12 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_surtvep_stra_sampling_cpp", (DL_FUNC) &_surtvep_stra_sampling_cpp, 2},
-    {"_surtvep_surtiver_fixtra_fit_penalizestop", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop, 27},
-    {"_surtvep_surtiver_fixtra_fit_penalizestop_bresties", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop_bresties, 28},
+    {"_surtvep_surtiver_fixtra_fit_penalizestop", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop, 26},
+    {"_surtvep_surtiver_fixtra_fit_penalizestop_bresties", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop_bresties, 27},
     {"_surtvep_LogPartialTest", (DL_FUNC) &_surtvep_LogPartialTest, 10},
     {"_surtvep_VarianceMatrixCalculate", (DL_FUNC) &_surtvep_VarianceMatrixCalculate, 12},
     {"_surtvep_VarianceMatrixCalculate_bresties", (DL_FUNC) &_surtvep_VarianceMatrixCalculate_bresties, 13},
-    {"_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge, 27},
+    {"_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge, 26},
     {"_surtvep_Lambda_estimate_ties2", (DL_FUNC) &_surtvep_Lambda_estimate_ties2, 6},
     {NULL, NULL, 0}
 };
