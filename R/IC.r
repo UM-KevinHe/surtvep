@@ -39,7 +39,7 @@ IC <- function(fit, IC.prox, ...){
   
   if (class(fit.smoothspline)[1]!= "list" & class(fit.smoothspline)[2]!= "coxtp" ) stop("fit is not an output from coxtp")
   
-  lambda_all = fit.smoothspline$lambda.list
+  lambda_all = fit$lambda.list
   
   fmla <- attr(fit, "fmla") 
   data_NR<- attr(fit, "data_NR") 

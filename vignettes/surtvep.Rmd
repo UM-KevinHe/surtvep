@@ -552,9 +552,17 @@ the corresponding covariate effect is time-independent.
  S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T \left[\boldsymbol{C}_p \{- \triangledown^2 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).s
 \end{align*}
 
+
 Under the null hypothesis that the effect is time-independent, $S_p$ is asymptotically chi-square distributed with $K-1$ degrees of freedom.
 
-### Testing for beta effect
+
+```{r,message = FALSE, results='hide'}
+tvef.ph(fit.proxN)
+```
+For the second variable, We reject the null hypothesis and claim it has the time varying effect.
+
+
+### Testing for beta effect at each time point
 To test whether the effects are significant or not, we use the test statistic
 $\theta_{p1}=\cdots=\theta_{pK} = 0,$
 the corresponding covariate effect is time-independent.
@@ -569,9 +577,9 @@ Under the null hypothesis that the effect is time-independent, $S_p$ is asymptot
 
 
 
-## 5.6 Model prediction:
+## Model prediction:
 
-### 5.6.1 Simple prediction
+### Simple prediction
 
 To predict the new data, we offered the function coxtp.predict.
 This function could also be used to calculate absolute hazard.
