@@ -439,14 +439,14 @@ fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline=lambd
 Then we use the `IC` function to select the tuning parameter.
 ```{r, message = FALSE, results='hide'}
 IC <- IC(fit.smoothspline)
-print(IC$AIC)
+print(IC$mAIC)
 print(IC$TIC)
 print(IC$GIC)
 ```
 
 We can directly call the `plot` function to give the estimation plot.
 ```{r,  fig.ncol = 1, fig.show="hold", out.width="40%",out.height="44%", message = FALSE, warning=FALSE}
-plot(IC$model.AIC)
+plot(IC$model.mAIC)
 ```
 
 
@@ -581,11 +581,16 @@ For the second variable, We reject the null hypothesis and claim it has the time
 To test whether the effects are significant or not, we use the test statistic
 $\theta_{p1}=\cdots=\theta_{pK} = 0,$
 the corresponding covariate effect is time-independent.
- Specify a matrix $\boldsymbol{C}_p^'$ such that
- $\boldsymbol{C}_p\boldsymbol\theta=\textbf{0} = 0$ corresponds to the contrast that $\theta_{p1}=\cdots=\theta_{pK}$. A Wald statistic can  be constructed by
+ Specify a matrix $\boldsymbol{C}_p$ such that
+ $\boldsymbol{C}_p\boldsymbol\theta=\textbf{0} = 0$ corresponds to the contrast that $\theta_{p1}=\cdots=\theta_{pK} = 0$. A Wald statistic can  be constructed by
  \begin{align*}
  S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T \left[\boldsymbol{C}_p \{- \triangledown^2 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
 \end{align*}
+
+
+```{r,message = FALSE}
+tvef.zero(fit.proxN)
+```
 
 Under the null hypothesis that the effect is time-independent, $S_p$ is asymptotically chi-square distributed with $K-1$ degrees of freedom.
 

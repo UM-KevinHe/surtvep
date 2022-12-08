@@ -2,21 +2,19 @@
 % Please edit documentation in R/coxtp.baseline.R
 \name{coxtp.baseline}
 \alias{coxtp.baseline}
-\title{calculating Baseline hazard using the result from coxtp()}
+\title{calculating baseline hazard using the result from a \code{coxtv} object}
 \usage{
 coxtp.baseline(fit, delta, z, time, strata = c())
 }
 \arguments{
-\item{fit}{model get from \code{coxtp} or \code{coxtv}}
-
-\item{delta}{event vector, should be a vector containing 0 or 1}
-
-\item{z}{Covariate matrix}
-
-\item{time}{Time vector, should be a vector with non-negative numeric value}
-
-\item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.}
+\item{fit}{model from \code{coxtp}}
+}
+\value{
+a list with components
+\item{time}{the unique event time points}
+\item{hazard}{the baseline hazard corresponding to each unqiue time point}
+\item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 }
 \description{
-calculating Baseline hazard using the result from coxtp()
+calculating baseline hazard using the result from a \code{coxtv} object
 }

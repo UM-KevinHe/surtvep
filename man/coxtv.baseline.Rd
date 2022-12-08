@@ -2,20 +2,12 @@
 % Please edit documentation in R/coxtv.baseline.R
 \name{coxtv.baseline}
 \alias{coxtv.baseline}
-\title{calculating Baseline hazard using the result from a \code{coxtv} object}
+\title{calculating baseline hazard using the result from a \code{coxtv} object}
 \usage{
-coxtv.baseline(fit, event, z, time, strata = NULL, ...)
+coxtv.baseline(fit, ...)
 }
 \arguments{
-\item{fit}{Model get from coxtp}
-
-\item{z}{Covariate matrix}
-
-\item{time}{Time vector, should be a vector with non-negative numeric value}
-
-\item{strata}{stratification group defined in the data. If there exist stratification group, please enter as vector.}
-
-\item{delta}{event vector, should be a vector containing 0 or 1}
+\item{fit}{fitted model from \code{coxtv}}
 }
 \value{
 a list with components
@@ -24,13 +16,13 @@ a list with components
 \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 }
 \description{
-calculating Baseline hazard using the result from a \code{coxtv} object
+calculating baseline hazard using the result from a \code{coxtv} object
 }
 \examples{
-data("ExampleDataBinary")
-z <- ExampleDataBinary$x
-time <- ExampleDataBinary$time
-event <- ExampleDataBinary$event
+data("ExampleData")
+z <- ExampleData$x
+time <- ExampleData$time
+event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)
-base.est = coxtv.baseline(fit, event, z, time)
+base.est = coxtv.baseline(fit)
 }

@@ -1,6 +1,9 @@
 
-#' Title
-#'
+#' make predictions from a "coxtv" or "coxtp" object.
+#' 
+#' @description 
+#' Similar to other predict methods, this functions predicts fitted values, logits, coefficients and more from a fitted ""coxtv" or "coxtp"object.
+#' 
 #' @param fit Model get from coxtp
 #' @param baseline Baseline estimation from coxtp.baseline or the arbitary baseline entered
 #' @param newdata New data in vector

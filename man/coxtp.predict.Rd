@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.predict.R
 \name{coxtp.predict}
 \alias{coxtp.predict}
-\title{Title}
+\title{make predictions from a "coxtv" or "coxtp" object.}
 \usage{
 coxtp.predict(fit, baseline, newdata = c(), strata = FALSE, out_seq = NULL)
 }
@@ -18,5 +18,5 @@ coxtp.predict(fit, baseline, newdata = c(), strata = FALSE, out_seq = NULL)
 \item{out_seq}{Output time sequence. Default is out_seq=NULL. When default, will output the time sequence according to input fit}
 }
 \description{
-Title
+Similar to other predict methods, this functions predicts fitted values, logits, coefficients and more from a fitted ""coxtv" or "coxtp"object.
 }

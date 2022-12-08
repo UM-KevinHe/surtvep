@@ -2,7 +2,7 @@
 % Please edit documentation in R/tvef.ph.R
 \name{tvef.zero}
 \alias{tvef.zero}
-\title{test the significance of the covariates from a \code{coxtv} or \code{coxtp} object}
+\title{test the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a wald test statistic}
 \usage{
 tvef.zero(fit, times, parm)
 }
@@ -14,7 +14,7 @@ tvef.zero(fit, times, parm)
 \item{parm}{the names of parameter to be tested}
 }
 \description{
-test the significance of the covariates from a \code{coxtv} or \code{coxtp} object
+test the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a wald test statistic
 }
 \examples{
 data(ExampleData)
