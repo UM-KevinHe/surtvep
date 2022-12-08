@@ -10,12 +10,12 @@
 #' 
 #' 
 #' @return 
-#' \item{model.AIC}{an object with S3 class \code{"coxtp"} using AIC to select the tunning parameter.}
+#' \item{model.mAIC}{an object with S3 class \code{"coxtp"} using mAIC to select the tunning parameter.}
 #' \item{model.TIC}{an object with S3 class \code{"coxtp"} using TIC to select the tunning parameter.}
 #' \item{model.GIC}{an object with S3 class \code{"coxtp"} using GIC to select the tunning parameter.}
-#' \item{AIC}{a sequence of AIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
-#' \item{TIC}{a sequence of AIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
-#' \item{GIC}{a sequence of AIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
+#' \item{mAIC}{a sequence of mAIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
+#' \item{TIC}{a sequence of TIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
+#' \item{GIC}{a sequence of GIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
 #' 
 #' @export
 #' 

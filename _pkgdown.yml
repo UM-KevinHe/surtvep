@@ -20,6 +20,7 @@ reference:
   - tvef.zero
 - title: Helper functions
   contents:
+  - get.tvcoef
   - confint.coxtp
   - confint.coxtv
   - plot.coxtp

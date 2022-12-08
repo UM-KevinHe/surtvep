@@ -1,6 +1,6 @@
-#' fit a Cox Non-proportional Hazards model:
+#' fit a Cox non-proportional hazards model.
 #' 
-#' Fit a Cox Non-proportional Hazards model via maximum likelihood. 
+#' Fit a Cox non-proportional hazards model via maximum likelihood. 
 #' 
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1
 #' @param z input covariate matrix, of dimension `nobs` x `nvars`; each row is an observation vector. 
@@ -79,25 +79,26 @@
 #' @details 
 #' The model is fit by Newton's method (Proximal Newton's method).
 #' 
-#' @references
-#' Gray, R.~J.
-#' \emph{Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis. (1992), Journal of the American Statistical Association, Vol. 87, 942--951}.
+#' @references 
+#' Gray, Robert J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
+#' \emph{Journal of the American Statistical Association}, \strong{87}: 942-951. 
+#' 
+#' Gray, Robert J. (1994) Spline-based tests in survival analysis.
+#' \emph{Biometrics}, \strong{50}: 640-652.
 #' \cr
 #' 
-#' Gray, R.~J.
-#' \emph{Spline-based tests in survival analysis. (1994), Biometrics, Vol. 50, 640--652}.
+#' Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor. (2022) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 #' \cr
 #' 
-#' Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor 
-#' \emph{Using Information Criteria to Select Smoothing Parameters when Analyzing Survival Data with Time-Varying Coefficient Hazard Models (2022)}.
+#' Wenbo Wu, Jeremy M.G. Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients 
+#' \emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
 #' \cr
 #' 
-#' Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. 
-#' \emph{Scalable proximal Methods for cause-specific hazard modeling with time-varying coefficients (2022), Lifetime Data Analysis, Vol. 28(2), 194-218}.
-#' \cr
+#' Wood, Simon N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
+#' \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
 #' 
-#' Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. 
-#' \emph{A fast routine for fitting Cox models with time varying effects of the covariates (2006), Computer methods and programs in biomedicine, Vol. 81.2 154-161}.
+#' Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+#' \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 #' \cr
 #' 
 #' 
@@ -397,6 +398,7 @@ coxtv <- function(event , z , time ,strata= NULL, spline="P-spline", nsplines=8,
   class(res) <- "coxtv"
   attr(res, "spline") <- spline
   attr(res, "strata") <- strata
+  attr(res, "event") <- event
   if (length(term.ti)>0) {
     res$tief <- c(res$tief)
     names(res$tief) <- term.ti

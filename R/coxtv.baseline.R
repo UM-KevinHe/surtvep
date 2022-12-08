@@ -1,11 +1,7 @@
-#' calculating Baseline hazard using the result from a `coxtv` object
+#' calculating baseline hazard using the result from a `coxtv` object
 #'
-#' @param fit Model get from coxtp
-#' @param delta event vector, should be a vector containing 0 or 1
-#' @param z Covariate matrix
-#' @param time Time vector, should be a vector with non-negative numeric value
-#' @param strata stratification group defined in the data. If there exist stratification group, please enter as vector.
-#'
+#' @param fit fitted model from `coxtv`
+#' 
 #' @export
 #' 
 #' @return a list with components
@@ -14,20 +10,26 @@
 #' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 #' 
 #' @examples
-#'data("ExampleDataBinary")
-#'z <- ExampleDataBinary$x
-#'time <- ExampleDataBinary$time
-#'event <- ExampleDataBinary$event
+#'data("ExampleData")
+#'z <- ExampleData$x
+#'time <- ExampleData$time
+#'event <- ExampleData$event
 #'fit <- coxtv(event = event, z = z, time = time)
-#'base.est = coxtv.baseline(fit, event, z, time)
+#'base.est = coxtv.baseline(fit)
 
 
-coxtv.baseline <- function(fit, event, z, time, strata= NULL, ...){
-  if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtv") stop("Object fit is not of class 'coxtv'!")
+coxtv.baseline <- function(fit, ...){
+    if (missing(fit)) stop ("Argument fit is required!")
+    if (class(fit)!="coxtv") stop("Object fit is not of class 'coxtv'!")
   
   # if(length(strata)==0){
+    event   <- attr(fit, "event")
+    strata  <- attr(fit, "strata")
+    time <- fit$times
+    z <- fit$ctrl.pts
+
     unique_time   <- unique(time)
+    
     
     tieseq <- NULL
     index  <- NULL
@@ -50,7 +52,7 @@ coxtv.baseline <- function(fit, event, z, time, strata= NULL, ...){
     baselinedata <- data.frame(unique(time),lambda,Lambda)
     # colnames(baselinedata) <- c("time", "hazard", "Lambda")
     return(list("time" = unique(time),
-                "hazard" = lambda,
+                "hazard" = as.numeric(lambda),
                 "cumulHaz" = Lambda))
     
   # } else {

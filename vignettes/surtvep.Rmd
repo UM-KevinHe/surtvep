@@ -71,6 +71,21 @@ fit.tv <- coxtv(z = z, event = event, time=time)
 We do not encourage users to extract the components directly.
 Instead, various methods are provided for the object such as `plot` and `test` that enable us to execute those tasks more elegantly.
 
+We can get the time-varying coefficients by calling the `get.tvcoef` method:
+```{r, results=hide}
+beta.tv <- get.tvcoef(fit.tv)
+head(beta.tv)
+```
+
+The first row of `beta.tv` represents the time-varying coefficient of x1 and x2 at time 0.00017835.
+
+In order to get the time-varying coefficients on a new time sequence, we can modify the `times` argument in `get.tvcoef`.
+```{r, results=hide}
+time.new <- seq(1,2,0.1)
+beta.tv.new <- get.tvcoef(fit.tv,times = time.new)
+head(beta.tv.new)
+```
+
 We can visualize the time-varying coefficients by executing the `plot` method:
 
 ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
@@ -556,7 +571,7 @@ the corresponding covariate effect is time-independent.
 Under the null hypothesis that the effect is time-independent, $S_p$ is asymptotically chi-square distributed with $K-1$ degrees of freedom.
 
 
-```{r,message = FALSE, results='hide'}
+```{r,message = FALSE}
 tvef.ph(fit.proxN)
 ```
 For the second variable, We reject the null hypothesis and claim it has the time varying effect.

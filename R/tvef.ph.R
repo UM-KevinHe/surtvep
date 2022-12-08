@@ -1,4 +1,4 @@
-#' test the proportional hazards assumption from a `coxtv` or `coxtp` object
+#' test the proportional hazards assumption from a `coxtv` or `coxtp` object using a wald test statistic
 #' 
 #' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model
 #' @param parm the names of parameter to be tested
@@ -56,7 +56,7 @@ tvef.ph <- function(fit, parm) {
 
 
 
-#' test the significance of the covariates from a `coxtv` or `coxtp` object
+#' test the significance of the covariates from a `coxtv` or `coxtp` object using a wald test statistic
 #' 
 #' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model
 #' @param parm the names of parameter to be tested

@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{fit a Cox Non-proportional Hazards Model with P-spline or Smoothing-spline, penalization tuning parameter can be chosen by information criteria or cross-validation.}
+\title{fit a Cox non-proportional hazards model with p-spline or smoothing-spline, penalization tuning parameter can be chosen by information criteria or cross-validation.}
 \usage{
 coxtp(
   event,
@@ -46,11 +46,11 @@ Default is \code{P-spline}. Three options are \code{P-spline}, \code{Smooth-spli
 will be set as 0.
 
 \code{P-spline} stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
-When \code{lambda} goes to infinity, the time-varying effects are encouraged to be constant.
+When \code{lambda} goes to infinity, the time-varying effects are reduced to be constant.
 
 \code{Smooth-spline} refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See \code{degree} for different choices.
-When \code{degree=3}, we use the cubic B-spline penalizing the second-order derivative, which reduces to a linear term when \code{lambda} goes to infinity.
-When \code{degree=2}, we use the quadratic B-spline penalizing first-order derivative, which reduces to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
+When \code{degree=3}, we use the cubic B-spline penalizing the second-order derivative, which reduces the time-varying effect to a linear term when \code{lambda} goes to infinity.
+When \code{degree=2}, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
 
 If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as (0.1, 1, 10). Users can modify \code{lambda}. See details in \code{lambda}.}
 
@@ -65,10 +65,9 @@ Default is \code{0}, which refers to Newton's Method without penalization.}
 \item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 \code{degree = 2} results in the quadratic B-spline basis functions.
 
-If \code{penalty} is \code{Smooth-spline}, different choices of \code{degree} give different results.
-When \code{degree=3}, we use the cubic B-spline penalizing the second-order derivative, which reduces to a linear term when \code{lambda} goes to infinity.
-When \code{degree=2}, we use the quadratic B-spline penalizing first-order derivative, which reduces to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
-Default is \code{degree=2}.}
+If \code{penalty} is \code{P-spline} or \code{NULL}, \code{degree}'s default value is 3.
+
+If \code{penalty} is \code{Smooth-spline}, \code{degree}'s default value is 2.}
 
 \item{knots}{the internal knot locations (breakpoints) that define the B-splines.
 The number of the internal knots should be \code{nsplines}-\code{degree}-1.
@@ -110,7 +109,7 @@ Default value is \code{ratch}. If the maximum iteration steps \code{iter.max} is
 \item{fixedstep}{if \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
 }
 \value{
-A list of objects with S3 class \code{"coxtp"}. The length is the same as \code{lambda}, each represents the model with the tuning parameter \code{lambda}.
+A list of objects with S3 class \code{"coxtp"}. The length is the same as that of \code{lambda}; each represents the model output with each value of the tuning parameter \code{lambda}.
 \item{call}{the call that produced this object.}
 \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension \code{len_unique_t} x \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
 Each row represents the coefficients at the corresponding input observation time.}
@@ -127,13 +126,13 @@ Each row represents a covariate's coefficient on the \code{nsplines} dimensional
 \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative \code{Hessian} matrix.}
 }
 \description{
-Fit a Cox Non-proportional Hazards model via penalized maximum likelihood.
+Fit a Cox non-proportional hazards model via penalized maximum likelihood.
 }
 \details{
 The sequence of models implied by \code{lambda.spline} is fit by Newton's method (Proximal Newton's method). The objective function is
 \deqn{loglik - P_{\lambda}},
-where P_{lambda} can be \code{P-spline} or \code{Smooth-spline}. The \eqn{`\lambda`} is the tuning  parameter \eqn{`\lambda`}. Users can define the initial sequence.
-\code{IC}provides different information criteria to choose the tuning parameter \eqn{`\lambda`}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
+where \eqn{P_{\lambda}} can be \code{P-spline} or \code{Smooth-spline}. The \eqn{\lambda} is the tuning  parameter \eqn{\lambda}. Users can define the initial sequence.
+\code{IC}provides different information criteria to choose the tuning parameter \eqn{\lambda}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
 }
 \examples{
 data(ExampleData)
@@ -148,28 +147,25 @@ fit   <- coxtp(event = event, z = z, time = time, lambda=lambda)
 
 }
 \references{
-Gray, R.~J.
-\emph{Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis. (1992), Journal of the American Statistical Association, Vol. 87, 942--951}.
+Gray, Robert J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
+\emph{Journal of the American Statistical Association}, \strong{87}: 942-951.
+
+Gray, Robert J. (1994) Spline-based tests in survival analysis.
+\emph{Biometrics}, \strong{50}: 640-652.
 \cr
 
-Gray, R.~J.
-\emph{Spline-based tests in survival analysis. (1994), Biometrics, Vol. 50, 640--652}.
+Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor. (2022) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 \cr
 
-Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor
-\emph{Using Information Criteria to Select Smoothing Parameters when Analyzing Survival Data with Time-Varying Coefficient Hazard Models (2022)}.
+Wenbo Wu, Jeremy M.G. Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients
+\emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
 \cr
 
-Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He.
-\emph{Scalable proximal Methods for cause-specific hazard modeling with time-varying coefficients (2022), Lifetime Data Analysis, Vol. 28(2), 194-218}.
-\cr
+Wood, Simon N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
+\emph{Statistics and Computing}, \strong{27(4)}: 985-989.
 
-Wood, Simon N.
-\emph{P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data. (2017)
-Statistics and Computing, Vol. 27(4), 985-989}.
-
-Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen.
-\emph{A fast routine for fitting Cox models with time varying effects of the covariates (2006), Computer methods and programs in biomedicine, Vol. 81.2 154-161}.
+Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+\emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 \cr
 }
 \seealso{

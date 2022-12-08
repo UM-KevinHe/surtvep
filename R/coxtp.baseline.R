@@ -1,13 +1,13 @@
-#' calculating Baseline hazard using the result from coxtp()
+#' calculating baseline hazard using the result from a `coxtv` object
 #'
-#' @param fit model get from `coxtp` or `coxtv`
-#' @param delta event vector, should be a vector containing 0 or 1
-#' @param z Covariate matrix
-#' @param time Time vector, should be a vector with non-negative numeric value
-#' @param strata stratification group defined in the data. If there exist stratification group, please enter as vector.
-#'
-#' @return
+#' @param fit model from `coxtp`
+#' 
 #' @export
+#' 
+#' @return a list with components
+#' \item{time}{the unique event time points} 
+#' \item{hazard}{the baseline hazard corresponding to each unqiue time point}
+#' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 #'
 #' @examples
 coxtp.baseline <- function(fit, delta,z,time,strata=c()){
