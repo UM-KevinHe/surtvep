@@ -72,7 +72,7 @@ We do not encourage users to extract the components directly.
 Instead, various methods are provided for the object such as `plot` and `test` that enable us to execute those tasks more elegantly.
 
 We can get the time-varying coefficients by calling the `get.tvcoef` method:
-```{r, results=hide}
+```{r, eval=false, results=hide}
 beta.tv <- get.tvcoef(fit.tv)
 head(beta.tv)
 ```
@@ -80,7 +80,7 @@ head(beta.tv)
 The first row of `beta.tv` represents the time-varying coefficient of x1 and x2 at time 0.00017835.
 
 In order to get the time-varying coefficients on a new time sequence, we can modify the `times` argument in `get.tvcoef`.
-```{r, results=hide}
+```{r, eval=false, results=hide}
 time.new <- seq(1,2,0.1)
 beta.tv.new <- get.tvcoef(fit.tv,times = time.new)
 head(beta.tv.new)

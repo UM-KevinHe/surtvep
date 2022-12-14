@@ -1,5 +1,5 @@
 Package: surtvep
-Title: Cox Non-proportional Hazards model with penalization
+Title: Cox non-proportional hazards model with penalization
 Version: 1.0.0
 URL: https://github.com/UM-KevinHe/surtvep,
     https://um-kevinhe.github.io/surtvep/
@@ -9,7 +9,7 @@ Authors@R: c(
     person("Wenbo","Wu",role=c("aut"),email="wenbowu@umich.edu"),
     person("Xueting","Tao",role=c("aut","cre"), email="xuetao@umich.edu")
   )
-Description: Surtvep is an R package for fitting penalized Newton's method 
+Description: surtvep is an R package for fitting penalized Newton's method 
   for the time-varying effects model using mAIC, TIC, GIC as information criteria, 
   in particular we span the parameter using basis functions. Utilities for carrying 
   out post-fitting visualization, summarization, and inference are also provided.
