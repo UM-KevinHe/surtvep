@@ -72,7 +72,7 @@ We do not encourage users to extract the components directly.
 Instead, various methods are provided for the object such as `plot` and `test` that enable us to execute those tasks more elegantly.
 
 We can get the time-varying coefficients by calling the `get.tvcoef` method:
-```{r, eval=false, results=hide}
+```{r}
 beta.tv <- get.tvcoef(fit.tv)
 head(beta.tv)
 ```
@@ -80,7 +80,7 @@ head(beta.tv)
 The first row of `beta.tv` represents the time-varying coefficient of x1 and x2 at time 0.00017835.
 
 In order to get the time-varying coefficients on a new time sequence, we can modify the `times` argument in `get.tvcoef`.
-```{r, eval=false, results=hide}
+```{r}
 time.new <- seq(1,2,0.1)
 beta.tv.new <- get.tvcoef(fit.tv,times = time.new)
 head(beta.tv.new)
@@ -101,7 +101,7 @@ Next we fit the Newton's method combined with penalization method. We specify a 
 
 ```{r, fig = TRUE}
 lambda_all <- c(1)
-fit.penalize = coxtp(z = z, event = event, time=time, lambda = lambda_all, method = "ProxN", btr = "static")
+fit.penalize = coxtp(z = z, event = event, time=time, lambda = lambda_all, method = "ProxN")
 ```
 
 ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
@@ -446,7 +446,7 @@ print(IC$GIC)
 
 We can directly call the `plot` function to give the estimation plot.
 ```{r,  fig.ncol = 1, fig.show="hold", out.width="40%",out.height="44%", message = FALSE, warning=FALSE}
-plot(IC$model.mAIC)
+plot(IC$model.TIC)
 ```
 
 
@@ -471,6 +471,32 @@ The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is gi
 
 The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero.
 We use the model fitted result `fit_penalized` in section 4.2.
+
+```{r}
+data("ExampleData")
+z     <- ExampleData$x
+time  <- ExampleData$time
+event <- ExampleData$event
+
+time2  <- round(time, digits = 1)
+```
+
+```{r, message=FALSE}
+lambda_spline_all=c(0.01,0.1,1,10,100)
+fit.smoothspline <- coxtp(event = event, z = z, time = time2, lambda=lambda_spline_all, spline = "Smooth-spline")
+IC <- IC(fit.smoothspline)
+fit.mAIC <- IC$model.mAIC
+```
+
+```{r}
+base.est = coxtp.baseline(fit.mAIC)
+```
+
+```{r}
+head(base.est)
+```
+
+
 
 <!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
 
@@ -589,7 +615,9 @@ the corresponding covariate effect is time-independent.
 
 
 ```{r,message = FALSE}
-tvef.zero(fit.proxN)
+test.zero <- tvef.zero(fit.proxN)
+head(test.zero$X1)
+head(test.zero$X2)
 ```
 
 Under the null hypothesis that the effect is time-independent, $S_p$ is asymptotically chi-square distributed with $K-1$ degrees of freedom.

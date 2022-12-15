@@ -94,10 +94,10 @@ IC <- function(fit, IC.prox, ...){
   
   
   res <- NULL
-  res$model.AIC <- model_AIC
+  res$model.mAIC <- model_AIC
   res$model.TIC <- model_TIC
   res$model.GIC <- model_GIC
-  res$AIC <- AIC_all
+  res$mAIC <- AIC_all
   res$TIC <- TIC_all
   res$GIC <- GIC_all
   

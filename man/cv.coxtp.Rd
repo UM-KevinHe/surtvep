@@ -31,7 +31,7 @@ cv.coxtp(
 \arguments{
 \item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1}
 
-\item{z}{input covariate matrix, of dimension \code{nobs} x \code{nvars}; each row is an observation vector.}
+\item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation vector.}
 
 \item{time}{observed event time, should be a vector with non-negative numeric values.}
 

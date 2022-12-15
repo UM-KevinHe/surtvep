@@ -19,7 +19,7 @@ coxtv(
 \arguments{
 \item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1}
 
-\item{z}{input covariate matrix, of dimension \code{nobs} x \code{nvars}; each row is an observation vector.}
+\item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation vector.}
 
 \item{time}{observed event time, should be a vector with non-negative numeric values.}
 
@@ -78,11 +78,11 @@ An object with S3 class \code{"coxtv"}.
 \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension \code{len_unique_t} x \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
 Each row represents the coefficients at the corresponding input observation time.}
 
-\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension is \code{nvars} * \code{nsplines};
-if \code{ties="Breslow"}, the dimension is \code{len_unique_t} * \code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
-\item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars} x \code{nsplines}.
+\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension of the basis matrix is \code{nvars}-by-\code{nsplines};
+if \code{ties="Breslow"}, the dimension is \code{len_unique_t}-by-\code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
+\item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars}-by-\code{nsplines}.
 Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
-\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} x \code{nsplines * nvars}.}
+\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars}-by-\code{nsplines * nvars}.}
 \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
 \item{nobs}{number of observations.}
 \item{theta.list}{a list of \code{ctrl.pts} of length \code{m}, contains the updated \code{ctrl.pts} after each algorithm iteration.}

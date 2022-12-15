@@ -3,7 +3,7 @@
 #' Fit a Cox non-proportional hazards model via penalized maximum likelihood. 
 #' 
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1
-#' @param z input covariate matrix, of dimension `nobs` x `nvars`; each row is an observation vector. 
+#' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
 #' @param time observed event time, should be a vector with non-negative numeric values.
 #' @param strata stratification group defined in the data used for the stratified model. 
 #' If there exists a stratification group, please enter it as a vector. 

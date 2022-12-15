@@ -3,7 +3,7 @@
 #' Fit a Cox non-proportional hazards model via maximum likelihood. 
 #' 
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1
-#' @param z input covariate matrix, of dimension `nobs` x `nvars`; each row is an observation vector. 
+#' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
 #' @param time observed event time, should be a vector with non-negative numeric values.
 #' @param strata stratification group defined in the data used for the stratified model. 
 #' If there exists a stratification group, please enter it as a vector. 
@@ -50,11 +50,11 @@
 #' \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension `len_unique_t` x `nvars`, where `len_unique_t` is the length of unique follow-up `time`.
 #' Each row represents the coefficients at the corresponding input observation time.}
 #' 
-#' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension is `nvars` * `nsplines`; 
-#' if `ties="Breslow"`, the dimension is `len_unique_t` * `nsplines`. The matrix is constructed using `bs::splines` function.}
-#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars` x `nsplines`. 
+#' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension of the basis matrix is `nvars`-by-`nsplines`; 
+#' if `ties="Breslow"`, the dimension is `len_unique_t`-by-`nsplines`. The matrix is constructed using `bs::splines` function.}
+#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars`-by-`nsplines`. 
 #' Each row represents a covariate's coefficient on the `nsplines` dimensional basis functions.}
-#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` x `nsplines * nvars`.}
+#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars`-by-`nsplines * nvars`.}
 #' \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
 #' \item{nobs}{number of observations.}
 #' \item{theta.list}{a list of `ctrl.pts` of length `m`, contains the updated `ctrl.pts` after each algorithm iteration.}
@@ -403,6 +403,8 @@ coxtv <- function(event , z , time ,strata= NULL, spline="P-spline", nsplines=8,
     res$tief <- c(res$tief)
     names(res$tief) <- term.ti
   }
+  attr(res, "data") <- data
+  attr(res, "time")     <- time
   
   # colnames(res$info) <- rownames(res$info) <-
   #   c(rep(term.tv, each=nsplines), term.ti)
@@ -536,11 +538,7 @@ confint.coxtv <- function(fit, times, parm, level=0.95, ...) {
     return(mat.tv)
   })
   names(ls$tvef) <- parm.tv
-  # } 
-  # else if (spline=="P-spline") {
-  
-  # }
-  # }
+
   return(ls)
 }
 

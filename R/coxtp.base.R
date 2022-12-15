@@ -291,7 +291,7 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   class(res) <- "coxtp"
 
   row.names(res$ctrl.pts) <- term.tv
-  
+  attr(res, "data") <- data
   attr(res, "spline") <- spline
   # if (length(term.ti)>0) {
   #   fit$tief <- c(fit$tief)
@@ -299,6 +299,7 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   # }
   # colnames(fit$info) <- rownames(fit$info) <-
   #   c(rep(term.tv, each=nsplines), term.ti)
+  attr(res, "time")     <- time
   attr(res, "nsplines") <- nsplines
   attr(res, "degree.spline") <- degree
   attr(res, "control") <- control

@@ -10,13 +10,13 @@ coxtv.baseline(fit, ...)
 \item{fit}{fitted model from \code{coxtv}}
 }
 \value{
-a list with components
+a list with three components
 \item{time}{the unique event time points}
 \item{hazard}{the baseline hazard corresponding to each unqiue time point}
 \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 }
 \description{
-calculating baseline hazard using the result from a \code{coxtv} object
+The baseline estimation is the baseline hazard at each observation time when holding all the covariates equals to zero.
 }
 \examples{
 data("ExampleData")

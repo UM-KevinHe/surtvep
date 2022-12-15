@@ -10,11 +10,11 @@ coxtp.baseline(fit, delta, z, time, strata = c())
 \item{fit}{model from \code{coxtp}}
 }
 \value{
-a list with components
-\item{time}{the unique event time points}
+a list with three components
+\item{time}{the unique observation time}
 \item{hazard}{the baseline hazard corresponding to each unqiue time point}
 \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 }
 \description{
-calculating baseline hazard using the result from a \code{coxtv} object
+The baseline estimation is the baseline hazard at each observation time when holding all the covariates equals to zero.
 }

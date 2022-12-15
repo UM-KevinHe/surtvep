@@ -92,7 +92,7 @@
 
 
 <dt>z</dt>
-<dd><p>input covariate matrix, of dimension <code>nobs</code> x <code>nvars</code>; each row is an observation vector.</p></dd>
+<dd><p>input covariate matrix, with <code>nobs</code> rows and <code>nvars</code> columns; each row is an observation vector.</p></dd>
 
 
 <dt>time</dt>
@@ -192,15 +192,15 @@ Each row represents the coefficients at the corresponding input observation time
 
 
 <dt>bases</dt>
-<dd><p>the basis matrix used in model fitting. If <code>ties="None"</code>, the dimension is <code>nvars</code> * <code>nsplines</code>;
-if <code>ties="Breslow"</code>, the dimension is <code>len_unique_t</code> * <code>nsplines</code>. The matrix is constructed using <code>bs::splines</code> function.</p></dd>
+<dd><p>the basis matrix used in model fitting. If <code>ties="None"</code>, the dimension of the basis matrix is <code>nvars</code>-by-<code>nsplines</code>;
+if <code>ties="Breslow"</code>, the dimension is <code>len_unique_t</code>-by-<code>nsplines</code>. The matrix is constructed using <code>bs::splines</code> function.</p></dd>
 
 <dt>ctrl.pts</dt>
-<dd><p>estimated coefficient of the basis matrix of dimension <code>nvars</code> x <code>nsplines</code>.
+<dd><p>estimated coefficient of the basis matrix of dimension <code>nvars</code>-by-<code>nsplines</code>.
 Each row represents a covariate's coefficient on the <code>nsplines</code> dimensional basis functions.</p></dd>
 
 <dt>Hessian</dt>
-<dd><p>the Hessian matrix of the log-partial likelihood, of which the dimension is <code>nsplines * nvars</code> x <code>nsplines * nvars</code>.</p></dd>
+<dd><p>the Hessian matrix of the log-partial likelihood, of which the dimension is <code>nsplines * nvars</code>-by-<code>nsplines * nvars</code>.</p></dd>
 
 <dt>internal.knots</dt>
 <dd><p>the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.</p></dd>

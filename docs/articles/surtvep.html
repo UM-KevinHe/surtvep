@@ -157,11 +157,39 @@ information of the fitted model for further use. We do not encourage
 users to extract the components directly. Instead, various methods are
 provided for the object such as <code>plot</code> and <code>test</code>
 that enable us to execute those tasks more elegantly.</p>
+<p>We can get the time-varying coefficients by calling the
+<code>get.tvcoef</code> method:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">beta.tv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get.tvcoef.html">get.tvcoef</a></span><span class="op">(</span><span class="va">fit.tv</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">beta.tv</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                             X1          X2</span></span>
+<span><span class="co">#&gt; 0.000178354960296403 0.8190941 -0.07539314</span></span>
+<span><span class="co">#&gt; 0.000355177544950556 0.8202944 -0.07436044</span></span>
+<span><span class="co">#&gt; 0.000532422851851532 0.8214929 -0.07332691</span></span>
+<span><span class="co">#&gt; 0.0011332947259668   0.8255221 -0.06983544</span></span>
+<span><span class="co">#&gt; 0.00146478440156426  0.8277227 -0.06791732</span></span>
+<span><span class="co">#&gt; 0.00224849921081871  0.8328625 -0.06340520</span></span></code></pre></div>
+<p>The first row of <code>beta.tv</code> represents the time-varying
+coefficient of x1 and x2 at time 0.00017835.</p>
+<p>In order to get the time-varying coefficients on a new time sequence,
+we can modify the <code>times</code> argument in
+<code>get.tvcoef</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">time.new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="va">beta.tv.new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get.tvcoef.html">get.tvcoef</a></span><span class="op">(</span><span class="va">fit.tv</span>,times <span class="op">=</span> <span class="va">time.new</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">beta.tv.new</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            X1         X2</span></span>
+<span><span class="co">#&gt; 1   1.0753701  0.7029324</span></span>
+<span><span class="co">#&gt; 1.1 1.0529174  0.5242153</span></span>
+<span><span class="co">#&gt; 1.2 1.0039703  0.3215421</span></span>
+<span><span class="co">#&gt; 1.3 0.9365847  0.1039432</span></span>
+<span><span class="co">#&gt; 1.4 0.8590977 -0.1195252</span></span>
+<span><span class="co">#&gt; 1.5 0.7798461 -0.3398073</span></span></code></pre></div>
 <p>We can visualize the time-varying coefficients by executing the
 <code>plot</code> method:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.tv</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>Each sub figure corresponds to a variable. It shows the time-varying
 effect of our predictors. In our <code>ExampleData</code>, the first
 predictor has a constant effect of 1, and the second predictor has a
@@ -176,18 +204,17 @@ specify a range of penalization coefficients first, then call the
 <code>coxtp</code> function. Detailed disucussion of how to specify the
 range of penalization coefficients and how to choose the appropriate one
 will be discussed in section Information Criteria.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">fit.penalize</span> <span class="op">=</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, lambda <span class="op">=</span> <span class="va">lambda_all</span>, method <span class="op">=</span> <span class="st">"ProxN"</span>, btr <span class="op">=</span> <span class="st">"static"</span><span class="op">)</span></span>
+<span><span class="va">fit.penalize</span> <span class="op">=</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, lambda <span class="op">=</span> <span class="va">lambda_all</span>, method <span class="op">=</span> <span class="st">"ProxN"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -3.3068888; Stopping crit = 1.7435312e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -3.2954100; Stopping crit = 3.7446678e-02;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.2954100; Stopping crit = 2.0664261e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.penalize</span><span class="op">$</span><span class="va">lambda1</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 <p>With the tools introduced so far, users are able to fit the
 time-varying model. There are many more arguments in the package that
 give users a great deal of flexibility. To learn more, move on to later
@@ -327,7 +354,7 @@ frequency, which is a relatively harsh setting to be estimated. The
 related true log-hazard function for each variable is <span class="math inline">\(\beta(t)=1\)</span> and <span class="math inline">\(\beta(t)=exp(-1.5*t)\)</span>, where t denotes
 time.</p>
 <p>Let’s check the data first:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleDataBinary"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -354,16 +381,16 @@ adding small terms <span class="math inline">\(1/\lambda\)</span> to the
 the diagonal elements. The default value of <span class="math inline">\(\lambda\)</span> is <span class="math inline">\(10^8\)</span>, which can be modified by user. If
 the data set have predictors with extremely low frequency, users may
 consider a smaller <span class="math inline">\(\lambda\)</span>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.newton</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, method <span class="op">=</span> <span class="st">'Newton'</span><span class="op">)</span></span>
 <span><span class="va">fit.proxN</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, method <span class="op">=</span> <span class="st">'ProxN'</span><span class="op">)</span></span></code></pre></div>
 <p>Then we plot the fitted methods with all the curves on the same plot.
 No obvious change can be oberserved here. However, we do recommand
 using</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.newton</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.proxN</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-11-1.png" width="40%" height="44%"><img src="surtvep_files/figure-html/unnamed-chunk-11-2.png" width="40%" height="44%"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-13-1.png" width="40%" height="44%"><img src="surtvep_files/figure-html/unnamed-chunk-13-2.png" width="40%" height="44%"></p>
 </div>
 <div class="section level4">
 <h4 id="stratified-newtons-method-strata">Stratified Newton’s Method: <code>strata</code><a class="anchor" aria-label="anchor" href="#stratified-newtons-method-strata"></a>
@@ -394,7 +421,7 @@ for stratum <span class="math inline">\(j\)</span>.</p>
 with different stratums. In our simulation, we vary the baseline for
 different stratums by adding a small term generated by uniform
 distribution with mean = 0 and standard deviation= 0.5.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"StrataExample"</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">StrataExample</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">StrataExample</span><span class="op">$</span><span class="va">time</span></span>
@@ -403,10 +430,10 @@ distribution with mean = 0 and standard deviation= 0.5.</p>
 <p>The <code>strata</code> variable can be a <code>ns &gt;= 1</code>
 level factor, numerical numbers or strings. The stratified model can be
 easily fitted by calling</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.strata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, strata <span class="op">=</span> <span class="va">strata</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.strata</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
 </div>
 <div class="section level4">
 <h4 id="step-size-adjustment-btr">Step size adjustment: <code>btr</code><a class="anchor" aria-label="anchor" href="#step-size-adjustment-btr"></a>
@@ -415,7 +442,7 @@ easily fitted by calling</p>
 <h5 id="model-results-meanings">Model results meanings:<a class="anchor" aria-label="anchor" href="#model-results-meanings"></a>
 </h5>
 <p>First, Let’s look at the <code>fit</code> result</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># summary(fit.tv)</span></span></code></pre></div>
 <p>There are 4 results saved under the fit result.</p>
 <ul>
@@ -515,7 +542,7 @@ of 5000, detail about ties and Breslow ties could refers to here(insert
 link)).</p>
 <p>We could also get the 95%CI for the estimation by the
 <code>confint.surtiver</code></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">CI</span><span class="op">$</span><span class="va">tvef</span><span class="op">$</span><span class="va">X1</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                           est     2.5%    97.5%</span></span>
@@ -617,29 +644,29 @@ contains binary predictors with low frequency, which may have
 ill-conditioned second-order information of the log-partial likelihood.
 Penalization plays an important role here as it helps to smooth the
 time-varying effects.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleDataBinary</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">time</span></span>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">event</span></span></code></pre></div>
 <p>First we fit the penalized model with
 <code>"Smooth-spline"</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co"># fit.pspline &lt;- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")</span></span>
 <span><span class="va">fit.smoothspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda_spline<span class="op">=</span><span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"Smooth-spline"</span><span class="op">)</span></span></code></pre></div>
 <p>Then we use the <code>IC</code> function to select the tuning
 parameter.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">IC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.smoothspline</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">AIC</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">mAIC</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">TIC</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">GIC</span><span class="op">)</span></span></code></pre></div>
 <p>We can directly call the <code>plot</code> function to give the
 estimation plot.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">model.AIC</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-19-1.png" width="40%" height="44%"></p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">model.TIC</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-21-1.png" width="40%" height="44%"></p>
 <p>From the result above, we noticed that with different selection
 criteria, the best lambda selected is different. Here, we use the AIC
 criteria which set <code>lambda=1000</code>. The result for this model
@@ -751,8 +778,11 @@ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K-1\)</span> degrees of
 freedom.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/tvef.ph.html">tvef.ph</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/tvef.ph.html">tvef.ph</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        chisq df          p</span></span>
+<span><span class="co">#&gt; X1  6.889955  7 0.44042707</span></span>
+<span><span class="co">#&gt; X2 21.437089  7 0.00317433</span></span></code></pre></div>
 <p>For the second variable, We reject the null hypothesis and claim it
 has the time varying effect.</p>
 </div>
@@ -762,13 +792,32 @@ has the time varying effect.</p>
 <p>To test whether the effects are significant or not, we use the test
 statistic <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK} =
 0,\)</span> the corresponding covariate effect is time-independent.
-Specify a matrix <span class="math inline">\(\boldsymbol{C}_p^'\)</span> such that <span class="math inline">\(\boldsymbol{C}_p\boldsymbol\theta=\textbf{0} =
-0\)</span> corresponds to the contrast that <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK}\)</span>. A Wald
-statistic can be constructed by <span class="math display">\[\begin{align*}
+Specify a matrix <span class="math inline">\(\boldsymbol{C}_p\)</span>
+such that <span class="math inline">\(\boldsymbol{C}_p\boldsymbol\theta=\textbf{0} =
+0\)</span> corresponds to the contrast that <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK} = 0\)</span>. A
+Wald statistic can be constructed by <span class="math display">\[\begin{align*}
 S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 \left[\boldsymbol{C}_p \{- \triangledown^2
 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
 \end{align*}\]</span></p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">test.zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.html">tvef.zero</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">test.zero</span><span class="op">$</span><span class="va">X1</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                           est        se        z            p</span></span>
+<span><span class="co">#&gt; 0.000201305374503136 1.915036 0.4187715 4.572985 4.808256e-06</span></span>
+<span><span class="co">#&gt; 0.000913836294785142 1.900685 0.4087898 4.649542 3.326737e-06</span></span>
+<span><span class="co">#&gt; 0.000952352538988396 1.899914 0.4082559 4.653733 3.259796e-06</span></span>
+<span><span class="co">#&gt; 0.00131430392382309  1.892692 0.4032683 4.693382 2.687253e-06</span></span>
+<span><span class="co">#&gt; 0.00156992387894415  1.887617 0.3997773 4.721672 2.339138e-06</span></span>
+<span><span class="co">#&gt; 0.00167505841328876  1.885536 0.3983491 4.733377 2.208150e-06</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">test.zero</span><span class="op">$</span><span class="va">X2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                           est        se        z           p</span></span>
+<span><span class="co">#&gt; 0.000201305374503136 1.151787 0.3900096 2.953226 0.003144716</span></span>
+<span><span class="co">#&gt; 0.000913836294785142 1.147883 0.3805312 3.016529 0.002556867</span></span>
+<span><span class="co">#&gt; 0.000952352538988396 1.147674 0.3800246 3.019999 0.002527756</span></span>
+<span><span class="co">#&gt; 0.00131430392382309  1.145711 0.3752925 3.052847 0.002266812</span></span>
+<span><span class="co">#&gt; 0.00156992387894415  1.144332 0.3719820 3.076309 0.002095803</span></span>
+<span><span class="co">#&gt; 0.00167505841328876  1.143766 0.3706279 3.086022 0.002028535</span></span></code></pre></div>
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K-1\)</span> degrees of
 freedom.</p>
@@ -1130,7 +1179,7 @@ daily living was not imputed. This is due to collinearity between the
 other two covariates for activities of daily living. Therefore,
 surrogate activities of daily living was removed.</p>
 <p>First we load the data:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">support</span><span class="op">)</span></span>
 <span><span class="co"># Using the matrix interface and log of time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">)</span></span>
@@ -1138,7 +1187,7 @@ surrogate activities of daily living was removed.</p>
 <span><span class="co">#&gt;   18.04   52.80   64.86   62.65   74.00  101.85</span></span></code></pre></div>
 <p>We study the time-varying effects of age so a subset of the data is
 chosen as the illustration example.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">/</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
 <span>    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>, include.lowest <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    [1] 1 1 0 0 3 3 1 3 3 0 0 1 0 2 0 1 0 1 0 1 2 0 0 0 0 1 3 0 0 0 3 1 3 1 1 1 2</span></span>
