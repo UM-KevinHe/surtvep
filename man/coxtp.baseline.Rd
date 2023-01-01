@@ -4,7 +4,7 @@
 \alias{coxtp.baseline}
 \title{calculating baseline hazard using the result from a \code{coxtv} object}
 \usage{
-coxtp.baseline(fit, delta, z, time, strata = c())
+coxtp.baseline(fit, ...)
 }
 \arguments{
 \item{fit}{model from \code{coxtp}}

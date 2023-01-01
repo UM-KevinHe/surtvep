@@ -695,6 +695,91 @@ it takes the value <span class="math display">\[\begin{align*}
 <p>The baseline estimation here refers to the baseline hazard at time t
 when holding all the covariates equals to zero. We use the model fitted
 result <code>fit_penalized</code> in section 4.2.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleData"</span><span class="op">)</span></span>
+<span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span>
+<span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span>
+<span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span>
+<span></span>
+<span><span class="va">time2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">time</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span><span class="op">)</span></span>
+<span><span class="va">fit.smoothspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time2</span>, lambda<span class="op">=</span><span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"Smooth-spline"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3547896; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3496894; Stopping crit = 1.8328456e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3496685; Stopping crit = 7.5009068e-05;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3496685; Stopping crit = 9.5055611e-08;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3496685; Stopping crit = 3.7484725e-12;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3551771; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3500715; Stopping crit = 1.8372984e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3500328; Stopping crit = 1.3917288e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3500327; Stopping crit = 3.0106586e-07;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3500327; Stopping crit = 2.7706982e-12;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3584050; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3534872; Stopping crit = 1.7917577e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3534313; Stopping crit = 2.0350508e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3534312; Stopping crit = 2.9285592e-07;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3534312; Stopping crit = 6.8426414e-13;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3657596; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3617116; Stopping crit = 1.5203960e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3616821; Stopping crit = 1.1071394e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3616821; Stopping crit = 4.5050421e-08;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3616821; Stopping crit = 1.6677702e-14;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3732581; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3702700; Stopping crit = 1.1595777e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3702564; Stopping crit = 5.2957390e-05;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3702564; Stopping crit = 5.4156966e-09;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3702564; Stopping crit = 1.7232601e-15;</span></span>
+<span><span class="va">IC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.smoothspline</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3547896; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3496894; Stopping crit = 1.8328456e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3496685; Stopping crit = 7.5009068e-05;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3496685; Stopping crit = 9.5055611e-08;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3496685; Stopping crit = 3.7484725e-12;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3551771; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3500715; Stopping crit = 1.8372984e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3500328; Stopping crit = 1.3917288e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3500327; Stopping crit = 3.0106586e-07;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3500327; Stopping crit = 2.7706982e-12;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3584050; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3534872; Stopping crit = 1.7917577e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3534313; Stopping crit = 2.0350508e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3534312; Stopping crit = 2.9285592e-07;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3534312; Stopping crit = 6.8426414e-13;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3657596; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3617116; Stopping crit = 1.5203960e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3616821; Stopping crit = 1.1071394e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3616821; Stopping crit = 4.5050421e-08;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3616821; Stopping crit = 1.6677702e-14;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -3.3732581; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -3.3702700; Stopping crit = 1.1595777e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -3.3702564; Stopping crit = 5.2957390e-05;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3702564; Stopping crit = 5.4156966e-09;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3702564; Stopping crit = 1.7232601e-15;</span></span>
+<span><span class="va">fit.mAIC</span> <span class="op">&lt;-</span> <span class="va">IC</span><span class="op">$</span><span class="va">model.mAIC</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">base.est</span> <span class="op">=</span> <span class="fu"><a href="../reference/coxtp.baseline.html">coxtp.baseline</a></span><span class="op">(</span><span class="va">fit.mAIC</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">base.est</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $time</span></span>
+<span><span class="co">#&gt;  [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8</span></span>
+<span><span class="co">#&gt; [20] 1.9 2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 3.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $hazard</span></span>
+<span><span class="co">#&gt;  [1] 0.02576925 0.04632723 0.04796684 0.05258371 0.04708783 0.04544031</span></span>
+<span><span class="co">#&gt;  [7] 0.05096521 0.03807625 0.04421912 0.05162255 0.05153851 0.06367847</span></span>
+<span><span class="co">#&gt; [13] 0.04167940 0.04678650 0.04840596 0.06907205 0.05280167 0.04285638</span></span>
+<span><span class="co">#&gt; [19] 0.02951995 0.02536585 0.02495845 0.02703002 0.03259201 0.03841546</span></span>
+<span><span class="co">#&gt; [25] 0.01788728 0.02645356 0.02097025 0.00000000 0.03385874 0.00000000</span></span>
+<span><span class="co">#&gt; [31] 0.00000000</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $cumulHaz</span></span>
+<span><span class="co">#&gt;  [1] 0.02576925 0.07209648 0.12006331 0.17264703 0.21973486 0.26517517</span></span>
+<span><span class="co">#&gt;  [7] 0.31614038 0.35421663 0.39843575 0.45005830 0.50159681 0.56527528</span></span>
+<span><span class="co">#&gt; [13] 0.60695468 0.65374117 0.70214714 0.77121918 0.82402086 0.86687724</span></span>
+<span><span class="co">#&gt; [19] 0.89639719 0.92176304 0.94672149 0.97375150 1.00634352 1.04475898</span></span>
+<span><span class="co">#&gt; [25] 1.06264625 1.08909982 1.11007006 1.11007006 1.14392881 1.14392881</span></span>
+<span><span class="co">#&gt; [31] 1.14392881</span></span></code></pre></div>
 <!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
 <!-- event=sim_data[,"event"] -->
 <!-- time=sim_data[,"time"] -->
@@ -778,7 +863,7 @@ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K-1\)</span> degrees of
 freedom.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tvef.ph.html">tvef.ph</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        chisq df          p</span></span>
 <span><span class="co">#&gt; X1  6.889955  7 0.44042707</span></span>
@@ -800,7 +885,7 @@ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 \left[\boldsymbol{C}_p \{- \triangledown^2
 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
 \end{align*}\]</span></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">test.zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.html">tvef.zero</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">test.zero</span><span class="op">$</span><span class="va">X1</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                           est        se        z            p</span></span>
@@ -1179,7 +1264,7 @@ daily living was not imputed. This is due to collinearity between the
 other two covariates for activities of daily living. Therefore,
 surrogate activities of daily living was removed.</p>
 <p>First we load the data:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">support</span><span class="op">)</span></span>
 <span><span class="co"># Using the matrix interface and log of time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">)</span></span>
@@ -1187,7 +1272,7 @@ surrogate activities of daily living was removed.</p>
 <span><span class="co">#&gt;   18.04   52.80   64.86   62.65   74.00  101.85</span></span></code></pre></div>
 <p>We study the time-varying effects of age so a subset of the data is
 chosen as the illustration example.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">/</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
 <span>    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>, include.lowest <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    [1] 1 1 0 0 3 3 1 3 3 0 0 1 0 2 0 1 0 1 0 1 2 0 0 0 0 1 3 0 0 0 3 1 3 1 1 1 2</span></span>
