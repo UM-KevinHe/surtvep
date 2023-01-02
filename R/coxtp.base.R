@@ -292,7 +292,11 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
 
   row.names(res$ctrl.pts) <- term.tv
   attr(res, "data") <- data
+  attr(res, "term.event") <- term.event
+  attr(res, "term.tv") <- term.tv
+  attr(res, "SmoothMatrix") <- SmoothMatrix
   attr(res, "spline") <- spline
+  attr(res, "count.strata") <- count.strata
   # if (length(term.ti)>0) {
   #   fit$tief <- c(fit$tief)
   #   names(fit$tief) <- term.ti

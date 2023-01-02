@@ -174,6 +174,9 @@ coxtp <- function(event , z , time ,strata=NULL ,penalty="Smooth-spline", nsplin
                                ICLastOnly = InfoCrit)
     
     names(res)[lambda_i] <- paste0("lambda",lambda_i)
+    
+    cat(paste("lambda", lambda[lambda_i], "is done.\n"))
+    
   }
   
   res$lambda.list <- lambda

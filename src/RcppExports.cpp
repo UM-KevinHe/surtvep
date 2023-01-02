@@ -213,6 +213,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ICcpp
+List ICcpp(const arma::vec& event, const arma::mat& Z_tv, const arma::mat& B_spline, const IntegerVector& count_strata, arma::mat& theta, double lambda_i, const arma::mat& SmoothMatrix, const std::string& SplineType, const std::string& method, const double& lambda, const double& factor, const bool& parallel, const unsigned int& threads);
+RcppExport SEXP _surtvep_ICcpp(SEXP eventSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP count_strataSEXP, SEXP thetaSEXP, SEXP lambda_iSEXP, SEXP SmoothMatrixSEXP, SEXP SplineTypeSEXP, SEXP methodSEXP, SEXP lambdaSEXP, SEXP factorSEXP, SEXP parallelSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type event(eventSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Z_tv(Z_tvSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B_spline(B_splineSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type count_strata(count_strataSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda_i(lambda_iSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type SmoothMatrix(SmoothMatrixSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type SplineType(SplineTypeSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type method(methodSEXP);
+    Rcpp::traits::input_parameter< const double& >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type factor(factorSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type parallel(parallelSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(ICcpp(event, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMatrix, SplineType, method, lambda, factor, parallel, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_surtvep_stra_sampling_cpp", (DL_FUNC) &_surtvep_stra_sampling_cpp, 2},
@@ -223,6 +246,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_surtvep_VarianceMatrixCalculate_bresties", (DL_FUNC) &_surtvep_VarianceMatrixCalculate_bresties, 13},
     {"_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge, 26},
     {"_surtvep_Lambda_estimate_ties2", (DL_FUNC) &_surtvep_Lambda_estimate_ties2, 6},
+    {"_surtvep_ICcpp", (DL_FUNC) &_surtvep_ICcpp, 13},
     {NULL, NULL, 0}
 };
 

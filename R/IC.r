@@ -37,60 +37,52 @@
 #' 
 IC <- function(fit, IC.prox, ...){
   
-  if (class(fit.smoothspline)[1]!= "list" & class(fit.smoothspline)[2]!= "coxtp" ) stop("fit is not an output from coxtp")
+  if (class(fit)[1]!= "list" & class(fit)[2]!= "coxtp" ) stop("fit is not an output from coxtp")
   
-  lambda_all = fit$lambda.list
+  lambda_list = fit$lambda.list
   
-  fmla <- attr(fit, "fmla") 
-  data_NR<- attr(fit, "data_NR") 
-  nsplines<- attr(fit, "nsplines") 
-  spline<- attr(fit, "spline") 
-  method<- attr(fit, "method") 
-  btr<- attr(fit, "btr") 
-  TIC_prox<- attr(fit, "TIC_prox") 
-  ord<- attr(fit, "ord")
-  degree<- attr(fit, "degree") 
-  tol<- attr(fit, "tol") 
-  iter.max<- attr(fit, "iter.max") 
-  tau<- attr(fit, "tau")
-  parallel<- attr(fit, "parallel") 
-  fixedstep<- attr(fit, "fixedstep")
-  InfoCrit<- attr(fit, "InfoCrit")
-  ties<- attr(fit, "ties")
-  stop<- attr(fit, "stop")
-  threads <-  attr(fit, "threads")
-  
-  model <- vector(mode = "list", length = length(lambda_all))
-  for(lambda_index in 1:length(lambda_all)){
-
-    model1 <- coxtp.base(fmla, data_NR, nsplines=nsplines, spline=spline, ties=ties, stop=stop,
-                         method = method, btr = btr,
-                         lambda_spline = lambda_all[lambda_index],TIC_prox = TIC_prox, ord = ord, degree = degree,
-                         tol = tol, iter.max = iter.max, tau= tau, parallel = parallel, threads = threads,
-                         fixedstep = fixedstep,
-                         ICLastOnly = TRUE)
-
-    model[[lambda_index]] <- model1
-  }
-
-
   AIC_all <- NULL
   TIC_all <- NULL
   GIC_all <- NULL
-
-  for (i in 1:length(lambda_all)){
-    AIC_all<-c(AIC_all, model[[i]]$AIC_all)
-    TIC_all<-c(TIC_all, model[[i]]$TIC_all)
-    GIC_all<-c(GIC_all, model[[i]]$GIC_all)
+  
+  for (index_lambda in c(1:length(lambda_list))) {
+    lambda_i = lambda_list[index_lambda]
+    
+    fit.tmp = fit[[index_lambda]]
+    theta.tmp = fit.tmp$ctrl.pts
+    data = attr(fit.tmp, "data")
+    term.event   = attr(fit.tmp, "term.event")
+    term.tv      = attr(fit.tmp, "term.tv")
+    SmoothMatrix = attr(fit.tmp, "SmoothMatrix")
+    SplineType   = fit.tmp$SplineType
+    control      = attr(fit.tmp, "control")
+    count.strata = attr(fit.tmp, "count.strata")
+    bases        = fit.tmp$bases
+    
+    IC <-  ICcpp(event = data[,term.event], Z_tv = as.matrix(data[,term.tv]), B_spline = as.matrix(bases), 
+                 count_strata = count.strata,
+                 theta = theta.tmp, 
+                 lambda_i = lambda_i,
+                 SmoothMatrix  = SmoothMatrix,
+                 SplineType    = SplineType,
+                 method=control$method, 
+                 lambda=control$lambda,
+                 factor=control$factor,
+                 parallel=control$parallel, threads=control$threads)
+    
+    AIC_all <- c(AIC_all, IC$AIC)
+    TIC_all <- c(TIC_all, IC$TIC)
+    GIC_all <- c(GIC_all, IC$GIC)
   }
+  
 
   AIC_lambda <- which.min(AIC_all)
   TIC_lambda <- which.min(TIC_all)
   GIC_lambda <- which.min(GIC_all)
 
-  model_AIC <- model[[AIC_lambda]]
-  model_TIC <- model[[TIC_lambda]]
-  model_GIC <- model[[GIC_lambda]]
+  model_AIC <- fit[[AIC_lambda]]
+  model_TIC <- fit[[TIC_lambda]]
+  model_GIC <- fit[[GIC_lambda]]
   
   
   res <- NULL
