@@ -1,4 +1,4 @@
-#' plotting result from a `coxtp` object
+#' plotting result from a fitted `coxtp` object
 #'
 #' @param fit Model get from coxtp
 #'

@@ -28,7 +28,7 @@ This function is to calculate information criteria from a \code{coxtp} object to
 \details{
 In order to select the proper smoothing parameter, we utilize the idea of information criteria.
 We provide four different information criteria to select the optimal smoothing parameter \eqn{\lambda}.
-Generally, AIC, TIC and GIC selects similar parameters and the difference of resulting estimations are barely noticable.
+Generally, mAIC, TIC and GIC selects similar parameters and the difference of resulting estimations are barely noticable.
 See details in Lingfeng Luo et al. (2022)
 }
 \examples{

@@ -1,4 +1,4 @@
-#' test the proportional hazards assumption from a `coxtv` or `coxtp` object using a wald test statistic
+#' test the proportional hazards assumption from a `coxtv` or `coxtp` object using a Wald test statistic
 #' 
 #' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model
 #' @param parm the names of parameter to be tested
@@ -11,6 +11,8 @@
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
 #' tvef.ph(fit)
+#' 
+#' @seealso tvef.zero.time tevf.zero
 #' 
 #' @export
 tvef.ph <- function(fit, parm) {
@@ -54,9 +56,69 @@ tvef.ph <- function(fit, parm) {
 }
 
 
+#' test the significance of the covariates from a `coxtv` or `coxtp` object using a Wald test statistic
+#' 
+#' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model
+#' @param parm the names of parameter to be tested
+#' 
+#' 
+#' @examples 
+#' data(ExampleData)
+#' z <- ExampleData$x
+#' time <- ExampleData$time
+#' event <- ExampleData$event
+#' fit <- coxtv(event = event, z = z, time = time)
+#' tvef.ph(fit)
+#' 
+#' @seealso tvef.ph tvef.zero.time
+#' 
+#' @export
+tvef.zero <- function(fit, parm) {
+  if (missing(fit)) stop ("Argument fit is required!")
+  if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
+  nsplines <- attr(fit, "nsplines"); spline <- attr(fit, "spline")
+  term.ti <- names(fit$tief); term.tv <- rownames(fit$ctrl.pts)
+  method <- attr(fit,"control")$method
+  
+  if (missing(parm)) {
+    parm <- term.tv
+  } else if (length(parm)>0) {
+    indx <- pmatch(parm, term.tv, nomatch=0L)
+    if (any(indx==0L))
+      stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
+  } else stop("Invalid parm!")
+  
+  rownames.info <- c(rep(term.tv, each=nsplines), term.ti)
+  
+  if (method=="Newton") {
+    invinfo <- solve(fit$info)
+  } else if (method=="ProxN") {
+    invinfo <- solve(fit$info+diag(sqrt(.Machine$double.eps),dim(fit$info)[1]))
+  }
+  # if (spline=="B-spline") {
+  mat.contrast <- rbind(diff(diag(nsplines)),rep(1,nsplines))
+  ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm,], ncol=nsplines)
+  mat.test <- sapply(parm, function(tv) {
+    bread <- mat.contrast%*%ctrl.pts[parm%in%tv,]
+    idx <- rownames.info%in%tv
+    meat <- solve(mat.contrast%*%invinfo[idx,idx]%*%t(mat.contrast))
+    stat <- t(bread)%*%meat%*%bread
+    p.value <- pchisq(stat, nsplines, lower.tail=F)
+    return(c(stat, nsplines, p.value))})
+  colnames(mat.test) <- parm
+  rownames(mat.test) <- c("chisq", "df", "p")
+  return(t(mat.test))
+  # } else if (spline=="P-spline") {
+  
+  # }
+}
 
 
-#' test the significance of the covariates from a `coxtv` or `coxtp` object using a wald test statistic
+
+
+#' test the significance of the covariates from a `coxtv` or `coxtp` object using a Wald test statistic
+#' 
+#' test the significance of the covariates at each time point.
 #' 
 #' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model
 #' @param parm the names of parameter to be tested
@@ -65,13 +127,15 @@ tvef.ph <- function(fit, parm) {
 #' @examples 
 #' data(ExampleData)
 #' z <- ExampleData$x
-#' time <- ExampleData$time
+#' time  <- ExampleData$time
 #' event <- ExampleData$event
-#' fit <- coxtv(event = event, z = z, time = time)
-#' tvef.zero(fit)
+#' fit   <- coxtv(event = event, z = z, time = time)
+#' test  <- tvef.zero.time(fit)
+#' 
+#' @seealso \code{\link{tvef.ph}} \code{\link{tvef.zero}}
 #' 
 #' @export
-tvef.zero <- function(fit, times, parm) {
+tvef.zero.time <- function(fit, times, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
   if (missing(times)) {
@@ -118,4 +182,9 @@ tvef.zero <- function(fit, times, parm) {
   # }
   return(ls)
 }
+
+
+
+
+
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tvef.ph.R
 \name{tvef.ph}
 \alias{tvef.ph}
-\title{test the proportional hazards assumption from a \code{coxtv} or \code{coxtp} object using a wald test statistic}
+\title{test the proportional hazards assumption from a \code{coxtv} or \code{coxtp} object using a Wald test statistic}
 \usage{
 tvef.ph(fit, parm)
 }
@@ -12,7 +12,7 @@ tvef.ph(fit, parm)
 \item{parm}{the names of parameter to be tested}
 }
 \description{
-test the proportional hazards assumption from a \code{coxtv} or \code{coxtp} object using a wald test statistic
+test the proportional hazards assumption from a \code{coxtv} or \code{coxtp} object using a Wald test statistic
 }
 \examples{
 data(ExampleData)
@@ -22,4 +22,7 @@ event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)
 tvef.ph(fit)
 
+}
+\seealso{
+tvef.zero.time tevf.zero
 }

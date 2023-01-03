@@ -460,7 +460,7 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 
 
 
-#' get confidence interval from a 'coxtv' object
+#' get confidence interval from a fitted object
 #' 
 #' @param fit fitted \code{"coxtv"} model
 #' @param times the time interval to be estamtied. The default value is the time of the fitted model
@@ -469,12 +469,14 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 #' 
 #' 
 #' @examples 
+#' \dontrun{
 #' data(ExampleData)
 #' z <- ExampleData$x
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
-#' confit(fit)
+#' confint(fit)
+#' }
 #' 
 #' @exportS3Method confint coxtv
 confint.coxtv <- function(fit, times, parm, level=0.95, ...) {

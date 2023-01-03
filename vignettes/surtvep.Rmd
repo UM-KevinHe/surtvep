@@ -590,7 +590,7 @@ the corresponding covariate effect is time-independent.
  Specify a matrix $\boldsymbol{C}_p$ such that
  $\boldsymbol{C}_p\boldsymbol\theta=\textbf{0}$ corresponds to the contrast that $\theta_{p1}=\cdots=\theta_{pK}$. A Wald statistic can  be constructed by
  \begin{align*}
- S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T \left[\boldsymbol{C}_p \{- \triangledown^2 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).s
+ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T \left[\boldsymbol{C}_p \{- \triangledown^2 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
 \end{align*}
 
 
@@ -603,12 +603,14 @@ tvef.ph(fit.proxN)
 For the second variable, We reject the null hypothesis and claim it has the time varying effect.
 
 
-### Testing for beta effect at each time point
+### Testing for beta effect 
+
+#### Testing at each time point
 To test whether the effects are significant or not, we use the test statistic
 $\theta_{p1}=\cdots=\theta_{pK} = 0,$
 the corresponding covariate effect is time-independent.
  Specify a matrix $\boldsymbol{C}_p$ such that
- $\boldsymbol{C}_p\boldsymbol\theta=\textbf{0} = 0$ corresponds to the contrast that $\theta_{p1}=\cdots=\theta_{pK} = 0$. A Wald statistic can  be constructed by
+ $\boldsymbol{C}_p\boldsymbol\theta=\textbf{0}$ corresponds to the contrast that $\theta_{p1}=\cdots=\theta_{pK} = 0$. A Wald statistic can  be constructed by
  \begin{align*}
  S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T \left[\boldsymbol{C}_p \{- \triangledown^2 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
 \end{align*}

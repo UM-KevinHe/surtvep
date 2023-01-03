@@ -542,7 +542,7 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
 }
 
 
-#' get confidence interval from a 'coxtp' object
+#' @rdname confint.coxtv
 #' 
 #' @param fit fitted \code{"coxtp"} model
 #' @param times the time interval to be estamtied. The default value is the time of the fitted model
@@ -551,12 +551,14 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
 #' 
 #' 
 #' @examples 
+#' \dontrun{
 #' data(ExampleData)
 #' z <- ExampleData$x
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtp(event = event, z = z, time = time)
-#' confit(fit)
+#' confint(fit$lambda1)
+#' }
 #' 
 #' @exportS3Method confint coxtp
 confint.coxtp <- function(fit, times, parm, level=0.95) {

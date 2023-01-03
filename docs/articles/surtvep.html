@@ -858,7 +858,7 @@ corresponds to the contrast that <span class="math inline">\(\theta_{p1}=\cdots=
 statistic can be constructed by <span class="math display">\[\begin{align*}
 S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 \left[\boldsymbol{C}_p \{- \triangledown^2
-\ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).s
+\ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
 \end{align*}\]</span></p>
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K-1\)</span> degrees of
@@ -872,14 +872,17 @@ freedom.</p>
 has the time varying effect.</p>
 </div>
 <div class="section level4">
-<h4 id="testing-for-beta-effect-at-each-time-point">Testing for beta effect at each time point<a class="anchor" aria-label="anchor" href="#testing-for-beta-effect-at-each-time-point"></a>
+<h4 id="testing-for-beta-effect">Testing for beta effect<a class="anchor" aria-label="anchor" href="#testing-for-beta-effect"></a>
 </h4>
+<div class="section level5">
+<h5 id="testing-at-each-time-point">Testing at each time point<a class="anchor" aria-label="anchor" href="#testing-at-each-time-point"></a>
+</h5>
 <p>To test whether the effects are significant or not, we use the test
 statistic <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK} =
 0,\)</span> the corresponding covariate effect is time-independent.
 Specify a matrix <span class="math inline">\(\boldsymbol{C}_p\)</span>
-such that <span class="math inline">\(\boldsymbol{C}_p\boldsymbol\theta=\textbf{0} =
-0\)</span> corresponds to the contrast that <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK} = 0\)</span>. A
+such that <span class="math inline">\(\boldsymbol{C}_p\boldsymbol\theta=\textbf{0}\)</span>
+corresponds to the contrast that <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK} = 0\)</span>. A
 Wald statistic can be constructed by <span class="math display">\[\begin{align*}
 S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 \left[\boldsymbol{C}_p \{- \triangledown^2
@@ -906,6 +909,7 @@ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K-1\)</span> degrees of
 freedom.</p>
+</div>
 </div>
 </div>
 <div class="section level3">

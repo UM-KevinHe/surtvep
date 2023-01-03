@@ -18,6 +18,7 @@ reference:
   contents:
   - tvef.ph
   - tvef.zero
+  - tvef.zero.time
 - title: Helper functions
   contents:
   - get.tvcoef
