@@ -290,10 +290,11 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   
   class(res) <- "coxtp"
 
-  row.names(res$ctrl.pts) <- term.tv
-  attr(res, "data") <- data
-  attr(res, "term.event") <- term.event
-  attr(res, "term.tv") <- term.tv
+  row.names(res$ctrl.pts)   <- term.tv
+  attr(res, "data")         <- data
+  attr(res, "term.event")   <- term.event
+  attr(res, "term.tv")      <- term.tv
+  attr(res, "term.time")    <- term.time
   attr(res, "SmoothMatrix") <- SmoothMatrix
   attr(res, "spline") <- spline
   attr(res, "count.strata") <- count.strata
@@ -304,6 +305,7 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   # colnames(fit$info) <- rownames(fit$info) <-
   #   c(rep(term.tv, each=nsplines), term.ti)
   attr(res, "time")     <- time
+  attr(res, "ties")     <- ties
   attr(res, "nsplines") <- nsplines
   attr(res, "degree.spline") <- degree
   attr(res, "control") <- control

@@ -53,22 +53,39 @@ IC <- function(fit, IC.prox, ...){
     data = attr(fit.tmp, "data")
     term.event   = attr(fit.tmp, "term.event")
     term.tv      = attr(fit.tmp, "term.tv")
+    term.time    = attr(fit.tmp, "term.time")
     SmoothMatrix = attr(fit.tmp, "SmoothMatrix")
     SplineType   = fit.tmp$SplineType
     control      = attr(fit.tmp, "control")
     count.strata = attr(fit.tmp, "count.strata")
     bases        = fit.tmp$bases
+    ties         = attr(fit.tmp, "ties")
     
-    IC <-  ICcpp(event = data[,term.event], Z_tv = as.matrix(data[,term.tv]), B_spline = as.matrix(bases), 
-                 count_strata = count.strata,
-                 theta = theta.tmp, 
-                 lambda_i = lambda_i,
-                 SmoothMatrix  = SmoothMatrix,
-                 SplineType    = SplineType,
-                 method=control$method, 
-                 lambda=control$lambda,
-                 factor=control$factor,
-                 parallel=control$parallel, threads=control$threads)
+    if(ties != "Breslow"){
+      IC <-  ICcpp(event = data[,term.event], Z_tv = as.matrix(data[,term.tv]), B_spline = as.matrix(bases), 
+                   count_strata = count.strata,
+                   theta = theta.tmp, 
+                   lambda_i = lambda_i,
+                   SmoothMatrix  = SmoothMatrix,
+                   SplineType    = SplineType,
+                   method=control$method, 
+                   lambda=control$lambda,
+                   factor=control$factor,
+                   parallel=control$parallel, threads=control$threads)
+    } else{
+      IC <-  ICcpp_bresties(event = data[,term.event], time = data[,term.time],
+                   Z_tv = as.matrix(data[,term.tv]), B_spline = as.matrix(bases), 
+                   count_strata = count.strata,
+                   theta = theta.tmp, 
+                   lambda_i = lambda_i,
+                   SmoothMatrix  = SmoothMatrix,
+                   SplineType    = SplineType,
+                   method=control$method, 
+                   lambda=control$lambda,
+                   factor=control$factor,
+                   parallel=control$parallel, threads=control$threads)
+    }
+
     
     AIC_all <- c(AIC_all, IC$AIC)
     TIC_all <- c(TIC_all, IC$TIC)

@@ -37,3 +37,7 @@ ICcpp <- function(event, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMa
     .Call(`_surtvep_ICcpp`, event, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMatrix, SplineType, method, lambda, factor, parallel, threads)
 }
 
+ICcpp_bresties <- function(event, time, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMatrix, SplineType = "smooth-spline", method = "Newton", lambda = 1e8, factor = 1.0, parallel = FALSE, threads = 1L) {
+    .Call(`_surtvep_ICcpp_bresties`, event, time, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMatrix, SplineType, method, lambda, factor, parallel, threads)
+}
+

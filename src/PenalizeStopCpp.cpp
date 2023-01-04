@@ -2789,7 +2789,151 @@ List ICcpp( const arma::vec &event, const arma::mat &Z_tv, const arma::mat &B_sp
 
     return List::create(_["AIC"]=AIC,
                         _["TIC"]=TIC,
-                        _["GIC"]=GIC,
-                        _["J_p"]=J_p,
-                        _["J_p_GIC"]=J_p_GIC);
+                        _["GIC"]=GIC);
+}
+
+
+
+// [[Rcpp::export]]
+List ICcpp_bresties(const arma::vec &event, const arma::vec &time, 
+                    const arma::mat &Z_tv, const arma::mat &B_spline,
+                    const IntegerVector &count_strata,
+                    arma::mat &theta,
+                    double lambda_i,
+                    const arma::mat &SmoothMatrix,
+                    const std::string &SplineType = "smooth-spline",
+                    const std::string &method="Newton",
+                    const double &lambda=1e8, const double &factor = 1.0,
+                    const bool &parallel=false, const unsigned int &threads=1){
+
+
+    int p     = Z_tv.n_cols; //dimension
+    int K     = B_spline.n_cols; //number of knots  
+    int N     = Z_tv.n_rows;
+    arma::mat Z_ti = arma::zeros<arma::mat>(N,p);
+    arma::vec beta_ti = arma::zeros<arma::vec> (p);
+    bool difflambda = false, ti = false, TIC_prox = false;
+
+    double AIC, TIC, GIC;
+
+    IntegerVector cumsum_strata = cumsum(count_strata);
+    unsigned int n_strata = cumsum_strata.length();
+    cumsum_strata.push_front(0);
+
+    vector<vector<arma::uvec>> idx_fail;
+    vector<vector<unsigned int>> idx_fail_1st, idx_Z_strata;
+    vector<unsigned int> n_fail_time, n_Z_strata;
+    // each element of idx_Z_strata contains start/end row indices of Z_strata
+    for (unsigned int i = 0; i < n_strata; ++i) {
+      arma::vec event_tmp = event.rows(cumsum_strata[i], cumsum_strata[i+1]-1),
+      time_tmp = time.rows(cumsum_strata[i], cumsum_strata[i+1]-1);
+      arma::uvec idx_fail_tmp = find(event_tmp==1);
+      vector<unsigned int> idx_Z_strata_tmp;
+      idx_Z_strata_tmp.push_back(cumsum_strata[i]+idx_fail_tmp(0));
+      idx_Z_strata_tmp.push_back(cumsum_strata[i+1]-1);
+      idx_Z_strata.push_back(idx_Z_strata_tmp);
+      n_Z_strata.push_back(cumsum_strata[i+1]-cumsum_strata[i]-
+        idx_fail_tmp(0));
+      arma::vec time_fail_tmp = time_tmp.elem(idx_fail_tmp);
+      idx_fail_tmp -= idx_fail_tmp(0);
+      arma::vec uniq_t = unique(time_fail_tmp);
+      n_fail_time.push_back(uniq_t.n_elem);
+      vector<arma::uvec> idx_fail_tmp_tmp;
+      vector<unsigned int> idx_fail_1st_tmp;
+      for (arma::vec::iterator j = uniq_t.begin(); j < uniq_t.end(); ++j) {
+        arma::uvec tmp = idx_fail_tmp.elem(find(time_fail_tmp==*j));
+        idx_fail_tmp_tmp.push_back(tmp);
+        idx_fail_1st_tmp.push_back(tmp[0]);
+      }
+      idx_fail.push_back(idx_fail_tmp_tmp);
+      idx_fail_1st.push_back(idx_fail_1st_tmp);
+    }
+    IntegerVector n_failtime = wrap(n_fail_time);
+    IntegerVector cumsum_failtime = cumsum(n_failtime);
+    cumsum_failtime.push_front(0);
+    vector<arma::uvec> idx_B_sp;
+    for (unsigned int i = 0; i < n_strata; ++i) {
+      idx_B_sp.push_back(arma::regspace<arma::uvec>(cumsum_failtime[i],
+                                        cumsum_failtime[i+1]-1));
+    }
+    // istart and iend for each thread when parallel=true
+    vector<arma::vec>  cumsum_ar;
+    vector<vector<unsigned int>> istart, iend;
+    if (parallel) {
+      for (unsigned int i = 0; i < n_strata; ++i) {
+        double scale_fac = as_scalar(idx_fail[i].back().tail(1));
+        cumsum_ar.push_back(
+          (double)n_Z_strata[i] / scale_fac * arma::regspace(1, idx_fail[i].size()) -
+            arma::cumsum(arma::conv_to<arma::vec> ::from(idx_fail_1st[i])/scale_fac));
+        vector<unsigned int> istart_tmp, iend_tmp;
+        for (unsigned int id = 0; id < threads; ++id) {
+          istart_tmp.push_back(as_scalar(find(cumsum_ar[i] >=
+            cumsum_ar[i](idx_fail[i].size()-1)/(double)threads*id, 1)));
+          iend_tmp.push_back(as_scalar(find(cumsum_ar[i] >=
+            cumsum_ar[i](idx_fail[i].size()-1)/(double)threads*(id+1), 1)));
+          if (id == threads-1) {
+            iend_tmp.pop_back();
+            iend_tmp.push_back(idx_fail[i].size());
+          }
+        }
+        istart.push_back(istart_tmp);
+        iend.push_back(iend_tmp);
+      }
+    }
+
+    arma::vec lambda_effct = arma::zeros<arma::vec> (p*K);
+    arma::mat lambda_i_mat = repmat(lambda_effct,1,p*K);
+
+
+    List SplineUdpate;
+    arma::mat S_matrix;
+    if(SplineType == "pspline") {
+      S_matrix        = spline_construct(K, p, SplineType);  
+    }
+    else{
+      S_matrix        = spline_construct2(K, p, SplineType, SmoothMatrix);  
+    }    
+
+    SplineUdpate    = stepinc_fixtra_spline_bresties(Z_tv, B_spline, theta, Z_ti, beta_ti, 
+                                            S_matrix, lambda_i, lambda_i_mat, difflambda,
+                                            ti, n_strata,
+                                            idx_B_sp, idx_fail, idx_Z_strata, istart, iend,
+                                            method, lambda, parallel, threads);
+
+    arma::mat info = SplineUdpate["info"];
+
+    List objfun;
+    objfun = obj_fixtra_bresties(Z_tv, B_spline, theta, Z_ti, beta_ti, ti, n_strata,
+                                          idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata, 
+                                          istart, iend, parallel, threads);
+    double logplkd = objfun["logplkd"];
+
+    List J_tmp;
+    J_tmp = TIC_J_penalized_second_bresties(Z_tv, B_spline, theta, n_strata, idx_B_sp, idx_fail, idx_Z_strata, TIC_prox, 
+                                  lambda_i, lambda_i_mat, difflambda, S_matrix);
+
+    arma::mat J    = J_tmp["info_J"];
+    arma::mat J_p  = J_tmp["info_J_p"];
+    arma::mat J_p_GIC = J_tmp["info_J_p_gic"];
+
+
+    arma::mat lambda_S_matrix = lambda_i*S_matrix;
+
+    double df;
+    arma::mat info_lambda = info + lambda_S_matrix;
+    arma::mat info_lambda_inv;
+    info_lambda_inv = inv(info_lambda);
+    //AIC:
+    df = trace(info * info_lambda_inv);
+    AIC = -2*logplkd*N + 2*df;
+    //TIC2:
+    df = trace(info*info_lambda_inv*J_p*info_lambda_inv);
+    TIC = -2*logplkd*N + 2*df;
+    //GIC:
+    df = trace(info_lambda_inv*J_p_GIC);
+    GIC = -2*logplkd*N + 2*df;
+
+    return List::create(_["AIC"]=AIC,
+                        _["TIC"]=TIC,
+                        _["GIC"]=GIC);
 }
