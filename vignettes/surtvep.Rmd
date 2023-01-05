@@ -1253,13 +1253,14 @@ For the following plot, the knot was set as default, which is `knot=8`.
 In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment).
 We use the processed `SUPPORT` data set included in the R package [@casebase].
 
-There were 9104 patients included in the data set.
-We study the time-varying effects of age and cancer status as the illustration example.
+We study the time-varying effects of metastatic cancer as the illustration example and include
 
 First we load the data and get the survival outcome:
 
 ```{r, message = FALSE}
+library(surtvep)
 data(support)
+support <- support[support$ca %in% c("metastatic"),]
 
 time <- support$d.time
 death <- support$death
@@ -1270,74 +1271,77 @@ Age has 4 levels and cancer status has 3 levels.
 The following codes processed the covariates for model fitting.
 
 ```{r, message = FALSE}
-#for variable age
-age <- cut(support$age, quantile(support$age, c(0,1/4,1/2,3/4,1), na.rm = TRUE), 
-     labels = c(0,1,2,3), include.lowest = TRUE)
-levels(age) <- c("2","0","1","3")
+#diabetes: 
+diabetes <-  model.matrix(~factor(support$diabetes))[,-1]
+
+#sex: female as the reference group
+sex <- model.matrix(~support$sex)[,-1]
+
+#age: continuous variable
+age <-support$age
+age[support$age<=50] <- "<50"
+age[support$age>50 & support$age<=60] <- "50-59"
+age[support$age>60 & support$age<70] <- "60-69"
+age[support$age>=70] <- "70+"
+age <- factor(age, levels = c("60-69", "<50", "50-59", "70+"))
 z_age <- model.matrix(~age)[,-1]
-colnames(z_age) <- c("age18_53", "age53_64", "age_74")
 
-# cancer status: metastatic, yes, no
-ca <- support$ca
-levels(ca) <- c("no", "yes", "metastatic")
-z_ca <-  model.matrix(~ca)[,-1]
-colnames(z_ca) <- c("non-metastatic", "metastatic")
-
-z <- cbind(z_age, z_ca)
+z <- data.frame(z_age, sex, diabetes)
+colnames(z) <- c("age_50", "age_50_59", "age_70", "diabetes", "male")
 ```
 
-<!-- #age variable: treat the youngest age group as the reference group -->
+```{r, fig = TRUE. message = FALSE}
+library(survminer)
+library(survival)
+data <- data.frame(time, death, z)
+fit1 <- survfit(Surv(time, death) ~ diabetes, data = data)
+fit2 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data)
+ggsurvplot(fit1, data = data)
+ggsurvplot(fit2, data = data, legend.labs = c("60-69", "70+", "50-59", "<50"))
+```
 
-<!-- age <- cut(support$age, quantile(support$age, c(0,1/4,1/2,3/4,1), na.rm = TRUE),  -->
+Fit the Newtons' Method using `coxtv`\`:
 
-<!--      labels = c(0,1,2,3), include.lowest = TRUE) -->
+```{r}
+fit.coxtv <- coxtv(event = death, z = z, time = time)
+```
 
-<!-- levels(age) <- c("2","0","1","3") -->
+Simply look at the plots using the `plot` function:
 
-<!-- z_age <- model.matrix(~age)[,-1] -->
+```{r, fig = TRUE. message = FALSE}
+plot(fit.coxtv)
 
-<!-- colnames(z_age) <- c("age18_53", "age53_64", "age_74") -->
+```
 
-<!-- # cancer status: metastatic, yes, no -->
+Then we add penalty term to improve the estimation.
 
-<!-- ca <- support$ca -->
+```{r, message = FALSE}
+fit.coxtp <- coxtp(event = death, z = z, time = time, lambda = c(1,10,100,1000))
+IC.support <- IC(fit.coxtp)
+```
 
-<!-- levels(ca) <- c("no", "yes", "metastatic") -->
+```{r, fig = TRUE. message = FALSE}
+plot(IC.support$model.mAIC)
 
-<!-- z_ca <-  model.matrix(~ca)[,-1] -->
+```
 
-<!-- colnames(z_ca) <- c("non-metastatic", "metastatic") -->
+Then we provide the hypothesis testing for each covariate.
 
-<!-- z <- cbind(z_age, z_ca) -->
+```{r}
+#test the proportional hazards assumption
+test.ph <- tvef.ph(fit.coxtv)
+test.ph
 
-<!-- #non-penalized -->
+#test the significance of each covariate
+test.zero <- tvef.zero(fit.coxtv)
+test.zero
 
-<!-- fit <- coxtv(event = death, z = z, time = time) -->
+```
 
-<!-- plot(fit, parm = c("age18_53", "age53_64")) -->
+We can use the following codes to get the baseline estimation and the baseline plot.
 
-<!-- fit <- coxtp(event = death, z = z, time = time) -->
+```{r}
+base <- coxtp.baseline(IC.support$model.mAIC)
+```
 
-<!-- plot(fit$lambda3) -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- age_ -->
-
-<!-- z <- model.matrix(death ~ sex + age + diabetes - d.time - 1, data = support) -->
-
-<!-- event <- support$death -->
-
-<!-- time <- support$d.time -->
-
-<!-- ``` -->
-
-<!-- We apply the Newton's method with Smoothing-spline: -->
-
-<!-- ```{r, message = FALSE, results='hide', fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE} -->
-
-<!-- fit.support <- coxtp(z = z, event = event, time=time, lambda_spline = c(0.1, 1, 10, 100)) -->
-
-<!-- ``` -->
+The following codes provide the absolute hazards plot.\
