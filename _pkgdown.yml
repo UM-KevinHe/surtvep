@@ -30,7 +30,6 @@ reference:
   - coxtp.predict
   - coxtp.baseline
   - coxtv.baseline
-  - coxtp.predict
 - title: Package data sets
   contents:
   - ExampleData

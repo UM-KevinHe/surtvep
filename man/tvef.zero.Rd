@@ -24,5 +24,5 @@ tvef.ph(fit)
 
 }
 \seealso{
-tvef.ph tvef.zero.time
+\code{\link{tvef.ph}} \code{\link{tvef.zero.time}}
 }

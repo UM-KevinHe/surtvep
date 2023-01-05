@@ -14,13 +14,15 @@
 #' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 #' 
 #' @examples
+#' \dontrun{
 #'data("ExampleData")
 #'z <- ExampleData$x
 #'time <- ExampleData$time
 #'event <- ExampleData$event
 #'fit <- coxtv(event = event, z = z, time = time)
 #'base.est = coxtv.baseline(fit)
-
+#' }
+#' 
 
 coxtv.baseline <- function(fit, ...){
     if (missing(fit)) stop ("Argument fit is required!")

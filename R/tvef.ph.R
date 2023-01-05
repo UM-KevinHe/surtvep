@@ -12,8 +12,7 @@
 #' fit <- coxtv(event = event, z = z, time = time)
 #' tvef.ph(fit)
 #' 
-#' @seealso tvef.zero.time tevf.zero
-#' 
+#' @seealso \code{\link{tevf.zero}} \code{\link{tvef.zero.time}}
 #' @export
 tvef.ph <- function(fit, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
@@ -70,8 +69,7 @@ tvef.ph <- function(fit, parm) {
 #' fit <- coxtv(event = event, z = z, time = time)
 #' tvef.ph(fit)
 #' 
-#' @seealso tvef.ph tvef.zero.time
-#' 
+#' @seealso \code{\link{tvef.ph}} \code{\link{tvef.zero.time}}
 #' @export
 tvef.zero <- function(fit, parm) {
   if (missing(fit)) stop ("Argument fit is required!")

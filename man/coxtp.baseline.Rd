@@ -18,3 +18,17 @@ a list with three components
 \description{
 The baseline estimation is the baseline hazard at each observation time when holding all the covariates equals to zero.
 }
+\examples{
+\dontrun{
+data(ExampleData)
+z <- ExampleData$x
+time  <- ExampleData$time
+event <- ExampleData$event
+
+lambda  = c(0,1)
+fit   <- coxtp(event = event, z = z, time = time, lambda=lambda)
+base.est <- coxtp(fit)
+}
+
+
+}

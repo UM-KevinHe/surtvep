@@ -53,7 +53,7 @@ IC <- function(fit, IC.prox, ...){
     data = attr(fit.tmp, "data")
     term.event   = attr(fit.tmp, "term.event")
     term.tv      = attr(fit.tmp, "term.tv")
-    term.time    = attr(fit.tmp, "term.time")
+    term.time    = attr(fit.tmp, "term.time") 
     SmoothMatrix = attr(fit.tmp, "SmoothMatrix")
     SplineType   = fit.tmp$SplineType
     control      = attr(fit.tmp, "control")

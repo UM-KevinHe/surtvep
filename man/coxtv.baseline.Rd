@@ -19,10 +19,13 @@ a list with three components
 The baseline estimation is the baseline hazard at each observation time when holding all the covariates equals to zero.
 }
 \examples{
+\dontrun{
 data("ExampleData")
 z <- ExampleData$x
 time <- ExampleData$time
 event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)
 base.est = coxtv.baseline(fit)
+}
+
 }

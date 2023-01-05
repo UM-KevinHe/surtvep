@@ -12,6 +12,18 @@
 #' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
 #'
 #' @examples
+#' \dontrun{
+#' data(ExampleData)
+#' z <- ExampleData$x
+#' time  <- ExampleData$time
+#' event <- ExampleData$event
+#' 
+#' lambda  = c(0,1)
+#' fit   <- coxtp(event = event, z = z, time = time, lambda=lambda)
+#' base.est <- coxtp(fit)
+#' }
+#' 
+#' 
 coxtp.baseline <-  function(fit, ...){
   
     
@@ -96,3 +108,9 @@ coxtp.baseline <-  function(fit, ...){
   # return(baselinedata)
   
 }
+
+
+
+
+
+
