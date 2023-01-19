@@ -1258,7 +1258,6 @@ We study the time-varying effects of metastatic cancer as the illustration examp
 First we load the data and get the survival outcome:
 
 ```{r, message = FALSE}
-library(surtvep)
 data(support)
 
 time <- support$d.time
@@ -1365,13 +1364,29 @@ All these covariates are significant based on the Wald test.
 Then we can use the following codes to get the baseline estimation and the baseline plot.
 
 ```{r}
-base <- coxtp.baseline(IC.support$model.TIC)
+base <- baseline(IC.support$model.TIC)
+```
+
+```{r, fig = TRUE, message = FALSE}
+plot(base)
 ```
 
 
 
 
 
+When dealing with data where ties are presented, we can also give baseline hazard and absolute hazard for different
+
+The following codes provide the absolute hazards plot.
 
 
-The following codes provide the absolute hazards plot.\
+
+
+
+
+
+
+
+
+
+

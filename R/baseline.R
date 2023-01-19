@@ -1,8 +1,8 @@
-#' calculating baseline hazard using the result from a `coxtv` object
+#' calculating baseline hazard using the result from a `coxtv` or `coxtp` object
 #'
 #' The baseline estimation is the baseline hazard at each observation time when holding all the covariates equals to zero.
 #'
-#' @param fit model from `coxtp`
+#' @param fit model from `coxtv` or `coxtp`
 #' 
 #' @export
 #' 
@@ -51,7 +51,7 @@ baseline <-  function(fit, ...){
   #call Rcpp
   theta_IC <- fit$ctrl.pts
   B.spline=splines::bs(unique_time,knots=fit$internal.knots,intercept=TRUE,degree=3)
-  k=ncol(model1$bases)
+  k=ncol(fit$bases)
   result1 <- Lambda_estimate_ties2(knot = k, delta = event,
                                    z = as.matrix(z), b_spline = as.matrix(B.spline),
                                    theta = theta_IC, tieseq = tieseq)
@@ -147,7 +147,7 @@ plot.baseline <- function(fit, xlab, ylab, xlim, ylim,
   missingxlim <- missing(xlim); missingylim <- missing(ylim); 
   missingtitle <- missing(title);
   
-  plot_data <- data.frame(base.est$time, base.est$cumulHaz)
+  plot_data <- data.frame(fit$time, fit$cumulHaz)
   colnames(plot_data) <- c("time", "cumulHaz")
   
   plt <- ggplot(data = plot_data, aes(x = time, y = cumulHaz)) +
