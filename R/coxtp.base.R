@@ -580,13 +580,13 @@ confint.coxtp <- function(fit, times, parm, level=0.95) {
   knots <- attr(fit, "internal.knots"); nsplines <- attr(fit, "nsplines")
   method <- attr(fit, "control")$method
   term.tv <- rownames(fit$ctrl.pts)
-  # if (missing(parm)) {
+  if (missing(parm)) {
     parm <- term.tv
-  # } else if (length(parm)>0) {
-  #   indx <- pmatch(parm, term.tv, nomatch=0L)
-  #   if (any(indx==0L))
-  #     stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
-  # } else stop("Invalid parm!")
+  } else if (length(parm)>0) {
+    indx <- pmatch(parm, term.tv, nomatch=0L)
+    if (any(indx==0L))
+      stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
+  } else stop("Invalid parm!")
   rownames.info <- rep(term.tv, each=nsplines)
   if (method=="Newton") {
     invinfo <- solve(fit$info)

@@ -256,14 +256,15 @@ Each row represents a covariate's coefficient on the <code>nsplines</code> dimen
     <div id="details">
     <h2>Details</h2>
     <p>The sequence of models implied by <code>lambda.spline</code> is fit by Newton's method (Proximal Newton's method). The objective function is
-$$loglik - P_{\lambda}$$,
+$$loglik - P_{\lambda},$$
 where \(P_{\lambda}\) can be <code>P-spline</code> or <code>Smooth-spline</code>. The \(\lambda\) is the tuning  parameter \(\lambda\). Users can define the initial sequence.
 <code>IC</code>provides different information criteria to choose the tuning parameter \(\lambda\). <code>cv.coxtp</code> uses  the cross validation to choose the tuning parameter.</p>
     </div>
     <div id="references">
     <h2>References</h2>
     <p>Gray, Robert J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
-<em>Journal of the American Statistical Association</em>, <strong>87</strong>: 942-951.</p>
+<em>Journal of the American Statistical Association</em>, <strong>87</strong>: 942-951.
+<br></p>
 <p>Gray, Robert J. (1994) Spline-based tests in survival analysis.
 <em>Biometrics</em>, <strong>50</strong>: 640-652.
 <br></p>
@@ -273,14 +274,15 @@ where \(P_{\lambda}\) can be <code>P-spline</code> or <code>Smooth-spline</code>
 <em>Lifetime Data Analysis</em>, <strong>28(2)</strong>: 194-218.
 <br></p>
 <p>Wood, Simon N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
-<em>Statistics and Computing</em>, <strong>27(4)</strong>: 985-989.</p>
-<p>Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+<em>Statistics and Computing</em>, <strong>27(4)</strong>: 985-989.
+<br></p>
+<p>Perperoglou, Aris, Saskia le Cessie and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
 <em>Computer Methods and Programs in Biomedicine</em>, <strong>81(2)</strong>: 154-161.
 <br></p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p><code>coef</code>, <code>plot</code>, <code>IC</code> and <code>cv.coxtp</code>.</p></div>
+    <div class="dont-index"><p><code><a href="get.tvcoef.html">get.tvcoef</a></code>, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></code>, <code><a href="IC.html">IC</a></code> and <code><a href="cv.coxtp.html">cv.coxtp</a></code>.</p></div>
     </div>
 
     <div id="ref-examples">

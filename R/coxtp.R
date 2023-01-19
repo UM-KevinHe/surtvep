@@ -90,11 +90,11 @@
 #'
 #' @details 
 #' The sequence of models implied by `lambda.spline` is fit by Newton's method (Proximal Newton's method). The objective function is
-#' \deqn{loglik - P_{\lambda}},
+#' \deqn{loglik - P_{\lambda},}
 #' where \eqn{P_{\lambda}} can be `P-spline` or `Smooth-spline`. The \eqn{\lambda} is the tuning  parameter \eqn{\lambda}. Users can define the initial sequence.
 #' `IC`provides different information criteria to choose the tuning parameter \eqn{\lambda}. `cv.coxtp` uses  the cross validation to choose the tuning parameter.
 #'
-#' @seealso \code{coef}, \code{plot}, \code{IC} and \code{cv.coxtp}.
+#' @seealso \code{\link{get.tvcoef}}, \code{\link{plot}}, \code{\link{IC}} and \code{\link{cv.coxtp}}.
 #' 
 #' 
 #' @export
@@ -113,6 +113,7 @@
 #' @references 
 #' Gray, Robert J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
 #' \emph{Journal of the American Statistical Association}, \strong{87}: 942-951. 
+#' \cr
 #' 
 #' Gray, Robert J. (1994) Spline-based tests in survival analysis.
 #' \emph{Biometrics}, \strong{50}: 640-652.
@@ -127,8 +128,9 @@
 #' 
 #' Wood, Simon N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
 #' \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
+#' \cr
 #' 
-#' Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+#' Perperoglou, Aris, Saskia le Cessie and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
 #' \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 #' \cr
 #' 

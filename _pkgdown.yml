@@ -26,10 +26,8 @@ reference:
   - confint.coxtv
   - plot.coxtp
   - plot.coxtv
-  - coxtp.baseline
-  - coxtp.predict
-  - coxtp.baseline
-  - coxtv.baseline
+  - baseline
+  - plot.baseline
 - title: Package data sets
   contents:
   - ExampleData

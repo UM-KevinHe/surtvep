@@ -1260,14 +1260,13 @@ First we load the data and get the survival outcome:
 ```{r, message = FALSE}
 library(surtvep)
 data(support)
-support <- support[support$ca %in% c("metastatic"),]
 
 time <- support$d.time
 death <- support$death
 ```
 
-Age and cancer status are included as covariates and considered as categorical variables.
-Age has 4 levels and cancer status has 3 levels.
+Age, cancer status and diabetes status are included as covariates and considered as categorical variables.
+Age has 4 levels, cancer status has 3 levels and diabetes has 2 levels.
 The following codes processed the covariates for model fitting.
 
 ```{r, message = FALSE}
@@ -1286,32 +1285,51 @@ age[support$age>=70] <- "70+"
 age <- factor(age, levels = c("60-69", "<50", "50-59", "70+"))
 z_age <- model.matrix(~age)[,-1]
 
-z <- data.frame(z_age, sex, diabetes)
-colnames(z) <- c("age_50", "age_50_59", "age_70", "diabetes", "male")
+# cancer status: metastatic, yes, no
+ca <- factor(support$ca)
+# levels(ca) <- c("non_metastatic",  "metastatic")
+levels(ca) <- c("metastatic",  "no", "yes")
+z_ca <-  model.matrix(~ca)[,-1]
+
+z <- data.frame(z_age, z_ca, sex, diabetes)
+# colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male")
+colnames(z) <- c("age_50", "age_50_59", "age_70", "non_cancer", "non_metastatic", "diabetes", "male")
 ```
+
+First we take a look at the Kaplan-Meier plots. The following code produces the K-M plots for three categorical variable mentioned above. 
 
 ```{r, fig = TRUE, message = FALSE}
 library(survminer)
 library(survival)
 data <- data.frame(time, death, z)
-fit1 <- survfit(Surv(time, death) ~ diabetes, data = data)
-fit2 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data)
+fit1 <- survfit(Surv(time, death) ~ non_cancer + non_metastatic, data = data)
+fit2 <- survfit(Surv(time, death) ~ diabetes, data = data)
+fit3 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data)
 ggsurvplot(fit1, data = data)
-ggsurvplot(fit2, data = data, legend.labs = c("60-69", "70+", "50-59", "<50"))
+ggsurvplot(fit1, data = data, legend.labs = c("non-metastatic", "metastatic", "non-cancer"))
+ggsurvplot(fit2, data = data, legend.labs = c("diabetes", "non-diabetes"))
+ggsurvplot(fit3, data = data, legend.labs = c("60-69", "70+", "50-59", "<50"))
 ```
 
-Fit the Newtons' Method using `coxtv`\`:
+
+Fit the Newtons' Method using `coxtv`:
 
 ```{r}
-fit.coxtv <- coxtv(event = death, z = z, time = time)
+fit.coxtv <- coxtv(event = death, z = z, time = time, nsplines = 10)
 ```
 
-Simply look at the plots using the `plot` function:
+We take a look at the estimation plots of cancer status using the `plot` function:
 
 ```{r, fig = TRUE, message = FALSE}
-plot(fit.coxtv)
-
+plot(fit.coxtv, parm = c("non_cancer", "non_metastatic"), ylim = c(-2,2))
 ```
+
+Non-metastatic cancer, also known as earlier stage cancer, refers to cancer that is confined to the primary site and has not spread to other parts of the body.
+
+Non-cancer refers to the absence of cancer in a person. It may also refer to benign tumors or abnormal growths that are not cancerous. 
+
+Conditioned on the diabetes status and age, we can see the proportional hazards assumption for cancer status is clearly not satisfied. There is a strong difference in the hazard of death from cancer between metastatic cancer, non-metastatic cancer and non-cancer. Patients with metastatic cancer has a higher hazard of dying in the first 1500 days. 
+
 
 Then we add penalty term to improve the estimation.
 
@@ -1321,9 +1339,10 @@ IC.support <- IC(fit.coxtp)
 ```
 
 ```{r, fig = TRUE, message = FALSE}
-plot(IC.support$model.mAIC)
-
+plot(IC.support$model.mAIC, parm = c("non_cancer", "non_metastatic"), ylim = c(-2,2))
 ```
+
+
 
 Then we provide the hypothesis testing for each covariate.
 
@@ -1338,10 +1357,21 @@ print(test.zero)
 
 ```
 
-We can use the following codes to get the baseline estimation and the baseline plot.
+When testing for the proportional hazards assumption, age_50, non_cancer, non_metastatic, diabetes and male has p-value < 0.05. We reject the null hypothesis and claim that these covariates have violated the proportional hazards assumption.
+
+All these covariates are significant based on the Wald test.
+
+
+Then we can use the following codes to get the baseline estimation and the baseline plot.
 
 ```{r}
-base <- coxtp.baseline(IC.support$model.mAIC)
+base <- coxtp.baseline(IC.support$model.TIC)
 ```
+
+
+
+
+
+
 
 The following codes provide the absolute hazards plot.\

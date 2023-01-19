@@ -140,6 +140,7 @@ fit  <- cv.coxtp(event = event, z = z, time = time, lambda=lambda, nfolds = 5)
 \references{
 Gray, Robert J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
 \emph{Journal of the American Statistical Association}, \strong{87}: 942-951.
+\cr
 
 Gray, Robert J. (1994) Spline-based tests in survival analysis.
 \emph{Biometrics}, \strong{50}: 640-652.
@@ -158,8 +159,9 @@ Wenbo Wu, Jeremy M.G. Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jia
 
 Wood, Simon N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
 \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
+\cr
 
-Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+Perperoglou, Aris, Saskia le Cessie and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
 \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 \cr
 }
