@@ -2,12 +2,12 @@
 % Please edit documentation in R/baseline.R
 \name{baseline}
 \alias{baseline}
-\title{calculating baseline hazard using the result from a \code{coxtv} object}
+\title{calculating baseline hazard using the result from a \code{coxtv} or \code{coxtp} object}
 \usage{
 baseline(fit, ...)
 }
 \arguments{
-\item{fit}{model from \code{coxtp}}
+\item{fit}{model from \code{coxtv} or \code{coxtp}}
 }
 \value{
 a list with three components
