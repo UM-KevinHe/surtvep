@@ -735,7 +735,7 @@ result <code>fit_penalized</code> in section 4.2.</p>
 <span><span class="va">IC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.smoothspline</span><span class="op">)</span></span>
 <span><span class="va">fit.mAIC</span> <span class="op">&lt;-</span> <span class="va">IC</span><span class="op">$</span><span class="va">model.mAIC</span></span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">base.est</span> <span class="op">=</span> <span class="fu"><a href="../reference/coxtp.baseline.html">coxtp.baseline</a></span><span class="op">(</span><span class="va">fit.mAIC</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">base.est</span> <span class="op">=</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">fit.mAIC</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">base.est</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $time</span></span>
@@ -1215,15 +1215,14 @@ package <span class="citation">(Bhatnagar et al. 2020)</span>.</p>
 illustration example and include</p>
 <p>First we load the data and get the survival outcome:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/UM-KevinHe/surtvep" class="external-link">surtvep</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">support</span><span class="op">)</span></span>
-<span><span class="va">support</span> <span class="op">&lt;-</span> <span class="va">support</span><span class="op">[</span><span class="va">support</span><span class="op">$</span><span class="va">ca</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metastatic"</span><span class="op">)</span>,<span class="op">]</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">support</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">support</span><span class="op">$</span><span class="va">d.time</span></span>
 <span><span class="va">death</span> <span class="op">&lt;-</span> <span class="va">support</span><span class="op">$</span><span class="va">death</span></span></code></pre></div>
-<p>Age and cancer status are included as covariates and considered as
-categorical variables. Age has 4 levels and cancer status has 3 levels.
-The following codes processed the covariates for model fitting.</p>
+<p>Age, cancer status and diabetes status are included as covariates and
+considered as categorical variables. Age has 4 levels, cancer status has
+3 levels and diabetes has 2 levels. The following codes processed the
+covariates for model fitting.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#diabetes: </span></span>
 <span><span class="va">diabetes</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">diabetes</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
@@ -1240,103 +1239,146 @@ The following codes processed the covariates for model fitting.</p>
 <span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">age</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"60-69"</span>, <span class="st">"&lt;50"</span>, <span class="st">"50-59"</span>, <span class="st">"70+"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">z_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">age</span><span class="op">)</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">z_age</span>, <span class="va">sex</span>, <span class="va">diabetes</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_50"</span>, <span class="st">"age_50_59"</span>, <span class="st">"age_70"</span>, <span class="st">"diabetes"</span>, <span class="st">"male"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># cancer status: metastatic, yes, no</span></span>
+<span><span class="va">ca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">ca</span><span class="op">)</span></span>
+<span><span class="co"># levels(ca) &lt;- c("non_metastatic",  "metastatic")</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ca</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metastatic"</span>,  <span class="st">"no"</span>, <span class="st">"yes"</span><span class="op">)</span></span>
+<span><span class="va">z_ca</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">ca</span><span class="op">)</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">z_age</span>, <span class="va">z_ca</span>, <span class="va">sex</span>, <span class="va">diabetes</span><span class="op">)</span></span>
+<span><span class="co"># colnames(z) &lt;- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male")</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_50"</span>, <span class="st">"age_50_59"</span>, <span class="st">"age_70"</span>, <span class="st">"non_cancer"</span>, <span class="st">"non_metastatic"</span>, <span class="st">"diabetes"</span>, <span class="st">"male"</span><span class="op">)</span></span></code></pre></div>
+<p>First we take a look at the Kaplan-Meier plots. The following code
+produces the K-M plots for three categorical variable mentioned
+above.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html" class="external-link">survminer</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: package 'survminer' was built under R version 4.1.3</span></span>
 <span><span class="co">#&gt; Warning: package 'ggpubr' was built under R version 4.1.3</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span>, <span class="va">z</span><span class="op">)</span></span>
-<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">diabetes</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
-<span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">age_50</span> <span class="op">+</span> <span class="va">age_50_59</span> <span class="op">+</span> <span class="va">age_70</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
+<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">non_cancer</span> <span class="op">+</span> <span class="va">non_metastatic</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
+<span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">diabetes</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
+<span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">age_50</span> <span class="op">+</span> <span class="va">age_50_59</span> <span class="op">+</span> <span class="va">age_70</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit1</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit2</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"60-69"</span>, <span class="st">"70+"</span>, <span class="st">"50-59"</span>, <span class="st">"&lt;50"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit1</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non-metastatic"</span>, <span class="st">"metastatic"</span>, <span class="st">"non-cancer"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-31-2.png" width="700"></p>
-<p>Fit the Newtons’ Method using <code>coxtv</code>`:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit.coxtv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -6.0075740; Stopping crit = 2.0058805e-02;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -6.0069564; Stopping crit = 5.3292865e-04;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -6.0068456; Stopping crit = 9.6247206e-05;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -6.0068380; Stopping crit = 7.3107910e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -6.0068379; Stopping crit = 4.4993724e-08;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -6.0068379; Stopping crit = 1.7576246e-12;</span></span></code></pre></div>
-<p>Simply look at the plots using the <code>plot</code> function:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit2</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"diabetes"</span>, <span class="st">"non-diabetes"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-31-3.png" width="700"></p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.coxtv</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-33-1.png" width="700"></p>
-<p>Then we add penalty term to improve the estimation.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit3</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"60-69"</span>, <span class="st">"70+"</span>, <span class="st">"50-59"</span>, <span class="st">"&lt;50"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-31-4.png" width="700"></p>
+<p>Fit the Newtons’ Method using <code>coxtv</code>:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit.coxtv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, nsplines <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.7809097; Stopping crit = 8.5517105e-02;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7668975; Stopping crit = 1.3701217e-02;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7668366; Stopping crit = 5.9791110e-05;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7668365; Stopping crit = 1.0851983e-07;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7668365; Stopping crit = 1.3509639e-11;</span></span></code></pre></div>
+<p>We take a look at the estimation plots of cancer status using the
+<code>plot</code> function:</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.coxtv</span>, parm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non_cancer"</span>, <span class="st">"non_metastatic"</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-33-1.png" width="700"></p>
+<p>Non-metastatic cancer, also known as earlier stage cancer, refers to
+cancer that is confined to the primary site and has not spread to other
+parts of the body.</p>
+<p>Non-cancer refers to the absence of cancer in a person. It may also
+refer to benign tumors or abnormal growths that are not cancerous.</p>
+<p>Conditioned on the diabetes status and age, we can see the
+proportional hazards assumption for cancer status is clearly not
+satisfied. There is a strong difference in the hazard of death from
+cancer between metastatic cancer, non-metastatic cancer and non-cancer.
+Patients with metastatic cancer has a higher hazard of dying in the
+first 1500 days.</p>
+<p>Then we add penalty term to improve the estimation.</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.coxtp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -6.0075748; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -6.0069563; Stopping crit = 3.0470864e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -6.0068457; Stopping crit = 5.4237542e-03;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -6.0068380; Stopping crit = 3.7523231e-04;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -6.0068380; Stopping crit = 2.1676876e-06;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -6.0068539; Stopping crit = 7.8384596e-04;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -6.0068380; Stopping crit = 7.8323184e-04;</span></span>
-<span><span class="co">#&gt; Iter 8: Obj fun = -6.0068380; Stopping crit = 6.0905542e-13;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812444; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7671833; Stopping crit = 1.9641985e-01;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671236; Stopping crit = 8.3228788e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671235; Stopping crit = 1.7829964e-06;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7671235; Stopping crit = 1.4411016e-10;</span></span>
 <span><span class="co">#&gt; lambda 1 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -6.0075830; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -6.0069579; Stopping crit = 3.0800332e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -6.0068474; Stopping crit = 5.4117544e-03;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -6.0068399; Stopping crit = 3.7140232e-04;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -6.0068398; Stopping crit = 1.7822801e-06;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -6.0069929; Stopping crit = 7.5541290e-03;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -6.0068398; Stopping crit = 7.4974894e-03;</span></span>
-<span><span class="co">#&gt; Iter 8: Obj fun = -6.0068398; Stopping crit = 8.7015862e-14;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812468; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7671838; Stopping crit = 1.9644601e-01;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671242; Stopping crit = 8.3214259e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671241; Stopping crit = 1.7319602e-06;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7671516; Stopping crit = 3.8334108e-04;</span></span>
+<span><span class="co">#&gt; Iter 6: Obj fun = -5.7671241; Stopping crit = 3.8319360e-04;</span></span>
+<span><span class="co">#&gt; Iter 7: Obj fun = -5.7671241; Stopping crit = 2.4793353e-13;</span></span>
 <span><span class="co">#&gt; lambda 10 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -6.0077261; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -6.0070765; Stopping crit = 3.2190501e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -6.0069670; Stopping crit = 5.4009023e-03;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -6.0069598; Stopping crit = 3.5347876e-04;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -6.0080121; Stopping crit = 5.4688031e-02;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -6.0069598; Stopping crit = 5.1851770e-02;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -6.0069598; Stopping crit = 1.8366017e-08;</span></span>
-<span><span class="co">#&gt; Iter 8: Obj fun = -6.0069598; Stopping crit = 1.4442511e-12;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812821; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7672134; Stopping crit = 1.9660829e-01;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671538; Stopping crit = 8.3172929e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671537; Stopping crit = 1.4760428e-06;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7673032; Stopping crit = 2.0917439e-03;</span></span>
+<span><span class="co">#&gt; Iter 6: Obj fun = -5.7671537; Stopping crit = 2.0873733e-03;</span></span>
+<span><span class="co">#&gt; Iter 7: Obj fun = -5.7671537; Stopping crit = 7.3170615e-13;</span></span>
 <span><span class="co">#&gt; lambda 100 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -6.0091784; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -6.0085890; Stopping crit = 3.1578911e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -6.0084717; Stopping crit = 6.2446383e-03;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -6.0084638; Stopping crit = 4.2309663e-04;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -6.0103550; Stopping crit = 1.1191445e-01;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -6.0084638; Stopping crit = 1.0064949e-01;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -6.0084638; Stopping crit = 2.6580513e-08;</span></span>
-<span><span class="co">#&gt; Iter 8: Obj fun = -6.0084638; Stopping crit = 9.4536390e-13;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.7814715; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7674149; Stopping crit = 1.9699357e-01;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7673556; Stopping crit = 8.3018593e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7673555; Stopping crit = 1.3357418e-06;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7675285; Stopping crit = 2.4280730e-03;</span></span>
+<span><span class="co">#&gt; Iter 6: Obj fun = -5.7673555; Stopping crit = 2.4221855e-03;</span></span>
+<span><span class="co">#&gt; Iter 7: Obj fun = -5.7673555; Stopping crit = 1.0322577e-12;</span></span>
 <span><span class="co">#&gt; lambda 1000 is done.</span></span>
 <span><span class="va">IC.support</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.coxtp</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.mAIC</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.mAIC</span>, parm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non_cancer"</span>, <span class="st">"non_metastatic"</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-35-1.png" width="700"></p>
 <p>Then we provide the hypothesis testing for each covariate.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#test the proportional hazards assumption</span></span>
 <span><span class="va">test.ph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.ph.html">tvef.ph</a></span><span class="op">(</span><span class="va">fit.coxtv</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">test.ph</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               chisq df          p</span></span>
-<span><span class="co">#&gt; age_50    15.454715  7 0.03059283</span></span>
-<span><span class="co">#&gt; age_50_59  8.638824  7 0.27963719</span></span>
-<span><span class="co">#&gt; age_70    10.110188  7 0.18241474</span></span>
-<span><span class="co">#&gt; diabetes  13.756883  7 0.05567828</span></span>
-<span><span class="co">#&gt; male       3.546281  7 0.83029941</span></span>
+<span><span class="co">#&gt;                    chisq df            p</span></span>
+<span><span class="co">#&gt; age_50          46.31117  9 5.271760e-07</span></span>
+<span><span class="co">#&gt; age_50_59       13.20847  9 1.533978e-01</span></span>
+<span><span class="co">#&gt; age_70           3.33877  9 9.493378e-01</span></span>
+<span><span class="co">#&gt; non_cancer     389.78944  9 2.064355e-78</span></span>
+<span><span class="co">#&gt; non_metastatic 210.60227  9 1.975632e-40</span></span>
+<span><span class="co">#&gt; diabetes        19.01802  9 2.504010e-02</span></span>
+<span><span class="co">#&gt; male            44.47614  9 1.153035e-06</span></span>
 <span></span>
 <span><span class="co">#test the significance of each covariate</span></span>
 <span><span class="va">test.zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.html">tvef.zero</a></span><span class="op">(</span><span class="va">fit.coxtv</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">test.zero</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               chisq df          p</span></span>
-<span><span class="co">#&gt; age_50    15.548155  8 0.04932336</span></span>
-<span><span class="co">#&gt; age_50_59  9.334500  8 0.31486836</span></span>
-<span><span class="co">#&gt; age_70    17.268841  8 0.02742827</span></span>
-<span><span class="co">#&gt; diabetes  14.683483  8 0.06560013</span></span>
-<span><span class="co">#&gt; male       5.551138  8 0.69736801</span></span></code></pre></div>
-<p>We can use the following codes to get the baseline estimation and the
-baseline plot.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.baseline.html">coxtp.baseline</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.mAIC</span><span class="op">)</span></span></code></pre></div>
-<p>The following codes provide the absolute hazards plot.<br></p>
+<span><span class="co">#&gt;                    chisq df             p</span></span>
+<span><span class="co">#&gt; age_50          92.95934 10  1.384020e-15</span></span>
+<span><span class="co">#&gt; age_50_59       23.20617 10  1.001062e-02</span></span>
+<span><span class="co">#&gt; age_70          33.59559 10  2.162004e-04</span></span>
+<span><span class="co">#&gt; non_cancer     997.76510 10 5.666717e-208</span></span>
+<span><span class="co">#&gt; non_metastatic 242.09638 10  2.486165e-46</span></span>
+<span><span class="co">#&gt; diabetes        25.96236 10  3.791138e-03</span></span>
+<span><span class="co">#&gt; male            48.35095 10  5.354766e-07</span></span></code></pre></div>
+<p>When testing for the proportional hazards assumption, age_50,
+non_cancer, non_metastatic, diabetes and male has p-value &lt; 0.05. We
+reject the null hypothesis and claim that these covariates have violated
+the proportional hazards assumption.</p>
+<p>All these covariates are significant based on the Wald test.</p>
+<p>Then we can use the following codes to get the baseline estimation
+and the baseline plot.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.TIC</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">base</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-38-1.png" width="700"></p>
+<p>When dealing with data where ties are presented, we can also give
+baseline hazard and absolute hazard for each covariate.</p>
+<p>We uti</p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">time.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">d.time</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p>The following codes provide the absolute hazards plot.</p>
+<p>Age, cancer status and diabetes status are included as covariates and
+considered as categorical variables. Age has 4 levels, cancer status has
+3 levels and diabetes has 2 levels. The following codes processed the
+covariates for model fitting.</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-casebase" class="csl-entry">
 Bhatnagar, Sahir, Maxime Turgeon, Jesse Islam, Olli Saarela, and James

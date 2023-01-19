@@ -505,7 +505,7 @@ fit.mAIC <- IC$model.mAIC
 ```
 
 ```{r}
-base.est = coxtp.baseline(fit.mAIC)
+base.est = baseline(fit.mAIC)
 ```
 
 ```{r}
@@ -848,16 +848,16 @@ Again, we could plot the result by ggplot:
 
 <!-- ``` -->
 
-# 6. Model performance
+<!-- # 6. Model performance -->
 
-## 6.1 Internal comparison
+<!-- ## 6.1 Internal comparison -->
 
-### 6.1.1 Accurancy:
+<!-- ### 6.1.1 Accurancy: -->
 
-For the non-penalized method, the estimation is largely depended on the number of knots chosen in the B-Spline base function.
-The example shown above is using the default knots, which is `nspline=8`.
-However, the estimation could be largely different if we choose other knots.
-Following is the code showing the performance of the estimation when choosing different knots:
+<!-- For the non-penalized method, the estimation is largely depended on the number of knots chosen in the B-Spline base function. -->
+<!-- The example shown above is using the default knots, which is `nspline=8`. -->
+<!-- However, the estimation could be largely different if we choose other knots. -->
+<!-- Following is the code showing the performance of the estimation when choosing different knots: -->
 
 <!-- Following is the code showing the performance of the estimation when choosing different knots: -->
 
@@ -1375,11 +1375,20 @@ plot(base)
 
 
 
-When dealing with data where ties are presented, we can also give baseline hazard and absolute hazard for different
+When dealing with data where ties are presented, we can also give baseline hazard and absolute hazard for each covariate.
+
+We uti
+
+```{r, message = FALSE}
+time.discrete <- round(support$d.time, digits = 2)
+```
+
 
 The following codes provide the absolute hazards plot.
 
-
+Age, cancer status and diabetes status are included as covariates and considered as categorical variables.
+Age has 4 levels, cancer status has 3 levels and diabetes has 2 levels.
+The following codes processed the covariates for model fitting.
 
 
 
