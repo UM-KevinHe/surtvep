@@ -116,9 +116,9 @@ baseline <-  function(fit, ...){
 
 
 
-#' plotting baseline from a fitted `coxtp.baseline` object
+#' plotting baseline from a fitted `baseline` object
 #'
-#' @param fit Model get from coxtp.baseline
+#' @param fit Model get from `baseline` function.
 #'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #'

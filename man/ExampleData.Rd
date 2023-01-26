@@ -3,13 +3,13 @@
 \docType{data}
 \name{ExampleData}
 \alias{ExampleData}
-\title{example data for surtvep with 4000 observations of 2 variables:}
+\title{example data for surtvep with 4000 observations of 2 variables}
 \format{
-A List containing the following elements:
+a list containing the following elements:
 \describe{
-\item{x}{Simulated covariate V1 and v2, Continuous variable. True time-independent function is b(t)=1 and true time-dependent function is b(t)=sin(3\emph{pi}t/4)}
-\item{event}{Simulated event variable, Binary varible with 0, 1 }
-\item{time}{Simulated time variable, Continous variable with non-negative value}
+\item{x}{simulated continuous covariate V1 and v2. True time-independent function is b(t)=1 and true time-dependent function is b(t)=sin(3\emph{pi}t/4).}
+\item{event}{simulated event variable, binary varible with 0, 1.}
+\item{time}{simulated time variable, continous variable with non-negative value.}
 }
 }
 \usage{

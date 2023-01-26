@@ -1,8 +1,8 @@
-#' fit a Cox non-proportional hazards model with p-spline or smoothing-spline where penalization tuning parameter is provided by cross validation.
+#' fit a Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross validation
 #' 
 #' Fit a Cox non-proportional hazards model via penalized maximum likelihood. 
 #' 
-#' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1
+#' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
 #' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
 #' @param time observed event time, should be a vector with non-negative numeric values.
 #' @param strata stratification group defined in the data used for the stratified model. 
@@ -31,8 +31,8 @@
 #' @param nfolds number of folds for cross-validation - default is 5. The smallest value allowable is `nfolds`=3.
 #' @param foldid an optional vector of values between 1 and nfold identifying what fold each observation is in. If supplied, `nfolds` can be missing.
 #'
-#' @param nsplines number of basis functions in the B-splines to span the time-varying effects, default value is 8. 
-#' We use the r function `splines::bs` to generate the B-splines. 
+#' @param nsplines number of basis functions in the splines to span the time-varying effects, default value is 8. 
+#' We use the R function `splines::bs` to generate the B-splines. 
 #' @param knots the internal knot locations (breakpoints) that define the B-splines.
 #' The number of the internal knots should be `nsplines`-`degree`-1.
 #' If `NULL`, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{fit a Cox non-proportional hazards model with p-spline or smoothing-spline, penalization tuning parameter can be chosen by information criteria or cross-validation.}
+\title{fit a Cox non-proportional hazards model with P-spline or Smoothing-spline, penalization tuning parameter chosen by information criteria or cross-validation}
 \usage{
 coxtp(
   event,
@@ -30,7 +30,7 @@ coxtp(
 )
 }
 \arguments{
-\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1}
+\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1.}
 
 \item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation vector.}
 
@@ -54,8 +54,8 @@ When \code{degree=2}, we use the quadratic B-spline penalizing first-order deriv
 
 If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as (0.1, 1, 10). Users can modify \code{lambda}. See details in \code{lambda}.}
 
-\item{nsplines}{number of basis functions in the B-splines to span the time-varying effects, the default value is 8.
-We use the r function \code{splines::bs} to generate the B-splines.}
+\item{nsplines}{number of basis functions in the splines to span the time-varying effects, the default value is 8.
+We use the R function \code{splines::bs} to generate the B-splines.}
 
 \item{lambda}{a user-specified \code{lambda} sequence as the penalization coefficients in front of the spline term specified by \code{spline}.
 This is the tuning parameter for penalization. Users can use \code{IC} to select the best tuning parameter based on the information criteria.
@@ -115,10 +115,10 @@ A list of objects with S3 class \code{"coxtp"}. The length is the same as that o
 Each row represents the coefficients at the corresponding input observation time.}
 
 \item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension of the basis matrix is \code{nvars}-by-\code{nsplines};
-if \code{ties="Breslow"}, the dimension is \code{len_unique_t} x \code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
+if \code{ties="Breslow"}, the dimension is \code{len_unique_t}-by-\code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
 \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars}-by-\code{nsplines}.
 Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
-\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars}-by-\code{nsplines * nvars}.}
+\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} -by- \code{nsplines * nvars}.}
 \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
 \item{nobs}{number of observations.}
 \item{spline}{the spline type user specified.}
@@ -132,7 +132,7 @@ Fit a Cox non-proportional hazards model via penalized maximum likelihood.
 The sequence of models implied by \code{lambda.spline} is fit by Newton's method (Proximal Newton's method). The objective function is
 \deqn{loglik - P_{\lambda},}
 where \eqn{P_{\lambda}} can be \code{P-spline} or \code{Smooth-spline}. The \eqn{\lambda} is the tuning  parameter \eqn{\lambda}. Users can define the initial sequence.
-\code{IC}provides different information criteria to choose the tuning parameter \eqn{\lambda}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
+\code{IC} provides different information criteria to choose the tuning parameter \eqn{\lambda}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
 }
 \examples{
 data(ExampleData)
@@ -171,5 +171,5 @@ Perperoglou, Aris, Saskia le Cessie and Hans C. van Houwelingen. (2006) A fast r
 \cr
 }
 \seealso{
-\code{\link{get.tvcoef}}, \code{\link{plot}}, \code{\link{IC}} and \code{\link{cv.coxtp}}.
+\code{\link{IC}}, \code{\link{plot}}, \code{\link{get.tvcoef}} and \code{\link{baseline}}.
 }

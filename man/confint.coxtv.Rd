@@ -10,11 +10,11 @@
 \method{confint}{coxtv}(fit, times, parm, level = 0.95, ...)
 }
 \arguments{
-\item{fit}{fitted \code{"coxtv"} model}
+\item{fit}{fitted \code{"coxtv"} model.}
 
-\item{times}{the time interval to be estamtied. The default value is the time of the fitted model}
+\item{times}{the time interval to be estamtied. The default value is the time of the fitted model.}
 
-\item{parm}{the names of parameter}
+\item{parm}{the names of parameter.}
 
 \item{level}{the confidence level. Default is 0.95.}
 }

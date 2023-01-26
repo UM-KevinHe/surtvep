@@ -1361,14 +1361,70 @@ and the baseline plot.</p>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-38-1.png" width="700"></p>
 <p>When dealing with data where ties are presented, we can also give
 baseline hazard and absolute hazard for each covariate.</p>
-<p>We uti</p>
+<p>We utilized the Breslow’s approximation to estimate the baseline
+hazard at each event time. We round the unique event time first.</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">time.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">d.time</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">time.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">d.time</span>, digits <span class="op">=</span> <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time.discrete</span>, nsplines <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.8724904; Stopping crit = 6.9769675e-02;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.8627640; Stopping crit = 9.4651633e-03;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.8627181; Stopping crit = 4.5036507e-05;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.8627180; Stopping crit = 9.3247857e-08;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.8627180; Stopping crit = 1.1457318e-11;</span></span>
+<span></span>
+<span><span class="va">base.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">fit.discrete</span><span class="op">)</span></span></code></pre></div>
 <p>The following codes provide the absolute hazards plot.</p>
-<p>Age, cancer status and diabetes status are included as covariates and
-considered as categorical variables. Age has 4 levels, cancer status has
-3 levels and diabetes has 2 levels. The following codes processed the
-covariates for model fitting.</p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">beta.abso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/get.tvcoef.html">get.tvcoef</a></span><span class="op">(</span><span class="va">fit.discrete</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">time_unique</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">time.discrete</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">haz_j</span>      <span class="op">&lt;-</span> <span class="va">base.discrete</span><span class="op">$</span><span class="va">hazard</span></span>
+<span></span>
+<span><span class="va">smooth_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">time_unique</span>, <span class="va">haz_j</span><span class="op">)</span></span>
+<span><span class="va">loessMod10</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/loess.html" class="external-link">loess</a></span><span class="op">(</span><span class="va">haz_j</span> <span class="op">~</span> <span class="va">time_unique</span>, data<span class="op">=</span><span class="va">smooth_data</span>, span<span class="op">=</span><span class="fl">0.10</span><span class="op">)</span> <span class="co"># 10% smoothing span</span></span>
+<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
+<span><span class="co">#&gt; parametric, : span too small. fewer data values than degrees of freedom.</span></span>
+<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
+<span><span class="co">#&gt; parametric, : pseudoinverse used at -10</span></span>
+<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
+<span><span class="co">#&gt; parametric, : neighborhood radius 110</span></span>
+<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
+<span><span class="co">#&gt; parametric, : reciprocal condition number 0</span></span>
+<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
+<span><span class="co">#&gt; parametric, : There are other near singularities as well. 12100</span></span>
+<span><span class="co">#loessMod30 &lt;- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing span</span></span>
+<span><span class="co">#loessMod50 &lt;- loess(haz_j ~ time_unique, data=smooth_data, span=0.50) # 50% smoothing span</span></span>
+<span></span>
+<span><span class="va">haz_j_smooth10</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">loessMod10</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">exp_betax</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">time.discrete</span><span class="op">)</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">beta2</span>                   <span class="op">&lt;-</span> <span class="va">beta.abso</span></span>
+<span><span class="va">beta2</span><span class="op">$</span><span class="va">cancer</span>         <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span></span>
+<span><span class="va">exp_betax</span>               <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">beta2</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co"># colnames(exp_betax) &lt;- colnames(z)</span></span>
+<span></span>
+<span><span class="va">haz_0_betax</span>             <span class="op">&lt;-</span> <span class="va">haz_j_smooth10</span> <span class="op">*</span> <span class="va">exp_betax</span></span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="va">plot_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">haz_0_betax</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">time_unique</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">non_cancer</span>,  color <span class="op">=</span> <span class="st">"non-cancer"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">non_metastatic</span>,    color <span class="op">=</span> <span class="st">"non-metastatic"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">cancer</span>,  color <span class="op">=</span> <span class="st">"metastatic-cancer"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
+<span></span>
+<span>  <span class="co"># scale_x_continuous(name='Years since diagnosis', limits=c(0,12), breaks=c(0,4,8,12)) + </span></span>
+<span>  <span class="co"># scale_y_continuous(name='Absolute hazard', limits = c(0,0.2)) +</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Age at diagnosis'</span>, </span>
+<span>                     breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'non-cancer'</span>, <span class="st">'non-metastatic'</span>, <span class="st">'metastatic-cancer'</span><span class="op">)</span>,</span>
+<span>                     values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'non-cancer'</span><span class="op">=</span><span class="st">'dark green'</span>, <span class="st">'non-metastatic'</span><span class="op">=</span><span class="st">'red'</span>, <span class="st">'metastatic-cancer'</span> <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># ggtitle(" Cancer Death Mets Only") +</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">plot_age</span></span></code></pre></div>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-41-1.png" width="700"></p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-casebase" class="csl-entry">
 Bhatnagar, Sahir, Maxime Turgeon, Jesse Islam, Olli Saarela, and James

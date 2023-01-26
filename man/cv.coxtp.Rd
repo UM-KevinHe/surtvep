@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv.coxtp.R
 \name{cv.coxtp}
 \alias{cv.coxtp}
-\title{fit a Cox non-proportional hazards model with p-spline or smoothing-spline where penalization tuning parameter is provided by cross validation.}
+\title{fit a Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross validation}
 \usage{
 cv.coxtp(
   event,
@@ -29,7 +29,7 @@ cv.coxtp(
 )
 }
 \arguments{
-\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1}
+\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1.}
 
 \item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation vector.}
 
@@ -62,8 +62,8 @@ When \code{degree=2}, we use the quadratic B-spline penalizing first-order deriv
 
 If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as (0.1, 1, 10). Users can modify \code{lambda}. See details in \code{lambda}.}
 
-\item{nsplines}{number of basis functions in the B-splines to span the time-varying effects, default value is 8.
-We use the r function \code{splines::bs} to generate the B-splines.}
+\item{nsplines}{number of basis functions in the splines to span the time-varying effects, default value is 8.
+We use the R function \code{splines::bs} to generate the B-splines.}
 
 \item{ties}{a character string specifying the method for tie handling. If there are no tied
 death times, the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties occur.}

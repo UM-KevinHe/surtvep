@@ -2,17 +2,21 @@
 % Please edit documentation in R/tvef.ph.R
 \name{tvef.zero}
 \alias{tvef.zero}
-\title{test the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a Wald test statistic}
+\title{test the significance of the covariates from a \code{coxtv} or \code{coxtp} object}
 \usage{
 tvef.zero(fit, parm)
 }
 \arguments{
-\item{fit}{fitted \code{"coxtv"} or \code{"coxtp"}  model}
+\item{fit}{fitted \code{"coxtv"} or \code{"coxtp"}  model.}
 
-\item{parm}{the names of parameter to be tested}
+\item{parm}{the names of parameter to be tested.}
+}
+\value{
+\code{tvef.zero} produces a matrix. Each row corresponds to a covariate from the fitted object. The three
+columns gives the value of test statistic, degrees of freedom and P-value.
 }
 \description{
-test the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a Wald test statistic
+Test the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a Wald test statistic.
 }
 \examples{
 data(ExampleData)

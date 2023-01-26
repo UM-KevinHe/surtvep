@@ -1,6 +1,6 @@
 #' plotting result from a fitted `coxtv` object
 #'
-#' @param fit Model get from coxtv
+#' @param fit Model get from coxtv.
 #'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 

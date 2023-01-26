@@ -546,9 +546,9 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
 
 #' @rdname confint.coxtv
 #' 
-#' @param fit fitted \code{"coxtp"} model
-#' @param times the time interval to be estamtied. The default value is the time of the fitted model
-#' @param parm the names of parameter
+#' @param fit fitted \code{"coxtp"} model.
+#' @param times the time interval to be estamtied. The default value is the time of the fitted model.
+#' @param parm the names of parameter.
 #' @param level the confidence level. Default is 0.95.
 #' 
 #' 

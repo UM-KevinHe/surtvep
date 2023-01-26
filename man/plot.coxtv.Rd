@@ -27,7 +27,7 @@
 )
 }
 \arguments{
-\item{fit}{Model get from coxtv}
+\item{fit}{Model get from coxtv.}
 }
 \description{
 plotting result from a fitted \code{coxtv} object
