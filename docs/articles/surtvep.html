@@ -559,7 +559,7 @@ link)).</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="newton-method-with-penalization">Newton Method with penalization:<a class="anchor" aria-label="anchor" href="#newton-method-with-penalization"></a>
+<h2 id="newtons-method-with-penalization">Newton’s Method with penalization:<a class="anchor" aria-label="anchor" href="#newtons-method-with-penalization"></a>
 </h2>
 <p>The proximal Newton can help improve the estimation when the
 origional hessian matrix is very close to a singular one, which may
@@ -872,118 +872,6 @@ freedom.</p>
 </h4>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">test.zero.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.time.html">tvef.zero.time</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="model-prediction">Model prediction:<a class="anchor" aria-label="anchor" href="#model-prediction"></a>
-</h2>
-<div class="section level3">
-<h3 id="simple-prediction">Simple prediction<a class="anchor" aria-label="anchor" href="#simple-prediction"></a>
-</h3>
-<p>To predict the new data, we offered the function coxtp.predict. This
-function could also be used to calculate absolute hazard. Suppose the
-new data to be predicted is <code>c(1,1,0,0,0)</code> for
-<code>V1</code> to <code>V5</code>. For data with no stratification:
-(Suppose we already have the best tuning parameter
-<code>lambda_spline</code> selected).</p>
-<!-- ```{r} -->
-<!-- sim_data=sim_data_p5 -->
-<!-- event=sim_data[,"event"] -->
-<!-- time=sim_data[,"time"] -->
-<!-- data=sim_data[,!colnames(sim_data) %in% c("event","time")] -->
-<!-- lambda_spline=1000 -->
-<!-- fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline) -->
-<!-- model_result  = fit_penalized$model_result -->
-<!-- baseline=coxtp.baseline(fit=model_result, delta=event,z=data,time=time) -->
-<!-- data_predict=c(1,1,0,0,0) -->
-<!-- predict=coxtp.predict(model_result,baseline,newdata=data_predict) -->
-<!-- ``` -->
-<!-- The result dataset `predict` is a dataset with predicted hazard and time points in the orginal dataset. -->
-<!-- We could plot the data using ggplot: -->
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-<!-- ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
-<!--   geom_line(size = 0.6) + -->
-<!--   scale_x_continuous(name='Years since diagnosis') + -->
-<!--   scale_y_continuous(name='Predicted hazard') + -->
-<!--   ggtitle("Predicted Hazard") + -->
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- ``` -->
-</div>
-<div class="section level3">
-<h3 id="absolute-hazard">5.6.2 absolute hazard<a class="anchor" aria-label="anchor" href="#absolute-hazard"></a>
-</h3>
-<p>If we want to calculate and show the difference of absolute hazard
-for variable <code>V2</code>, we could use the
-<code>coxtp.predict</code> to get it done. Assume that besides
-<code>V2</code>, other covariate are all set to the reference level.</p>
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-<!-- data_predict0=c(0,1,0,0,0) -->
-<!-- predict0=coxtp.predict(model_result,baseline,newdata=data_predict0,strata = F) -->
-<!-- data_predict1=c(0,0,0,0,0) -->
-<!-- predict1=coxtp.predict(model_result,baseline,newdata=data_predict1,strata = F) -->
-<!-- ggplot() + -->
-<!--   geom_line(aes(x=predict0$unique.time.,y=predict0$lambda0_exp_betax,color="V2=0"),size = 0.6) + -->
-<!--   geom_line(aes(x=predict1$unique.time.,y=predict1$lambda0_exp_betax,color="V2=1"),size = 0.6) + -->
-<!--   scale_x_continuous(name='Years since diagnosis') + -->
-<!--   scale_y_continuous(name='Predicted hazard') + -->
-<!--   ggtitle("Predicted Hazard") + -->
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- ``` -->
-<!-- ### 5.6.3 Prediction for certain time points -->
-<!-- Also, we could specify the time points of output by define `out_seq`. -->
-<!-- Following is an example: -->
-<!-- Let's check the output first: -->
-<!-- ```{r} -->
-<!-- predict_seq=coxtp.predict(model_result,baseline,newdata=data_predict,strata = F,out_seq=seq(0,3,by=0.5)) -->
-<!-- predict_seq -->
-<!-- ``` -->
-<!-- Instead of outputing all the data points, the `coxtp.predict` will only output the time points that has been specified. -->
-<!-- Next, we are going to see if there is any difference between the one with default output and the one with specified time points: -->
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-<!-- predict_seq=coxtp.predict(model_result,baseline,newdata=data_predict,strata = F,out_seq=seq(0,3,by=0.1)) -->
-<!-- plot_or=ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
-<!--           geom_line(size = 0.6) + -->
-<!--           scale_x_continuous(name='Years since diagnosis') + -->
-<!--           scale_y_continuous(name='Predicted hazard') + -->
-<!--           ggtitle("Without specify out_seq") + -->
-<!--           theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- plot_seq=ggplot(predict_seq,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
-<!--           geom_line(size = 0.6) + -->
-<!--           scale_x_continuous(name='Years since diagnosis') + -->
-<!--           scale_y_continuous(name='Predicted hazard') + -->
-<!--           ggtitle("With specify out_seq") + -->
-<!--           theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- plot_grid(plot_or,plot_seq,ncol = 2) -->
-<!-- ``` -->
-<p>From the result above, we could notice that only the function
-smoothness looks different.</p>
-<!-- ### 5.6.3 Prediction with stratification -->
-<p>For data with stratification, just define that
-<code>strata=T</code>(Default is FALSE):(Again, suppose we already have
-the best tuning parameter lambda selected)</p>
-<!-- ```{r} -->
-<!-- event_stra=sim_data_p5_f5[,"event"] -->
-<!-- time_stra=sim_data_p5_f5[,"time"] -->
-<!-- data_stra=sim_data_p5_f5[,!colnames(sim_data_p5_f5) %in% c("event","time","facility")] -->
-<!-- facility=sim_data_p5_f5[,"facility"] -->
-<!-- #select best lambda -->
-<!-- lambda_spline=1000 -->
-<!-- fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline) -->
-<!-- model_result  = fit_stra$model_result -->
-<!-- baseline_strata=coxtp.baseline(fit=model_result, delta=event_stra,z=data_stra,time=time_stra,strata = facility) -->
-<!-- data_predict=c(1,1,0,0,0) -->
-<!-- predict=coxtp.predict(model_result,baseline_strata,newdata=data_predict,strata = T) -->
-<!-- ``` -->
-<p>Again, we could plot the result by ggplot:</p>
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-<!-- ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
-<!--   geom_line(aes(color=strata,group=strata),size = 0.6) + -->
-<!--   scale_x_continuous(name='Years since diagnosis') + -->
-<!--   scale_y_continuous(name='Predicted hazard') + -->
-<!--   ggtitle("Predicted Hazard") + -->
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- ``` -->
 <!-- # 6. Model performance -->
 <!-- ## 6.1 Internal comparison -->
 <!-- ### 6.1.1 Accurancy: -->
@@ -1193,6 +1081,7 @@ selected. For the following plot, the knot was set as default, which is
 <!-- From previous illustration, we know that the function `cox.predict` could generate absolute hazard for one individual during the time period. -->
 </div>
 </div>
+</div>
 <div class="section level2">
 <h2 id="real-data-example-support">Real Data Example <code>SUPPORT</code><a class="anchor" aria-label="anchor" href="#real-data-example-support"></a>
 </h2>
@@ -1231,38 +1120,37 @@ covariates for model fitting.</p>
 <span></span>
 <span><span class="co"># cancer status: metastatic, yes, no</span></span>
 <span><span class="va">ca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">ca</span><span class="op">)</span></span>
-<span><span class="co"># levels(ca) &lt;- c("non_metastatic",  "metastatic")</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">ca</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metastatic"</span>,  <span class="st">"no"</span>, <span class="st">"yes"</span><span class="op">)</span></span>
-<span><span class="va">z_ca</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">ca</span><span class="op">)</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="va">z_ca_mets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">ca</span> <span class="op">==</span> <span class="st">"metastatic"</span><span class="op">)</span></span>
+<span><span class="va">z_ca_non_mets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">ca</span> <span class="op">==</span> <span class="st">"yes"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">z_age</span>, <span class="va">z_ca</span>, <span class="va">sex</span>, <span class="va">diabetes</span><span class="op">)</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">z_age</span>, <span class="va">z_ca_mets</span>, <span class="va">z_ca_non_mets</span>, <span class="va">sex</span>, <span class="va">diabetes</span><span class="op">)</span></span>
 <span><span class="co"># colnames(z) &lt;- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male")</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_50"</span>, <span class="st">"age_50_59"</span>, <span class="st">"age_70"</span>, <span class="st">"non_cancer"</span>, <span class="st">"non_metastatic"</span>, <span class="st">"diabetes"</span>, <span class="st">"male"</span><span class="op">)</span></span></code></pre></div>
-<p>First we take a look at the Kaplan-Meier plots. The following code
-produces the K-M plots for three categorical variable mentioned
-above.</p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_50"</span>, <span class="st">"age_50_59"</span>, <span class="st">"age_70"</span>, <span class="st">"metastatic"</span>, <span class="st">"non_metastatic"</span>, <span class="st">"diabetes"</span>, <span class="st">"male"</span><span class="op">)</span></span></code></pre></div>
+<p>The Kaplan-Meier (KM) plots were generated using the following codes
+to visualize the survival probability over time for three categorical
+variables. Analysis of the KM plot for cancer status revealed a
+crossover point at approximately day 200, where the survival probability
+of the non-metastatic cancer group surpassed that of the cancer group,
+suggesting a violation of the non-proportional hazards assumption.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html" class="external-link">survminer</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: package 'survminer' was built under R version 4.1.3</span></span>
 <span><span class="co">#&gt; Warning: package 'ggpubr' was built under R version 4.1.3</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span>, <span class="va">z</span><span class="op">)</span></span>
-<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">non_cancer</span> <span class="op">+</span> <span class="va">non_metastatic</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
+<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">metastatic</span> <span class="op">+</span> <span class="va">non_metastatic</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
 <span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">diabetes</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
 <span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">age_50</span> <span class="op">+</span> <span class="va">age_50_59</span> <span class="op">+</span> <span class="va">age_70</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit1</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit1</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non-cancer"</span>, <span class="st">"non-metastatic cancer"</span>, <span class="st">"metastatic cancer"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit1</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non-metastatic"</span>, <span class="st">"metastatic"</span>, <span class="st">"non-cancer"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit2</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"diabetes"</span>, <span class="st">"non-diabetes"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-31-2.png" width="700"></p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit2</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"diabetes"</span>, <span class="st">"non-diabetes"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-31-3.png" width="700"></p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit3</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"60-69"</span>, <span class="st">"70+"</span>, <span class="st">"50-59"</span>, <span class="st">"&lt;50"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-31-4.png" width="700"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-31-3.png" width="700"></p>
 <p>Fit the Newtons’ Method using <code>coxtv</code>:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.coxtv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, nsplines <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Iter 1: Obj fun = -5.7809097; Stopping crit = 8.5517105e-02;</span></span>
 <span><span class="co">#&gt; Iter 2: Obj fun = -5.7668975; Stopping crit = 1.3701217e-02;</span></span>
@@ -1271,70 +1159,69 @@ above.</p>
 <span><span class="co">#&gt; Iter 5: Obj fun = -5.7668365; Stopping crit = 1.3509639e-11;</span></span></code></pre></div>
 <p>We take a look at the estimation plots of cancer status using the
 <code>plot</code> function:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.coxtv</span>, parm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non_cancer"</span>, <span class="st">"non_metastatic"</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.coxtv</span>, parm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metastatic"</span>, <span class="st">"non_metastatic"</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-33-1.png" width="700"></p>
-<p>Non-metastatic cancer, also known as earlier stage cancer, refers to
-cancer that is confined to the primary site and has not spread to other
-parts of the body.</p>
-<p>Non-cancer refers to the absence of cancer in a person. It may also
-refer to benign tumors or abnormal growths that are not cancerous.</p>
-<p>Conditioned on the diabetes status and age, we can see the
-proportional hazards assumption for cancer status is clearly not
-satisfied. There is a strong difference in the hazard of death from
-cancer between metastatic cancer, non-metastatic cancer and non-cancer.
-Patients with metastatic cancer has a higher hazard of dying in the
-first 1500 days.</p>
-<p>Then we add penalty term to improve the estimation.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<p>Conditioned on the diabetes status and age, we can observe a
+violation of the proportional hazards assumption. A significant
+difference in the hazard of death was observed between the metastatic
+cancer, non-metastatic cancer, and non-cancer groups. Specifically,
+patients with metastatic cancer exhibited a higher hazard of death
+during the initial 1500 days compared with non-cancer patients.</p>
+<p>However, upon examination of the estimation plot for non-metastatic
+cancer, a decrease at the beginning followed by an increase can be
+observed. The fluctuation in the plot is not deemed reliable, primarily
+due to the instability of the estimation. To address this issue, a
+penalty term was added to improve the estimation.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.coxtp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Iter 1: Obj fun = -5.7812444; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7671833; Stopping crit = 1.9641985e-01;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671236; Stopping crit = 8.3228788e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671235; Stopping crit = 1.7829964e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7671235; Stopping crit = 1.4411016e-10;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7671833; Stopping crit = 1.9641947e-01;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671236; Stopping crit = 8.3225826e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671235; Stopping crit = 1.7825937e-06;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7671235; Stopping crit = 1.4383743e-10;</span></span>
 <span><span class="co">#&gt; lambda 1 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812468; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7671838; Stopping crit = 1.9644601e-01;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671242; Stopping crit = 8.3214259e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671241; Stopping crit = 1.7319602e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7671516; Stopping crit = 3.8334108e-04;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -5.7671241; Stopping crit = 3.8319360e-04;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -5.7671241; Stopping crit = 2.4793353e-13;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812465; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7671838; Stopping crit = 1.9644253e-01;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671242; Stopping crit = 8.3187556e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671241; Stopping crit = 1.7283675e-06;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7671518; Stopping crit = 3.8614177e-04;</span></span>
+<span><span class="co">#&gt; Iter 6: Obj fun = -5.7671241; Stopping crit = 3.8599213e-04;</span></span>
+<span><span class="co">#&gt; Iter 7: Obj fun = -5.7671241; Stopping crit = 1.7355348e-13;</span></span>
 <span><span class="co">#&gt; lambda 10 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812821; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7672134; Stopping crit = 1.9660829e-01;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671538; Stopping crit = 8.3172929e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671537; Stopping crit = 1.4760428e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7673032; Stopping crit = 2.0917439e-03;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -5.7671537; Stopping crit = 2.0873733e-03;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -5.7671537; Stopping crit = 7.3170615e-13;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812812; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7672135; Stopping crit = 1.9659361e-01;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671540; Stopping crit = 8.3082429e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671539; Stopping crit = 1.4655789e-06;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7673043; Stopping crit = 2.1045372e-03;</span></span>
+<span><span class="co">#&gt; Iter 6: Obj fun = -5.7671539; Stopping crit = 2.1001131e-03;</span></span>
+<span><span class="co">#&gt; Iter 7: Obj fun = -5.7671539; Stopping crit = 8.0611971e-13;</span></span>
 <span><span class="co">#&gt; lambda 100 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.7814715; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7674149; Stopping crit = 1.9699357e-01;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7673556; Stopping crit = 8.3018593e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7673555; Stopping crit = 1.3357418e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7675285; Stopping crit = 2.4280730e-03;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -5.7673555; Stopping crit = 2.4221855e-03;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -5.7673555; Stopping crit = 1.0322577e-12;</span></span>
+<span><span class="co">#&gt; Iter 1: Obj fun = -5.7814771; Stopping crit = 1.0000000e+00;</span></span>
+<span><span class="co">#&gt; Iter 2: Obj fun = -5.7674171; Stopping crit = 1.9704674e-01;</span></span>
+<span><span class="co">#&gt; Iter 3: Obj fun = -5.7673576; Stopping crit = 8.3362394e-04;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -5.7673575; Stopping crit = 1.3752688e-06;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -5.7675286; Stopping crit = 2.4012175e-03;</span></span>
+<span><span class="co">#&gt; Iter 6: Obj fun = -5.7673575; Stopping crit = 2.3954592e-03;</span></span>
+<span><span class="co">#&gt; Iter 7: Obj fun = -5.7673575; Stopping crit = 1.0322873e-12;</span></span>
 <span><span class="co">#&gt; lambda 1000 is done.</span></span>
 <span><span class="va">IC.support</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.coxtp</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.mAIC</span>, parm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non_cancer"</span>, <span class="st">"non_metastatic"</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.mAIC</span>, parm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metastatic"</span>, <span class="st">"non_metastatic"</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-35-1.png" width="700"></p>
 <p>Then we provide the hypothesis testing for each covariate.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#test the proportional hazards assumption</span></span>
 <span><span class="va">test.ph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.ph.html">tvef.ph</a></span><span class="op">(</span><span class="va">fit.coxtv</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">test.ph</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                    chisq df            p</span></span>
-<span><span class="co">#&gt; age_50          46.31117  9 5.271760e-07</span></span>
-<span><span class="co">#&gt; age_50_59       13.20847  9 1.533978e-01</span></span>
-<span><span class="co">#&gt; age_70           3.33877  9 9.493378e-01</span></span>
-<span><span class="co">#&gt; non_cancer     389.78944  9 2.064355e-78</span></span>
-<span><span class="co">#&gt; non_metastatic 210.60227  9 1.975632e-40</span></span>
-<span><span class="co">#&gt; diabetes        19.01802  9 2.504010e-02</span></span>
-<span><span class="co">#&gt; male            44.47614  9 1.153035e-06</span></span>
+<span><span class="co">#&gt;                     chisq df            p</span></span>
+<span><span class="co">#&gt; age_50          46.311169  9 5.271760e-07</span></span>
+<span><span class="co">#&gt; age_50_59       13.208472  9 1.533978e-01</span></span>
+<span><span class="co">#&gt; age_70           3.338770  9 9.493378e-01</span></span>
+<span><span class="co">#&gt; metastatic     389.789436  9 2.064355e-78</span></span>
+<span><span class="co">#&gt; non_metastatic   4.168983  9 8.999424e-01</span></span>
+<span><span class="co">#&gt; diabetes        19.018021  9 2.504010e-02</span></span>
+<span><span class="co">#&gt; male            44.476142  9 1.153035e-06</span></span>
 <span></span>
 <span><span class="co">#test the significance of each covariate</span></span>
 <span><span class="va">test.zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.html">tvef.zero</a></span><span class="op">(</span><span class="va">fit.coxtv</span><span class="op">)</span></span>
@@ -1343,8 +1230,8 @@ first 1500 days.</p>
 <span><span class="co">#&gt; age_50          92.95934 10  1.384020e-15</span></span>
 <span><span class="co">#&gt; age_50_59       23.20617 10  1.001062e-02</span></span>
 <span><span class="co">#&gt; age_70          33.59559 10  2.162004e-04</span></span>
-<span><span class="co">#&gt; non_cancer     997.76510 10 5.666717e-208</span></span>
-<span><span class="co">#&gt; non_metastatic 242.09638 10  2.486165e-46</span></span>
+<span><span class="co">#&gt; metastatic     997.76510 10 5.666717e-208</span></span>
+<span><span class="co">#&gt; non_metastatic 134.96747 10  4.517433e-24</span></span>
 <span><span class="co">#&gt; diabetes        25.96236 10  3.791138e-03</span></span>
 <span><span class="co">#&gt; male            48.35095 10  5.354766e-07</span></span></code></pre></div>
 <p>When testing for the proportional hazards assumption, age_50,
@@ -1354,16 +1241,16 @@ the proportional hazards assumption.</p>
 <p>All these covariates are significant based on the Wald test.</p>
 <p>Then we can use the following codes to get the baseline estimation
 and the baseline plot.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.TIC</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">base</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-38-1.png" width="700"></p>
 <p>When dealing with data where ties are presented, we can also give
 baseline hazard and absolute hazard for each covariate.</p>
 <p>We utilized the Breslow’s approximation to estimate the baseline
 hazard at each event time. We round the unique event time first.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">time.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">d.time</span>, digits <span class="op">=</span> <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fit.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time.discrete</span>, nsplines <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
@@ -1375,7 +1262,7 @@ hazard at each event time. We round the unique event time first.</p>
 <span></span>
 <span><span class="va">base.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">fit.discrete</span><span class="op">)</span></span></code></pre></div>
 <p>The following codes provide the absolute hazards plot.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beta.abso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/get.tvcoef.html">get.tvcoef</a></span><span class="op">(</span><span class="va">fit.discrete</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">time_unique</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">time.discrete</span><span class="op">)</span></span>
@@ -1383,21 +1270,11 @@ hazard at each event time. We round the unique event time first.</p>
 <span><span class="va">haz_j</span>      <span class="op">&lt;-</span> <span class="va">base.discrete</span><span class="op">$</span><span class="va">hazard</span></span>
 <span></span>
 <span><span class="va">smooth_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">time_unique</span>, <span class="va">haz_j</span><span class="op">)</span></span>
-<span><span class="va">loessMod10</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/loess.html" class="external-link">loess</a></span><span class="op">(</span><span class="va">haz_j</span> <span class="op">~</span> <span class="va">time_unique</span>, data<span class="op">=</span><span class="va">smooth_data</span>, span<span class="op">=</span><span class="fl">0.10</span><span class="op">)</span> <span class="co"># 10% smoothing span</span></span>
-<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
-<span><span class="co">#&gt; parametric, : span too small. fewer data values than degrees of freedom.</span></span>
-<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
-<span><span class="co">#&gt; parametric, : pseudoinverse used at -10</span></span>
-<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
-<span><span class="co">#&gt; parametric, : neighborhood radius 110</span></span>
-<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
-<span><span class="co">#&gt; parametric, : reciprocal condition number 0</span></span>
-<span><span class="co">#&gt; Warning in simpleLoess(y, x, w, span, degree = degree, parametric =</span></span>
-<span><span class="co">#&gt; parametric, : There are other near singularities as well. 12100</span></span>
-<span><span class="co">#loessMod30 &lt;- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing span</span></span>
+<span><span class="co"># loessMod10 &lt;- loess(haz_j ~ time_unique, data=smooth_data, span=0.10) # 10% smoothing span</span></span>
+<span><span class="va">loessMod30</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/loess.html" class="external-link">loess</a></span><span class="op">(</span><span class="va">haz_j</span> <span class="op">~</span> <span class="va">time_unique</span>, data<span class="op">=</span><span class="va">smooth_data</span>, span<span class="op">=</span><span class="fl">0.30</span><span class="op">)</span> <span class="co"># 30% smoothing span</span></span>
 <span><span class="co">#loessMod50 &lt;- loess(haz_j ~ time_unique, data=smooth_data, span=0.50) # 50% smoothing span</span></span>
 <span></span>
-<span><span class="va">haz_j_smooth10</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">loessMod10</span><span class="op">)</span> </span>
+<span><span class="va">haz_j_smooth30</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">loessMod30</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">exp_betax</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">time.discrete</span><span class="op">)</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">beta2</span>                   <span class="op">&lt;-</span> <span class="va">beta.abso</span></span>
@@ -1405,16 +1282,13 @@ hazard at each event time. We round the unique event time first.</p>
 <span></span>
 <span><span class="va">exp_betax</span>               <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">beta2</span><span class="op">)</span></span>
 <span></span>
-<span></span>
-<span><span class="co"># colnames(exp_betax) &lt;- colnames(z)</span></span>
-<span></span>
-<span><span class="va">haz_0_betax</span>             <span class="op">&lt;-</span> <span class="va">haz_j_smooth10</span> <span class="op">*</span> <span class="va">exp_betax</span></span></code></pre></div>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<span><span class="va">haz_0_betax</span>             <span class="op">&lt;-</span> <span class="va">haz_j_smooth30</span> <span class="op">*</span> <span class="va">exp_betax</span></span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">plot_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">haz_0_betax</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">time_unique</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">non_cancer</span>,  color <span class="op">=</span> <span class="st">"non-cancer"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">metastatic</span>,  color <span class="op">=</span> <span class="st">"metastatic-cancer"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">non_metastatic</span>,    color <span class="op">=</span> <span class="st">"non-metastatic"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">cancer</span>,  color <span class="op">=</span> <span class="st">"metastatic-cancer"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">cancer</span>,  color <span class="op">=</span> <span class="st">"non-cancer"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
 <span></span>
 <span>  <span class="co"># scale_x_continuous(name='Years since diagnosis', limits=c(0,12), breaks=c(0,4,8,12)) + </span></span>
 <span>  <span class="co"># scale_y_continuous(name='Absolute hazard', limits = c(0,0.2)) +</span></span>

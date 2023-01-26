@@ -2,7 +2,7 @@
 % Please edit documentation in R/baseline.R
 \name{baseline}
 \alias{baseline}
-\title{calculating baseline hazard using the result from a \code{coxtv} or \code{coxtp} object}
+\title{calculating baseline hazard and baseline cumulative hazard using the result from a \code{coxtv} or \code{coxtp} object}
 \usage{
 baseline(fit, ...)
 }
@@ -11,12 +11,13 @@ baseline(fit, ...)
 }
 \value{
 a list with three components
-\item{time}{the unique observation time}
-\item{hazard}{the baseline hazard corresponding to each unqiue time point}
-\item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
+\item{time}{the unique observed event time}
+\item{hazard}{the baseline hazard corresponding to each unique time point}
+\item{cumulHaz}{the cumulative baseline hazard corresponding to each unique time point}
 }
 \description{
-The baseline estimation is the baseline hazard at each observation time when holding all the covariates equals to zero.
+The baseline estimation is the baseline hazard at each observed event time when
+holding all the covariates to be zero.
 }
 \examples{
 \dontrun{

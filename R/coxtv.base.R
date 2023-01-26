@@ -462,7 +462,7 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 
 
 
-#' get confidence interval from a fitted object
+#' get confidence interval of time-varying coefficients from a fitted object
 #' 
 #' @param fit fitted \code{"coxtv"} model.
 #' @param times the time interval to be estamtied. The default value is the time of the fitted model.

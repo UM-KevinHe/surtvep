@@ -366,7 +366,7 @@ CI <- confint(fit.proxN)
 head(CI$tvef$X1)
 ```
 
-## Newton Method with penalization:
+## Newton's Method with penalization:
 
 The proximal Newton can help improve the estimation when the origional hessian matrix is very close to a singular one, which may often occur in the setting of time-varying effects, however, over-fitting issue still exists.
 We further improve the estimation by introducing the penalty.
@@ -662,191 +662,9 @@ Under the null hypothesis that the effect is time-independent, $S_p$ is asymptot
 test.zero.time <- tvef.zero.time(fit.proxN)
 ```
 
-## Model prediction:
 
-### Simple prediction
 
-To predict the new data, we offered the function coxtp.predict.
-This function could also be used to calculate absolute hazard.
-Suppose the new data to be predicted is `c(1,1,0,0,0)` for `V1` to `V5`.
-For data with no stratification: (Suppose we already have the best tuning parameter `lambda_spline` selected).
 
-<!-- ```{r} -->
-
-<!-- sim_data=sim_data_p5 -->
-
-<!-- event=sim_data[,"event"] -->
-
-<!-- time=sim_data[,"time"] -->
-
-<!-- data=sim_data[,!colnames(sim_data) %in% c("event","time")] -->
-
-<!-- lambda_spline=1000 -->
-
-<!-- fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline) -->
-
-<!-- model_result  = fit_penalized$model_result -->
-
-<!-- baseline=coxtp.baseline(fit=model_result, delta=event,z=data,time=time) -->
-
-<!-- data_predict=c(1,1,0,0,0) -->
-
-<!-- predict=coxtp.predict(model_result,baseline,newdata=data_predict) -->
-
-<!-- ``` -->
-
-<!-- The result dataset `predict` is a dataset with predicted hazard and time points in the orginal dataset. -->
-
-<!-- We could plot the data using ggplot: -->
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-
-<!-- ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
-
-<!--   geom_line(size = 0.6) + -->
-
-<!--   scale_x_continuous(name='Years since diagnosis') + -->
-
-<!--   scale_y_continuous(name='Predicted hazard') + -->
-
-<!--   ggtitle("Predicted Hazard") + -->
-
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- ``` -->
-
-### 5.6.2 absolute hazard
-
-If we want to calculate and show the difference of absolute hazard for variable `V2`, we could use the `coxtp.predict` to get it done.
-Assume that besides `V2`, other covariate are all set to the reference level.
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-
-<!-- data_predict0=c(0,1,0,0,0) -->
-
-<!-- predict0=coxtp.predict(model_result,baseline,newdata=data_predict0,strata = F) -->
-
-<!-- data_predict1=c(0,0,0,0,0) -->
-
-<!-- predict1=coxtp.predict(model_result,baseline,newdata=data_predict1,strata = F) -->
-
-<!-- ggplot() + -->
-
-<!--   geom_line(aes(x=predict0$unique.time.,y=predict0$lambda0_exp_betax,color="V2=0"),size = 0.6) + -->
-
-<!--   geom_line(aes(x=predict1$unique.time.,y=predict1$lambda0_exp_betax,color="V2=1"),size = 0.6) + -->
-
-<!--   scale_x_continuous(name='Years since diagnosis') + -->
-
-<!--   scale_y_continuous(name='Predicted hazard') + -->
-
-<!--   ggtitle("Predicted Hazard") + -->
-
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- ``` -->
-
-<!-- ### 5.6.3 Prediction for certain time points -->
-
-<!-- Also, we could specify the time points of output by define `out_seq`. -->
-
-<!-- Following is an example: -->
-
-<!-- Let's check the output first: -->
-
-<!-- ```{r} -->
-
-<!-- predict_seq=coxtp.predict(model_result,baseline,newdata=data_predict,strata = F,out_seq=seq(0,3,by=0.5)) -->
-
-<!-- predict_seq -->
-
-<!-- ``` -->
-
-<!-- Instead of outputing all the data points, the `coxtp.predict` will only output the time points that has been specified. -->
-
-<!-- Next, we are going to see if there is any difference between the one with default output and the one with specified time points: -->
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-
-<!-- predict_seq=coxtp.predict(model_result,baseline,newdata=data_predict,strata = F,out_seq=seq(0,3,by=0.1)) -->
-
-<!-- plot_or=ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
-
-<!--           geom_line(size = 0.6) + -->
-
-<!--           scale_x_continuous(name='Years since diagnosis') + -->
-
-<!--           scale_y_continuous(name='Predicted hazard') + -->
-
-<!--           ggtitle("Without specify out_seq") + -->
-
-<!--           theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- plot_seq=ggplot(predict_seq,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
-
-<!--           geom_line(size = 0.6) + -->
-
-<!--           scale_x_continuous(name='Years since diagnosis') + -->
-
-<!--           scale_y_continuous(name='Predicted hazard') + -->
-
-<!--           ggtitle("With specify out_seq") + -->
-
-<!--           theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- plot_grid(plot_or,plot_seq,ncol = 2) -->
-
-<!-- ``` -->
-
-From the result above, we could notice that only the function smoothness looks different.
-
-<!-- ### 5.6.3 Prediction with stratification -->
-
-For data with stratification, just define that `strata=T`(Default is FALSE):(Again, suppose we already have the best tuning parameter lambda selected)
-
-<!-- ```{r} -->
-
-<!-- event_stra=sim_data_p5_f5[,"event"] -->
-
-<!-- time_stra=sim_data_p5_f5[,"time"] -->
-
-<!-- data_stra=sim_data_p5_f5[,!colnames(sim_data_p5_f5) %in% c("event","time","facility")] -->
-
-<!-- facility=sim_data_p5_f5[,"facility"] -->
-
-<!-- #select best lambda -->
-
-<!-- lambda_spline=1000 -->
-
-<!-- fit_stra<-coxtp(event=event_stra,z=data_stra,time=time_stra,strata =facility,lambda_spline=lambda_spline) -->
-
-<!-- model_result  = fit_stra$model_result -->
-
-<!-- baseline_strata=coxtp.baseline(fit=model_result, delta=event_stra,z=data_stra,time=time_stra,strata = facility) -->
-
-<!-- data_predict=c(1,1,0,0,0) -->
-
-<!-- predict=coxtp.predict(model_result,baseline_strata,newdata=data_predict,strata = T) -->
-
-<!-- ``` -->
-
-Again, we could plot the result by ggplot:
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-
-<!-- ggplot(predict,aes(x=unique.time.,y=lambda0_exp_betax)) + -->
-
-<!--   geom_line(aes(color=strata,group=strata),size = 0.6) + -->
-
-<!--   scale_x_continuous(name='Years since diagnosis') + -->
-
-<!--   scale_y_continuous(name='Predicted hazard') + -->
-
-<!--   ggtitle("Predicted Hazard") + -->
-
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- ``` -->
 
 <!-- # 6. Model performance -->
 
@@ -1391,11 +1209,11 @@ time_unique<- unique(time.discrete)
 haz_j      <- base.discrete$hazard
 
 smooth_data <- data.frame(time_unique, haz_j)
-loessMod10 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.10) # 10% smoothing span
-#loessMod30 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing span
+# loessMod10 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.10) # 10% smoothing span
+loessMod30 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing span
 #loessMod50 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.50) # 50% smoothing span
 
-haz_j_smooth10 <- predict(loessMod10) 
+haz_j_smooth30 <- predict(loessMod30) 
 
 exp_betax<- matrix(0,length(unique(time.discrete)),dim(z)[2])
 beta2                   <- beta.abso
@@ -1403,19 +1221,16 @@ beta2$cancer         <- 0
 
 exp_betax               <- exp(beta2)
 
-
-# colnames(exp_betax) <- colnames(z)
-
-haz_0_betax             <- haz_j_smooth10 * exp_betax
+haz_0_betax             <- haz_j_smooth30 * exp_betax
 ```
 
 
 ```{r, fig = TRUE, message = FALSE}
 library(ggplot2)
 plot_age <- ggplot(haz_0_betax, aes(x=time_unique)) + 
-  geom_line(aes(y=non_cancer,  color = "non-cancer"),size = 0.6) + 
+  geom_line(aes(y=metastatic,  color = "metastatic-cancer"),size = 0.6) + 
   geom_line(aes(y=non_metastatic,    color = "non-metastatic"),size = 0.6) + 
-  geom_line(aes(y=cancer,  color = "metastatic-cancer"),size = 0.6) + 
+  geom_line(aes(y=cancer,  color = "non-cancer"),size = 0.6) + 
 
   # scale_x_continuous(name='Years since diagnosis', limits=c(0,12), breaks=c(0,4,8,12)) + 
   # scale_y_continuous(name='Absolute hazard', limits = c(0,0.2)) +

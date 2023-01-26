@@ -78,17 +78,26 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>fit</dt>
-<dd><p>fitted <code>"coxtv"</code> or <code>"coxtp"</code>  model</p></dd>
+<dd><p>fitted <code>"coxtv"</code> or <code>"coxtp"</code>  model.</p></dd>
 
 
 <dt>times</dt>
-<dd><p>the time points to test if the covariate is significant or not</p></dd>
+<dd><p>the time points to test if the covariate is significant or not.</p></dd>
 
 
 <dt>parm</dt>
-<dd><p>the names of parameter to be tested</p></dd>
+<dd><p>the names of parameter to be tested.</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
+
+<p><code>tvef.zero.time</code> produces a list of length <code>nvars</code>. Each element of the list is a matrix with respect to a
+covariate. The matrix is of dimension <code>len_unique_t</code> by 4, where <code>len_unique_t</code> is the length of unique follow-up time.
+Each row corresponds to the testing result at that time.  The four
+columns gives the estimation, standard error, z-statistic and  P-value.</p>
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p><code><a href="tvef.ph.html">tvef.ph</a></code> <code><a href="tvef.zero.html">tvef.zero</a></code></p></div>

@@ -1,15 +1,16 @@
-#' calculating baseline hazard using the result from a `coxtv` or `coxtp` object
+#' calculating baseline hazard and baseline cumulative hazard using the result from a `coxtv` or `coxtp` object
 #'
-#' The baseline estimation is the baseline hazard at each observation time when holding all the covariates equals to zero.
+#' The baseline estimation is the baseline hazard at each observed event time when 
+#' holding all the covariates to be zero.
 #'
 #' @param fit model from `coxtv` or `coxtp`
 #' 
 #' @export
 #' 
 #' @return a list with three components
-#' \item{time}{the unique observation time} 
-#' \item{hazard}{the baseline hazard corresponding to each unqiue time point}
-#' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unqiue time point}
+#' \item{time}{the unique observed event time} 
+#' \item{hazard}{the baseline hazard corresponding to each unique time point}
+#' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unique time point}
 #'
 #' @examples
 #' \dontrun{

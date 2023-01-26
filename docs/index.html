@@ -5,17 +5,19 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cox non-proportional hazards model with penalization • surtvep</title>
+<title>Cox non-proportional hazards model with time-varying coefficients • surtvep</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Cox non-proportional hazards model with penalization">
-<meta property="og:description" content="surtvep is an R package for fitting penalized Newton's method 
-  for the time-varying effects model using mAIC, TIC, GIC as information criteria, 
-  in particular we span the parameter using basis functions. Utilities for carrying 
-  out post-fitting visualization, summarization, and inference are also provided.">
+<script src="pkgdown.js"></script><meta property="og:title" content="Cox non-proportional hazards model with time-varying coefficients">
+<meta property="og:description" content="surtvep is an R package for fitting Cox non-proportional hazards models with time-varying coefficients. Both unpenalized procedures \
+  (Newton and proximal Newton) and penalized procedures (P-splines and smoothing splines) 
+  are included using B-spline basis functions for estimating time-varying coefficients. 
+  For penalized procedures, cross-validations, mAIC, TIC or GIC are implemented to select  tuning parameters. 
+  Utilities for carrying out post-estimation visualization, summarization, point-wise confidence interval 
+  and hypothesis testing are also provided.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -93,26 +95,14 @@
 <div class="section level1">
 <div class="page-header"><h1 id="surtvep">surtvep<a class="anchor" aria-label="anchor" href="#surtvep"></a>
 </h1></div>
-<p>“surtvep” is an R package for time-varying effects analysis in large-scale time-to-event data, including Newton’s method, Proximal Newton’s method and their combination with P-spline and smoothing-spline. mAIC, TIC, GIC and cross-validation are provided to choose the penalization coefficient.</p>
+<p>``surtvep” is an R package for fitting penalized Newton’s method for the time-varying effects model using mAIC, TIC and GIC as information criteria, in particular we span the parameters using B-spline basis functions. Utilities for carrying out post-estimation visualization, summarization, and inference are also provided.</p>
 </div>
 <div class="section level1">
-<h1 id="get-started">Get Started<a class="anchor" aria-label="anchor" href="#get-started"></a>
+<h1 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h1>
-<p>First you can install the ‘surtvep’ via:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Install the package, need to install the devtools packages:</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(<span class="st">"remotes"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"UM-KevinHe/surtvep"</span>, <span class="at">ref =</span> <span class="st">"openmp"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#To install with Vignettes:</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"UM-KevinHe/surtvep"</span>, <span class="at">ref =</span> <span class="st">"openmp"</span>, <span class="at">build_vignettes =</span>T)</span></code></pre></div>
-<p>We recommend to start with [01 introduction], which explains the general usage of the package in terms of data preprocessing, model training and evaluation procedure.</p>
-<p>Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature. However, there are no formal R packages for estimating the time-varying effect without pre-assuming the time-dependent function. However, in the real dataset, if we get the pre-assuming incorrect, the estimation could be largely influenced by the assumption. Thus, we decided to develop a time-varying model using spline terms with penalization which don’t need pre-assumption for the true time-dependent function and implemented it in R.</p>
-<p>Following are some benefits of our packages:</p>
-<p>To begin with, traditional methods of modeling time-varying survival models typically rely on expanding the original data in a repeated measurement format, which, even with moderate sample size, usually leads to an intractably large working dataset. Consequently, the computational burden increases dramatically as the sample size grows, precluding the evaluation of time-varying effects in large-scale studies, thus, we propose a computationally efficient Kronecker product-based proximal algorithm, which enables us to extend existing methods of estimating time-varying effects for time-to-event data to a large-scale context. Detailed information about our method could be found here.</p>
-<p>Also, by allowing parallel computing, our packages could handle the moderate and large sample size quite well compared to current methods which we would compare at the end of this page.</p>
-<p>Specifically, when the data under analysis include a number of binary covariates with near-zero variation (e.g., in the SEER prostate cancer data, only 0.6% of the 716,553 patients had their tumors regional to the lymph nodes), the associated observed information matrix of a Newton-type method may have its minimum eigenvalue close to zero with a large condition number. Inverting such a nearly singular matrix is numerically unstable and the corresponding Newton updates are likely to be conned within a small neighborhood of the initial value, causing the estimates to be far from the optimal solutions. However, our proposed Proximal-Newtown method could handle this problem quite well by adding (how to describe the edited Hessian matrix)</p>
+<p>Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects is particularly important, as time-varying effects have already been reported in the clinical literature. However, there are currently no formal R packages for estimating the time-varying effects without pre-assuming the time-dependent function. Inaccurate pre-assumptions can greatly influence the estimation, leading to unreliable results. To address this issue, we developed a time-varying model using spline terms with penalization that does not require pre-assumption of the true time-dependent function, and implemented it in R.</p>
+<p>Our package offers several benefits over traditional methods. Firstly, traditional methods for modeling time-varying survival models often rely on expanding the original data into a repeated measurement format. However, even with moderate sample sizes, this leads to a large and computationally burdensome working dataset. Our package addresses this issue by proposing a computationally efficient Kronecker product-based proximal algorithm, which allows for the evaluation of time-varying effects in large-scale studies. Additionally, our package allows for parallel computing and can handle moderate to large sample sizes more efficiently than current methods.</p>
+<p>In our statistical software tutorial, we address a common issue encountered when analyzing data with binary covariates with near-zero variation. For example, in the SEER prostate cancer data, only 0.6% of the 716,553 patients had their tumors regional to the lymph nodes. In such cases, the associated observed information matrix of a Newton-type method may have a minimum eigenvalue close to zero and a large condition number. Inverting this nearly singular matrix can lead to numerical instability and the corresponding Newton updates may be confined within a small neighborhood of the initial value, resulting in estimates that are far from the optimal solutions. To address this problem, our proposed Proximal-Newtown method utilizes a modified Hessian matrix, which allows for accurate estimation in these scenarios.</p>
 <div class="section level2">
 <h2 id="models">Models:<a class="anchor" aria-label="anchor" href="#models"></a>
 </h2>
@@ -133,18 +123,7 @@ Example
 Newton
 </td>
 <td>
-Newton’s method without penalization <a href="#references">[1]</a>.
-</td>
-<td>
-<a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#model-fitting">tutorial</a>
-</td>
-</tr>
-<tr>
-<td>
-Proximal Newton
-</td>
-<td>
-Proximal Newton’s method without penalization <a href="#references">[2]</a>.
+Newton’s method and Proximal Newton’s method <a href="#references">[1]</a>.
 </td>
 <td>
 <a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#model-fitting">tutorial</a>
@@ -155,7 +134,7 @@ Proximal Newton’s method without penalization <a href="#references">[2]</a>.
 Newton’s method with penalization
 </td>
 <td>
-Proximal Newton’s method without penalization <a href="#references">[2]</a>.
+Newton’s method and Proximal Newton combined with P-spline or Smoothing-spline <a href="#references">[2]</a>.
 </td>
 <td>
 <a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#model-fitting">tutorial</a>
@@ -228,19 +207,19 @@ Use cross validation to select the penalization coefficient <a href="#references
 <h2 id="usage">Usage:<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
 <p>Here, we are using the Simulation study included in our packages as an example</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(surtvep)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Load Simulation study</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>sim_data<span class="ot">=</span>sim_data</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Clean and create label and covariate matrix for the package:</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>event<span class="ot">=</span>sim_data[,<span class="st">"event"</span>]</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>time<span class="ot">=</span>sim_data[,<span class="st">"time"</span>]</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>data<span class="ot">=</span>sim_data[,<span class="sc">!</span><span class="fu">colnames</span>(sim_data) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"event"</span>,<span class="st">"time"</span>)]</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the model(Time varying model without penalty)</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">coxtp</span>(<span class="at">event =</span> event, <span class="at">z =</span> data, <span class="at">time =</span> time)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">coxtp.plot</span>(fit,<span class="at">coef=</span><span class="st">"V1"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(surtvep)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Load Simulation study</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sim_data<span class="ot">=</span>sim_data</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Clean and create label and covariate matrix for the package:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>event<span class="ot">=</span>sim_data[,<span class="st">"event"</span>]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>time<span class="ot">=</span>sim_data[,<span class="st">"time"</span>]</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>data<span class="ot">=</span>sim_data[,<span class="sc">!</span><span class="fu">colnames</span>(sim_data) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"event"</span>,<span class="st">"time"</span>)]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the model(Time varying model without penalty)</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">coxtp</span>(<span class="at">event =</span> event, <span class="at">z =</span> data, <span class="at">time =</span> time)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">coxtp.plot</span>(fit,<span class="at">coef=</span><span class="st">"V1"</span>)</span></code></pre></div>
 <!---<a href="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe"><img src="https://drive.google.com/uc?export=view&id=1ET7KIwGN6FVHtjduSNGYpIUf-ydkimIe" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture"/></a>-->
 </div>
 </div>
@@ -248,7 +227,7 @@ Use cross validation to select the penalization coefficient <a href="#references
 <h1 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a>
 </h1>
 <p>The SUPPORT dataset is available in the “surtvep” package. The following code will load the dataset in the form of a dataframe</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"support"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"support"</span>)</span></code></pre></div>
 <div class="section level2">
 <h2 id="simulated-datasets">Simulated Datasets:<a class="anchor" aria-label="anchor" href="#simulated-datasets"></a>
 </h2>
@@ -281,15 +260,15 @@ Dataset from simulation study in <a href="#references">[2]</a>. This is a simula
 <a href="https://github.com/havakv/pycox/blob/master/pycox/simulations/relative_risk.py" class="external-link">simulN2kOP2Continuous</a>
 </td>
 </tr>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&lt;</span>tr<span class="sc">&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="er">&lt;</span>td<span class="sc">&gt;</span>simulN2kOP2Binary<span class="sc">&lt;</span><span class="er">/</span>td<span class="sc">&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="er">&lt;</span>td<span class="sc">&gt;</span><span class="dv">100</span>,<span class="dv">000</span><span class="sc">&lt;</span><span class="er">/</span>td<span class="sc">&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="er">&lt;</span>td<span class="sc">&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    Dataset from simulation study <span class="cf">in</span> <span class="sc">&lt;</span>a href<span class="ot">=</span><span class="st">"#references"</span><span class="sc">&gt;</span>[<span class="dv">12</span>]<span class="sc">&lt;</span><span class="er">/</span>a<span class="sc">&gt;</span>.</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    This is a discrete time dataset with <span class="dv">1000</span> possible event<span class="sc">-</span>times.</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">&lt;</span><span class="er">/</span>td<span class="sc">&gt;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="er">&lt;</span>td<span class="sc">&gt;</span><span class="er">&lt;</span>a href<span class="ot">=</span><span class="st">"https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py"</span><span class="sc">&gt;</span>simulN2kOP2Binary<span class="sc">&lt;</span><span class="er">/</span>a<span class="sc">&gt;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="er">&lt;/</span>tr<span class="sc">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&lt;</span>tr<span class="sc">&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="er">&lt;</span>td<span class="sc">&gt;</span>simulN2kOP2Binary<span class="sc">&lt;</span><span class="er">/</span>td<span class="sc">&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="er">&lt;</span>td<span class="sc">&gt;</span><span class="dv">100</span>,<span class="dv">000</span><span class="sc">&lt;</span><span class="er">/</span>td<span class="sc">&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="er">&lt;</span>td<span class="sc">&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    Dataset from simulation study <span class="cf">in</span> <span class="sc">&lt;</span>a href<span class="ot">=</span><span class="st">"#references"</span><span class="sc">&gt;</span>[<span class="dv">12</span>]<span class="sc">&lt;</span><span class="er">/</span>a<span class="sc">&gt;</span>.</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    This is a discrete time dataset with <span class="dv">1000</span> possible event<span class="sc">-</span>times.</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">&lt;</span><span class="er">/</span>td<span class="sc">&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="er">&lt;</span>td<span class="sc">&gt;</span><span class="er">&lt;</span>a href<span class="ot">=</span><span class="st">"https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py"</span><span class="sc">&gt;</span>simulN2kOP2Binary<span class="sc">&lt;</span><span class="er">/</span>a<span class="sc">&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="er">&lt;/</span>tr<span class="sc">&gt;</span></span></code></pre></div>
 </table>
 </div>
 <div class="section level2">
@@ -334,15 +313,11 @@ for preprocessing.
 <p><strong>Note:</strong> <em>This package is still in its early stages of development, so please don’t hesitate to report any problems you may experience.</em></p>
 <p>The package only works for R 4.1.0+.</p>
 <p>You can install ‘surtvep’ via:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Install the package, need to install the devtools packages:</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(<span class="st">"remotes"</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"UM-KevinHe/surtvep"</span>, <span class="at">ref =</span> <span class="st">"openmp"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#To install with Vignettes:</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"UM-KevinHe/surtvep"</span>, <span class="at">ref =</span> <span class="st">"openmp"</span>, <span class="at">build_vignettes =</span>T)</span></code></pre></div>
-<p>We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">tutorial</a>, which explains the general usage of the package in terms of preprocessing, model training, penalziation parameter selection and evalutaion procedure.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Install the package, need to install the devtools packages:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(<span class="st">"remotes"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"UM-KevinHe/surtvep"</span>, <span class="at">ref =</span> <span class="st">"openmp"</span>)</span></code></pre></div>
+<p>We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#quick-start" target="_blank">tutorial</a>, as it provides an overview of the package’s usage, including preprocessing, model training, selection of penalization parameters, and post-estimation procedures.</p>
 <div class="section level2">
 <h2 id="detailed-tutorial">Detailed tutorial<a class="anchor" aria-label="anchor" href="#detailed-tutorial"></a>
 </h2>

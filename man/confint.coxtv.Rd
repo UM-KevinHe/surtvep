@@ -3,7 +3,7 @@
 \name{confint.coxtp}
 \alias{confint.coxtp}
 \alias{confint.coxtv}
-\title{get confidence interval from a fitted object}
+\title{get confidence interval of time-varying coefficients from a fitted object}
 \usage{
 \method{confint}{coxtp}(fit, times, parm, level = 0.95)
 
@@ -19,7 +19,7 @@
 \item{level}{the confidence level. Default is 0.95.}
 }
 \description{
-get confidence interval from a fitted object
+get confidence interval of time-varying coefficients from a fitted object
 }
 \examples{
 \dontrun{
