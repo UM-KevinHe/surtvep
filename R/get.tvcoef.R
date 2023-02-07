@@ -5,10 +5,10 @@
 #' @param fit model from `coxtv` or `coxtp`.
 #' @param times the observation time. If `NULL`, the observation time for fitting the model will be used.
 #' 
-#' @return a matrix of the time-varying coefficients. The dimension is `length(times)` x `nvars`, where `nvars` is the number
+#' @return A matrix of the time-varying coefficients. The dimension is `length(times)` x `nvars`, where `nvars` is the number
 #' of covariates in the fitted mode.
 #' Each row represents the time-varying coefficients at the corresponding time.
-#' ``
+#' 
 #' @export
 #' 
 #' @examples 

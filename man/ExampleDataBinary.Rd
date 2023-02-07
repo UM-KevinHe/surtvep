@@ -9,8 +9,8 @@ a list containing the following elements:
 \describe{
 \item{V1}{simulated binary covariate V1. True time-dependent function is b(t)=1. }
 \item{V2}{simulated binary covariate V2. True time-dependent function is b(t)=exp(-1.5*t). }
-\item{event}{simulated event variable, binary varible with 0, 1. }
-\item{time}{simulated time variable, continous variable with non-negative value. }
+\item{event}{simulated event variable, binary variable with 0, 1. }
+\item{time}{simulated time variable, continuous variable with non-negative value. }
 }
 }
 \usage{

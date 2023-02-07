@@ -8,8 +8,8 @@
 a list containing the following elements:
 \describe{
 \item{x}{simulated binary covariate V1 and V2. True time-dependent function is b(t)=1 and true time-dependent function is b(t)=sin(3\emph{pi}t/4). }
-\item{event}{simulated event variable, binary varible with 0, 1.}
-\item{time}{simulated time variable, continous variable with non-negative value.}
+\item{event}{simulated event variable, binary variable with 0, 1.}
+\item{time}{simulated time variable, continuous variable with non-negative value.}
 \item{strata}{simulated strata variable, patients in different stratums have different baseline hazards.}
 }
 }

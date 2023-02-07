@@ -9,11 +9,11 @@ tvef.ph(fit, parm)
 \arguments{
 \item{fit}{fitted \code{"coxtv"} or \code{"coxtp"}  model.}
 
-\item{parm}{the names of parameter to be tested.}
+\item{parm}{the names of parameters to be tested.}
 }
 \value{
 \code{tvef.ph} produces a matrix. Each row corresponds to a covariate from the fitted object. The three
-columns gives the value of test statistic, degrees of freedom and P-value.
+columns gives the value of the test statistic, degrees of freedom and P-value.
 }
 \description{
 Test the proportional hazards assumption using a Wald test statistic.

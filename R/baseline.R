@@ -1,16 +1,16 @@
 #' calculating baseline hazard and baseline cumulative hazard using the result from a `coxtv` or `coxtp` object
 #'
-#' The baseline estimation is the baseline hazard at each observed event time when 
+#' The baseline estimation is the baseline hazard at each observed failure time when 
 #' holding all the covariates to be zero.
 #'
-#' @param fit model from `coxtv` or `coxtp`
+#' @param fit model from `coxtv` or `coxtp`.
 #' 
 #' @export
 #' 
-#' @return a list with three components
-#' \item{time}{the unique observed event time} 
-#' \item{hazard}{the baseline hazard corresponding to each unique time point}
-#' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unique time point}
+#' @return A list with three components:
+#' \item{time}{the unique observed failure time.} 
+#' \item{hazard}{the baseline hazard corresponding to each unique failure time point.}
+#' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unique failure time point.}
 #'
 #' @examples
 #' \dontrun{
@@ -117,9 +117,11 @@ baseline <-  function(fit, ...){
 
 
 
-#' plotting baseline from a fitted `baseline` object
+#' plotting baseline
+#' 
+#' Plotting baseline from a fitted `baseline` object.
 #'
-#' @param fit Model get from `baseline` function.
+#' @param fit model get from `baseline` function.
 #'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #'

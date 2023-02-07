@@ -11,13 +11,13 @@ tvef.zero.time(fit, times, parm)
 
 \item{times}{the time points to test if the covariate is significant or not.}
 
-\item{parm}{the names of parameter to be tested.}
+\item{parm}{the names of parameters to be tested.}
 }
 \value{
 \code{tvef.zero.time} produces a list of length \code{nvars}. Each element of the list is a matrix with respect to a
 covariate. The matrix is of dimension \code{len_unique_t} by 4, where \code{len_unique_t} is the length of unique follow-up time.
 Each row corresponds to the testing result at that time.  The four
-columns gives the estimation, standard error, z-statistic and  P-value.
+columns give the estimation, standard error, z-statistic and  P-value.
 }
 \description{
 test the significance of the covariates at each time point.

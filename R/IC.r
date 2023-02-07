@@ -1,18 +1,18 @@
 #' calculating information criteria from a `coxtp` object
 #' 
-#' This function is to calculate information criteria from a `coxtp` object to select the penalization tuning paramter.
+#' This function is to calculate information criteria from a `coxtp` object to select the penalization tuning parameter.
 #'
 #' @param fit model from `coxtp`.
-#' @param IC.prox when calculating information criteria, there might be numerical issue(second order derivative, 
-#' Hessian matrix approximate is singular). In such cases warnings will be given. 
-#' if `true`, we modified the diagonal of hessian matrix a bit, which may lead to bias issues. 
+#' @param IC.prox when calculating information criteria, there might be numerical issues (e.g. the Hessian matrix is close to be singular).
+#' In such cases warnings will be given. 
+#' If `IC.prox = true`, we modified the diagonal of the Hessian matrix a bit, which can lead to more stable estimates.
 #' Default is `FALSE`.
 #' 
 #' 
 #' @return 
-#' \item{model.mAIC}{an object with S3 class \code{"coxtp"} using mAIC to select the tunning parameter.}
-#' \item{model.TIC}{an object with S3 class \code{"coxtp"} using TIC to select the tunning parameter.}
-#' \item{model.GIC}{an object with S3 class \code{"coxtp"} using GIC to select the tunning parameter.}
+#' \item{model.mAIC}{an object with S3 class \code{"coxtp"} using mAIC to select the tuning parameter.}
+#' \item{model.TIC}{an object with S3 class \code{"coxtp"} using TIC to select the tuning parameter.}
+#' \item{model.GIC}{an object with S3 class \code{"coxtp"} using GIC to select the tuning parameter.}
 #' \item{mAIC}{a sequence of mAIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
 #' \item{TIC}{a sequence of TIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
 #' \item{GIC}{a sequence of GIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
@@ -31,8 +31,8 @@
 #' @details 
 #' In order to select the proper smoothing parameter, we utilize the idea of information criteria. 
 #' We provide four different information criteria to select the optimal smoothing parameter \eqn{\lambda}.
-#' Generally, mAIC, TIC and GIC selects similar parameters and the difference of resulting estimations are barely noticable.
-#' See details in Lingfeng Luo et al. (2022)
+#' Generally, mAIC, TIC and GIC select similar parameters and the difference of resulting estimates are barely noticeable.
+#' See details in Luo et al. (2022).
 #' 
 #' 
 IC <- function(fit, IC.prox, ...){

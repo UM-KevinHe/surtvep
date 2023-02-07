@@ -1,6 +1,8 @@
 #' plotting result from a fitted `coxtp` object
+#' 
+#' Plotting result from a fitted `coxtp` object.
 #'
-#' @param fit Model get from coxtp.
+#' @param fit model get from `coxtp`.
 #'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 

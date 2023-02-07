@@ -7,16 +7,16 @@
 baseline(fit, ...)
 }
 \arguments{
-\item{fit}{model from \code{coxtv} or \code{coxtp}}
+\item{fit}{model from \code{coxtv} or \code{coxtp}.}
 }
 \value{
 a list with three components
-\item{time}{the unique observed event time}
-\item{hazard}{the baseline hazard corresponding to each unique time point}
-\item{cumulHaz}{the cumulative baseline hazard corresponding to each unique time point}
+\item{time}{the unique observed failure time.}
+\item{hazard}{the baseline hazard corresponding to each unique failure time point.}
+\item{cumulHaz}{the cumulative baseline hazard corresponding to each unique failure time point.}
 }
 \description{
-The baseline estimation is the baseline hazard at each observed event time when
+The baseline estimation is the baseline hazard at each observed failure time when
 holding all the covariates to be zero.
 }
 \examples{

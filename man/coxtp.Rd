@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtp.R
 \name{coxtp}
 \alias{coxtp}
-\title{fit a Cox non-proportional hazards model with P-spline or Smoothing-spline, penalization tuning parameter chosen by information criteria or cross-validation}
+\title{fit a Cox non-proportional hazards model with P-spline or Smoothing-spline, with penalization tuning parameter chosen by information criteria or cross-validation}
 \usage{
 coxtp(
   event,
@@ -34,15 +34,16 @@ coxtp(
 
 \item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation vector.}
 
-\item{time}{observed event time, should be a vector with non-negative numeric values.}
+\item{time}{observed event time, which should be a vector with non-negative numeric values.}
 
 \item{strata}{stratification group defined in the data used for the stratified model.
 If there exists a stratification group, please enter it as a vector.
-By default, a non-stratified model would be implemented.}
+By default = NULL, a non-stratified model would be implemented.}
 
 \item{penalty}{a character string specifying the spline term for Penalized Newton's Method.
-This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
-Default is \code{P-spline}. Three options are \code{P-spline}, \code{Smooth-spline} and \code{NULL}. If \code{NULL}, the method will be the same as \code{coxtv} and \code{lambda}
+This term is added to the log-partial likelihood, and the penalized log-partial likelihood serve as the new objective function to control the smoothness of the time-varying covariates.
+Default is \code{P-spline}. Three options are \code{P-spline}, \code{Smooth-spline} and \code{NULL}.
+If \code{NULL}, the method will be the same as \code{coxtv} (unpenalized time-varying effects models) and \code{lambda}
 will be set as 0.
 
 \code{P-spline} stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
@@ -65,9 +66,9 @@ Default is \code{0}, which refers to Newton's Method without penalization.}
 \item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 \code{degree = 2} results in the quadratic B-spline basis functions.
 
-If \code{penalty} is \code{P-spline} or \code{NULL}, \code{degree}'s default value is 3.
+If the \code{penalty} is \code{P-spline} or \code{NULL}, \code{degree}'s default value is 3.
 
-If \code{penalty} is \code{Smooth-spline}, \code{degree}'s default value is 2.}
+If the \code{penalty} is \code{Smooth-spline}, \code{degree}'s default value is 2.}
 
 \item{knots}{the internal knot locations (breakpoints) that define the B-splines.
 The number of the internal knots should be \code{nsplines}-\code{degree}-1.
@@ -82,8 +83,8 @@ The default value is  \code{1e-6}.}
 
 \item{iter.max}{maximum Iteration number if the stopping criteria specified by \code{stop} is not satisfied. Default value is  20.}
 
-\item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.  If \code{"Newton"} then exact hessian is used,
-while default method \code{"ProxN"} implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+\item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.
+If \code{"Newton"} then exact hessian is used, while the default method \code{"ProxN"} implements the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 See details in Wu et al. (2022).}
 
 \item{gamma}{parameter for Proximal Newton's Method \code{"ProxN"}. The default value is \code{1e8}.}
@@ -99,7 +100,7 @@ Users should be careful with \code{static} as this may lead to under-fitting.}
 \code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
 \code{"relch"} means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the \code{tol}.
 \code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
-\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} is met.
+\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} are met.
 Default value is \code{ratch}. If the maximum iteration steps \code{iter.max} is achieved, the algorithm stops before the stopping rule is met.}
 
 \item{parallel}{if \code{TRUE}, then the parallel computation is enabled. The number of threads in use is determined by \code{threads}.}
@@ -115,7 +116,7 @@ A list of objects with S3 class \code{"coxtp"}. The length is the same as that o
 Each row represents the coefficients at the corresponding input observation time.}
 
 \item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension of the basis matrix is \code{nvars}-by-\code{nsplines};
-if \code{ties="Breslow"}, the dimension is \code{len_unique_t}-by-\code{nsplines}. The matrix is constructed using \code{bs::splines} function.}
+if \code{ties="Breslow"}, the dimension is \code{len_unique_t}-by-\code{nsplines}. The matrix is constructed using the \code{bs::splines} function.}
 \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars}-by-\code{nsplines}.
 Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
 \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} -by- \code{nsplines * nvars}.}
@@ -147,26 +148,26 @@ fit   <- coxtp(event = event, z = z, time = time, lambda=lambda)
 
 }
 \references{
-Gray, Robert J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
+Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
 \emph{Journal of the American Statistical Association}, \strong{87}: 942-951.
 \cr
 
-Gray, Robert J. (1994) Spline-based tests in survival analysis.
+Gray, R. J. (1994) Spline-based tests in survival analysis.
 \emph{Biometrics}, \strong{50}: 640-652.
 \cr
 
-Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor. (2022) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 \cr
 
-Wenbo Wu, Jeremy M.G. Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients
+Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients
 \emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
 \cr
 
-Wood, Simon N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
+Wood, S. N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
 \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
 \cr
 
-Perperoglou, Aris, Saskia le Cessie and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006). A fast routine for fitting Cox models with time varying effects of the covariates.
 \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 \cr
 }

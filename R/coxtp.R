@@ -1,18 +1,19 @@
-#' fit a Cox non-proportional hazards model with P-spline or Smoothing-spline, penalization tuning parameter chosen by information criteria or cross-validation
+#' fit a Cox non-proportional hazards model with P-spline or Smoothing-spline, with penalization tuning parameter chosen by information criteria or cross-validation
 #' 
 #' Fit a Cox non-proportional hazards model via penalized maximum likelihood. 
 #' 
 #'
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
 #' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
-#' @param time observed event time, should be a vector with non-negative numeric values.
+#' @param time observed event time, which should be a vector with non-negative numeric values.
 #' @param strata stratification group defined in the data used for the stratified model. 
 #' If there exists a stratification group, please enter it as a vector. 
-#' By default, a non-stratified model would be implemented.
+#' By default = NULL, a non-stratified model would be implemented.
 #' 
 #' @param penalty a character string specifying the spline term for Penalized Newton's Method. 
-#' This term is added to the log-partial likelihood as the new objective function to control the smoothness of the time-varying covariates.
-#' Default is `P-spline`. Three options are `P-spline`, `Smooth-spline` and `NULL`. If `NULL`, the method will be the same as `coxtv` and `lambda` 
+#' This term is added to the log-partial likelihood, and the penalized log-partial likelihood serves as the new objective function to control the smoothness of the time-varying covariates.
+#' Default is `P-spline`. Three options are `P-spline`, `Smooth-spline` and `NULL`. 
+#' If `NULL`, the method will be the same as `coxtv` (unpenalized time-varying effects models) and `lambda` 
 #' will be set as 0. 
 #' 
 #' `P-spline` stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots. 
@@ -40,9 +41,9 @@
 #' @param degree degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
 #' `degree = 2` results in the quadratic B-spline basis functions. 
 #' 
-#' If `penalty` is `P-spline` or `NULL`, `degree`'s default value is 3. 
+#' If the `penalty` is `P-spline` or `NULL`, `degree`'s default value is 3. 
 #' 
-#' If `penalty` is `Smooth-spline`, `degree`'s default value is 2. 
+#' If the `penalty` is `Smooth-spline`, `degree`'s default value is 2. 
 #' 
 #' @param ties a character string specifying the method for tie handling. If there are no tied
 #' death times, the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties occur.
@@ -51,14 +52,14 @@
 #' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
 #' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. 
+#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
 #' Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
 #' 
 #' @param tol convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
 #'  The default value is  `1e-6`.
 #' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is  20.
-#' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, 
-#' while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+#' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.
+#' If `"Newton"` then exact hessian is used, while the default method `"ProxN"` implements the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
 #' 
 #' @param gamma parameter for Proximal Newton's Method `"ProxN"`. The default value is `1e8`.
@@ -77,7 +78,7 @@
 #' Each row represents the coefficients at the corresponding input observation time.}
 #' 
 #' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension of the basis matrix is `nvars`-by-`nsplines`; 
-#' if `ties="Breslow"`, the dimension is `len_unique_t`-by-`nsplines`. The matrix is constructed using `bs::splines` function.}
+#' if `ties="Breslow"`, the dimension is `len_unique_t`-by-`nsplines`. The matrix is constructed using the `bs::splines` function.}
 #' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars`-by-`nsplines`. 
 #' Each row represents a covariate's coefficient on the `nsplines` dimensional basis functions.} 
 #' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` -by- `nsplines * nvars`.}
@@ -111,26 +112,26 @@
 #' 
 #' 
 #' @references 
-#' Gray, Robert J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
+#' Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
 #' \emph{Journal of the American Statistical Association}, \strong{87}: 942-951. 
 #' \cr
 #' 
-#' Gray, Robert J. (1994) Spline-based tests in survival analysis.
+#' Gray, R. J. (1994) Spline-based tests in survival analysis.
 #' \emph{Biometrics}, \strong{50}: 640-652.
 #' \cr
 #' 
-#' Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor. (2022) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#' Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 #' \cr
 #' 
-#' Wenbo Wu, Jeremy M.G. Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients 
+#' Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
 #' \emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
 #' \cr
 #' 
-#' Wood, Simon N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
+#' Wood, S. N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
 #' \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
 #' \cr
 #' 
-#' Perperoglou, Aris, Saskia le Cessie and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+#' Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
 #' \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 #' \cr
 #' 
@@ -263,7 +264,7 @@ coxtp <- function(event , z , time ,strata=NULL ,penalty="Smooth-spline", nsplin
 #' #' \item{beta}{estimated coefficient matrix of dimension `len_unique_t` * `nvars`, where `len_unique_t` is the length of unique follow-up `time`.
 #' #' Each row represents the coefficients at the corresponding input follow-up time}
 #' #' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension is `nvars` * `nsplines`; 
-#' #' if `ties="Breslow"`, the dimension is `len_unique_t` * `nsplines`. The matrix is constructed using `bs::splines` function.}
+#' #' if `ties="Breslow"`, the dimension is `len_unique_t` * `nsplines`. The matrix is constructed using the `bs::splines` function.}
 #' #' \item{ctrl.pts}{estimated coefficient matrix of dimension `nvars` * `nsplines`. 
 #' #' Each row represents a covariate's coefficient on the `nsplines` dimensional basis functions.} 
 #' #' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` multiplied by `nsplines * nvars`.}

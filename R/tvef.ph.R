@@ -3,10 +3,10 @@
 #' Test the proportional hazards assumption using a Wald test statistic.
 #' 
 #' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model.
-#' @param parm the names of parameter to be tested.
+#' @param parm the names of parameters to be tested.
 #' 
 #' @return `tvef.ph` produces a matrix. Each row corresponds to a covariate from the fitted object. The three 
-#' columns gives the value of test statistic, degrees of freedom and P-value.
+#' columns give the value of the test statistic, degrees of freedom and P-value.
 #' 
 #' 
 #' @examples 
@@ -65,10 +65,10 @@ tvef.ph <- function(fit, parm) {
 #' Test the significance of the covariates from a `coxtv` or `coxtp` object using a Wald test statistic.
 #' 
 #' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model.
-#' @param parm the names of parameter to be tested.
+#' @param parm the names of parameters to be tested.
 #' 
 #' @return `tvef.zero` produces a matrix. Each row corresponds to a covariate from the fitted object. The three 
-#' columns gives the value of test statistic, degrees of freedom and P-value.
+#' columns give the value of the test statistic, degrees of freedom and P-value.
 #' 
 #' @examples 
 #' data(ExampleData)
@@ -125,16 +125,16 @@ tvef.zero <- function(fit, parm) {
 
 #' test the significance of the covariates from a `coxtv` or `coxtp` object using a Wald test statistic
 #' 
-#' test the significance of the covariates at each time point.
+#' Test the significance of the covariates at each time point.
 #' 
 #' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model.
-#' @param parm the names of parameter to be tested.
+#' @param parm the names of parameters to be tested.
 #' @param times the time points to test if the covariate is significant or not.
 #' 
 #' @return `tvef.zero.time` produces a list of length `nvars`. Each element of the list is a matrix with respect to a
 #' covariate. The matrix is of dimension `len_unique_t` by 4, where `len_unique_t` is the length of unique follow-up time.
 #' Each row corresponds to the testing result at that time.  The four 
-#' columns gives the estimation, standard error, z-statistic and  P-value.
+#' columns give the estimation, standard error, z-statistic and  P-value.
 #' 
 #' @examples 
 #' data(ExampleData)

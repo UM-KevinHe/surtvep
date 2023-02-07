@@ -4,7 +4,7 @@
 #' 
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
 #' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
-#' @param time observed event time, should be a vector with non-negative numeric values.
+#' @param time observed event time, which should be a vector with non-negative numeric values.
 #' @param strata stratification group defined in the data used for the stratified model. 
 #' If there exists a stratification group, please enter it as a vector. 
 #' By default, a non-stratified model would be implemented.
@@ -52,14 +52,14 @@
 #' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
 #' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. 
+#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
 #' Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
 #' 
 #' @param tol convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
 #'  The default value is  `1e-6`.
 #' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is  `20`. 
 #' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, 
-#' while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+#' while the default method `"ProxN"` implements the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
 #' 
 #' @param gamma parameter for Proximal Newton's Method `"ProxN"`. The default value is `1e8`.
@@ -72,8 +72,8 @@
 #' @param threads an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
 #' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
 #' 
-#' @return an object of class `"cv.coxtp"` is returned, which is a list with the ingredients of the cross-validation fit.
-#' \item{model.cv}{a \code{"coxtp"} object with tuning parameter chosen based on cross validation} 
+#' @return An object of class `"cv.coxtp"` is returned, which is a list with the ingredients of the cross-validation fit.
+#' \item{model.cv}{a \code{"coxtp"} object with tuning parameter chosen based on cross validation.} 
 #' \item{lambda}{the values of `lambda` used in the fits.}
 #' \item{cve}{the mean cross-validated error - a vector of length(lambda).
 #' For the k-th testing fold (k = 1,...,`nfolds`), we take the remaining folds as the training folds. 
@@ -96,32 +96,33 @@
 #' @details The function runs `coxtp` length of `lambda` x  `nfolds` times; each is to compute the fit with each of the folds omitted.
 #' 
 #' @references 
-#' Gray, Robert J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
+#' Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
 #' \emph{Journal of the American Statistical Association}, \strong{87}: 942-951. 
 #' \cr
 #' 
-#' Gray, Robert J. (1994) Spline-based tests in survival analysis.
+#' Gray, R. J. (1994) Spline-based tests in survival analysis.
 #' \emph{Biometrics}, \strong{50}: 640-652.
 #' \cr
 #' 
-#' Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor. (2022) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#' Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 #' \cr
 #' 
-#' Verweij, Pierre JM, and Hans C. Van Houwelingen. (1993) Cross‐validation in survival analysis.
+#' Verweij, P. J., and Van Houwelingen, H. C. (1993) Cross‐validation in survival analysis.
 #' \emph{Statistics in Medicine}, \strong{12(24)}: 2305-2314.
 #' \cr
 #' 
-#' Wenbo Wu, Jeremy M.G. Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients 
+#' Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
 #' \emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
 #' \cr
 #' 
-#' Wood, Simon N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
+#' Wood, S. N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
 #' \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
 #' \cr
 #' 
-#' Perperoglou, Aris, Saskia le Cessie and Hans C. van Houwelingen. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+#' Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
 #' \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 #' \cr
+#' 
 #' 
 #' 
 cv.coxtp <- function(event , z, time, strata=NULL, 

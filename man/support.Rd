@@ -6,7 +6,7 @@
 \title{study to Understand Prognoses Preferences Outcomes and Risks of Treatment
 (SUPPORT)}
 \format{
-A dataframe with 9104 observations and 34 variables after imputation
+A dataframe with 9,104 observations and 34 variables after imputation
 and the removal of response variables like hospital charges, patient ratio
 of costs to charges and micro-costs. Ordinal variables, namely functional
 disability and income, were also removed. Finally, Surrogate activities of
@@ -52,9 +52,9 @@ included only tracks follow-up time and death.
 }
 \details{
 Some of the original data was missing. Before imputation, there were
-a total of 9105 individuals and 47 variables. Of those variables, a few
+a total of 9,104 individuals and 47 variables. Of those variables, a few
 were removed before imputation. We removed three response variables:
-hospital charges, patient ratio of costs to charge,s and patient
+hospital charges, patient ratio of costs to charges and patient
 micro-costs. Next, we removed hospital death as it was directly informative
 of our event of interest, namely death. We also removed functional
 disability and income as they are ordinal covariates. Finally, we removed 8
@@ -71,7 +71,7 @@ we imputed a single dataset using \pkg{mice} with default settings. After
 imputation, we noted that the covariate for surrogate activities of daily
 living was not imputed. This is due to collinearity between the other two
 covariates for activities of daily living. Therefore, surrogate activities
-of daily living was removed.
+of daily living were removed.
 }
 \examples{
 \dontrun{
@@ -110,5 +110,11 @@ ggsurvplot(fit1, data = data)
 ggsurvplot(fit2, data = data, legend.labs = c("60-69", "70+", "50-59", "<50"))
 fit.coxtv <- coxtv(event = death, z = z, time = time)
 }
+}
+\references{
+Knaus, W. A., Harrell, F. E., Lynn, J., Goldman, L., Phillips, R. S., Connors, A. F., ... and Wagner, D. P. (1995).
+The SUPPORT prognostic model: Objective estimates of survival for seriously ill hospitalized adults.
+\emph{Annals of internal medicine}, \strong{122(3)}: 191-203.
+\cr
 }
 \keyword{datasets}

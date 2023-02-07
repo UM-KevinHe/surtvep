@@ -12,9 +12,10 @@
 \arguments{
 \item{fit}{fitted \code{"coxtv"} model.}
 
-\item{times}{the time interval to be estamtied. The default value is the time of the fitted model.}
+\item{times}{the time points for which the confidence intervals to be estimated.
+The default value is the unique observed event times in the dataset fitting the time-varying effects model.}
 
-\item{parm}{the names of parameter.}
+\item{parm}{the names of parameters.}
 
 \item{level}{the confidence level. Default is 0.95.}
 }
