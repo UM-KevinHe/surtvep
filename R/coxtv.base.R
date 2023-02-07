@@ -5,20 +5,21 @@
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
 #' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
 #' @param time observed event time, which should be a vector with non-negative numeric values.
-#' @param strata stratification group defined in the data used for the stratified model. 
+#' @param strata a vector of indicators defined in the data used for stratification. Such column in the data should be entered as a vector.
 #' If there exists a stratification group, please enter it as a vector. 
-#' By default, a non-stratified model would be implemented.
-#' @param nsplines number of basis functions in the splines to span the time-varying effects, the default value is 8. 
+#' By default, an unstratified model is be implemented.
+#' @param nsplines number of basis functions in the splines to span the time-varying effects, whose default value is 8. 
 #' We use the R function `splines::bs` to generate the B-splines. 
 #' 
 #' @param knots the internal knot locations (breakpoints) that define the B-splines.
 #' The number of the internal knots should be `nsplines`-`degree`-1.
-#' If `NULL`, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.
+#' If `NULL`, the locations of knots are chosen as quantiles of distinct failure time points.
+#' This choice leads to more stable results in most cases.
 #' Users can specify the internal knot locations by themselves.
 #' @param degree degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
 #' `degree = 2` results in the quadratic B-spline basis functions.
-#' @param ties a character string specifying the method for tie handling. If there are no tied
-#' death times, the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties occur.
+#' @param ties a character string specifying the method for tie handling. If there are no tied events, 
+#' the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties are present.
 #' @param stop a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.  
 #' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
 #' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
@@ -26,14 +27,14 @@
 #' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
 #' Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
 #' 
-#' @param tol convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
+#' @param tol tolerance used for stopping the algorithm. The algorithm continues until the method selected using `stop` converges.
 #'  The default value is  `1e-6`.
-#' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is  20.
-#' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, 
-#' while the default method `"ProxN"` implements the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+#' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. Default value is  20.
+#' @param method a character string specifying whether to use Newton method or proximal Newton method.  If `"Newton"` then Hessian is used, 
+#' while the default method `"ProxN"` implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
 
-#' @param gamma parameter for Proximal Newton's Method `"ProxN"`. Default value is `1e8`.
+#' @param gamma parameter for proximal Newton method `"ProxN"`. Default value is `1e8`.
 #' @param btr a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
 #' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
 #' which usually occurs when some predictors are categorical with low frequency for some categories. 
@@ -77,7 +78,7 @@
 #' 
 #' 
 #' @details 
-#' The model is fit by Newton's method (Proximal Newton's method).
+#' The model is fit by Newton method (proximal Newton method).
 #' 
 #' @references 
 #' Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
