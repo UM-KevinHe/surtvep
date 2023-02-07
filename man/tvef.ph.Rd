@@ -13,7 +13,7 @@ tvef.ph(fit, parm)
 }
 \value{
 \code{tvef.ph} produces a matrix. Each row corresponds to a covariate from the fitted object. The three
-columns gives the value of the test statistic, degrees of freedom and P-value.
+columns give the value of the test statistic, degrees of freedom and P-value.
 }
 \description{
 Test the proportional hazards assumption using a Wald test statistic.

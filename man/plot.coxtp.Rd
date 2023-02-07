@@ -27,10 +27,10 @@
 )
 }
 \arguments{
-\item{fit}{Model get from coxtp.}
+\item{fit}{model get from \code{coxtp}.}
 }
 \description{
-plotting result from a fitted \code{coxtp} object
+Plotting result from a fitted \code{coxtp} object.
 }
 \examples{
 data(ExampleData)

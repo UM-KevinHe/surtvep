@@ -12,10 +12,9 @@ get.tvcoef(fit, times)
 \item{times}{the observation time. If \code{NULL}, the observation time for fitting the model will be used.}
 }
 \value{
-a matrix of the time-varying coefficients. The dimension is \code{length(times)} x \code{nvars}, where \code{nvars} is the number
+A matrix of the time-varying coefficients. The dimension is \code{length(times)} x \code{nvars}, where \code{nvars} is the number
 of covariates in the fitted mode.
 Each row represents the time-varying coefficients at the corresponding time.
-``
 }
 \description{
 Gives the time-varying coefficients based on a fitted \code{coxtv} or \code{coxtp} subject. Users can specify  the observation  time.

@@ -13,7 +13,7 @@ tvef.zero(fit, parm)
 }
 \value{
 \code{tvef.zero} produces a matrix. Each row corresponds to a covariate from the fitted object. The three
-columns gives the value of the test statistic, degrees of freedom and P-value.
+columns give the value of the test statistic, degrees of freedom and P-value.
 }
 \description{
 Test the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a Wald test statistic.

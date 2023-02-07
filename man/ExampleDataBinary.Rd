@@ -5,7 +5,7 @@
 \alias{ExampleDataBinary}
 \title{example data for surtvep with 2000 observations of 2 binary variables}
 \format{
-a list containing the following elements:
+A list containing the following elements:
 \describe{
 \item{V1}{simulated binary covariate V1. True time-dependent function is b(t)=1. }
 \item{V2}{simulated binary covariate V2. True time-dependent function is b(t)=exp(-1.5*t). }

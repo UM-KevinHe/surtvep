@@ -10,7 +10,7 @@ baseline(fit, ...)
 \item{fit}{model from \code{coxtv} or \code{coxtp}.}
 }
 \value{
-a list with three components
+A list with three components:
 \item{time}{the unique observed failure time.}
 \item{hazard}{the baseline hazard corresponding to each unique failure time point.}
 \item{cumulHaz}{the cumulative baseline hazard corresponding to each unique failure time point.}

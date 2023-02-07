@@ -2,15 +2,15 @@
 % Please edit documentation in R/baseline.R
 \name{plot.baseline}
 \alias{plot.baseline}
-\title{plotting baseline from a fitted \code{baseline} object}
+\title{plotting baseline}
 \usage{
 \method{plot}{baseline}(fit, xlab, ylab, xlim, ylim, title, ...)
 }
 \arguments{
-\item{fit}{Model get from \code{baseline} function.}
+\item{fit}{model get from \code{baseline} function.}
 }
 \description{
-plotting baseline from a fitted \code{baseline} object
+Plotting baseline from a fitted \code{baseline} object.
 }
 \examples{
 \dontrun{

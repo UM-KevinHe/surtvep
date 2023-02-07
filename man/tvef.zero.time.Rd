@@ -20,7 +20,7 @@ Each row corresponds to the testing result at that time.  The four
 columns give the estimation, standard error, z-statistic and  P-value.
 }
 \description{
-test the significance of the covariates at each time point.
+Test the significance of the covariates at each time point.
 }
 \examples{
 data(ExampleData)

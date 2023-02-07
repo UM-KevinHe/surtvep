@@ -36,14 +36,14 @@ coxtp(
 
 \item{time}{observed event time, which should be a vector with non-negative numeric values.}
 
-\item{strata}{stratification group defined in the data used for the stratified model.
+\item{strata}{a vector of indicators defined in the data used for stratification. Such column in the data should be entered as a vector.
 If there exists a stratification group, please enter it as a vector.
-By default = NULL, a non-stratified model would be implemented.}
+By default, an unstratified model is be implemented.}
 
-\item{penalty}{a character string specifying the spline term for Penalized Newton's Method.
-This term is added to the log-partial likelihood, and the penalized log-partial likelihood serve as the new objective function to control the smoothness of the time-varying covariates.
+\item{penalty}{a character string specifying the spline term for penalized Newton method.
+This term is added to the log-partial likelihood, and the penalized log-partial likelihood serves as the new objective function to control the smoothness of the time-varying effects.
 Default is \code{P-spline}. Three options are \code{P-spline}, \code{Smooth-spline} and \code{NULL}.
-If \code{NULL}, the method will be the same as \code{coxtv} (unpenalized time-varying effects models) and \code{lambda}
+If \code{NULL}, the method will be the same as \code{coxtv} (unpenalized time-varying effects models) and \code{lambda} (defined below)
 will be set as 0.
 
 \code{P-spline} stands for Penalized B-spline. It combines the B-spline basis with a discrete quadratic penalty on the difference of basis coefficients between adjacent knots.
@@ -53,15 +53,15 @@ When \code{lambda} goes to infinity, the time-varying effects are reduced to be 
 When \code{degree=3}, we use the cubic B-spline penalizing the second-order derivative, which reduces the time-varying effect to a linear term when \code{lambda} goes to infinity.
 When \code{degree=2}, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
 
-If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as (0.1, 1, 10). Users can modify \code{lambda}. See details in \code{lambda}.}
+If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as a sequence (0.1, 1, 10). Users can modify \code{lambda}. See details in \code{lambda}.}
 
-\item{nsplines}{number of basis functions in the splines to span the time-varying effects, the default value is 8.
+\item{nsplines}{number of basis functions in the splines to span the time-varying effects, whose value is 8.
 We use the R function \code{splines::bs} to generate the B-splines.}
 
-\item{lambda}{a user-specified \code{lambda} sequence as the penalization coefficients in front of the spline term specified by \code{spline}.
+\item{lambda}{a user-specified \code{lambda} sequence as the penalization coefficients in front of the spline term specified by \code{penalty}.
 This is the tuning parameter for penalization. Users can use \code{IC} to select the best tuning parameter based on the information criteria.
 Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
-Default is \code{0}, which refers to Newton's Method without penalization.}
+Default is \code{0}, which refers to Newton method without penalization.}
 
 \item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 \code{degree = 2} results in the quadratic B-spline basis functions.
@@ -72,22 +72,23 @@ If the \code{penalty} is \code{Smooth-spline}, \code{degree}'s default value is 
 
 \item{knots}{the internal knot locations (breakpoints) that define the B-splines.
 The number of the internal knots should be \code{nsplines}-\code{degree}-1.
-If \code{NULL}, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.
+If \code{NULL}, the locations of knots are chosen as quantiles of distinct failure time points.
+This choice leads to more stable results in most cases.
 Users can specify the internal knot locations by themselves.}
 
-\item{ties}{a character string specifying the method for tie handling. If there are no tied
-death times, the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties occur.}
+\item{ties}{a character string specifying the method for tie handling. If there are no tied events,
+the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties are present.}
 
-\item{tol}{convergence threshold for Newton's method. The algorithm continues until the method selected using \code{stop} converges.
+\item{tol}{tolerance used for stopping the algorithm. The algorithm continues until the method selected using \code{stop} converges.
 The default value is  \code{1e-6}.}
 
-\item{iter.max}{maximum Iteration number if the stopping criteria specified by \code{stop} is not satisfied. Default value is  20.}
+\item{iter.max}{maximum iteration number if the stopping criterion specified by \code{stop} is not satisfied. Default value is  20.}
 
-\item{method}{a character string specifying whether to use Newton's method or Proximal Newton's method.
-If \code{"Newton"} then exact hessian is used, while the default method \code{"ProxN"} implements the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+\item{method}{a character string specifying whether to use Newton method or proximal Newton method.  If \code{"Newton"} then Hessian is used,
+while the default method \code{"ProxN"} implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 See details in Wu et al. (2022).}
 
-\item{gamma}{parameter for Proximal Newton's Method \code{"ProxN"}. The default value is \code{1e8}.}
+\item{gamma}{parameter for proximal Newton method \code{"ProxN"}. The default value is \code{1e8}.}
 
 \item{btr}{a character string specifying the backtracking line-search approach. \code{"dynamic"} is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
 \code{"static"} limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
@@ -130,7 +131,7 @@ Each row represents a covariate's coefficient on the \code{nsplines} dimensional
 Fit a Cox non-proportional hazards model via penalized maximum likelihood.
 }
 \details{
-The sequence of models implied by \code{lambda.spline} is fit by Newton's method (Proximal Newton's method). The objective function is
+The sequence of models implied by \code{lambda.spline} is fit by Newton method (proximal Newton method). The objective function is
 \deqn{loglik - P_{\lambda},}
 where \eqn{P_{\lambda}} can be \code{P-spline} or \code{Smooth-spline}. The \eqn{\lambda} is the tuning  parameter \eqn{\lambda}. Users can define the initial sequence.
 \code{IC} provides different information criteria to choose the tuning parameter \eqn{\lambda}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
@@ -159,7 +160,7 @@ Gray, R. J. (1994) Spline-based tests in survival analysis.
 Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 \cr
 
-Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients
+Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
 \emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
 \cr
 
@@ -167,7 +168,7 @@ Wood, S. N. (2017) P-splines with derivative based penalties and tensor product 
 \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
 \cr
 
-Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006). A fast routine for fitting Cox models with time varying effects of the covariates.
+Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
 \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 \cr
 }
