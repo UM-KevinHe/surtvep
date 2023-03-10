@@ -1,9 +1,7 @@
 # surtvep
 
-``surtvep" is an R package for fitting penalized Newton's method 
-for the time-varying effects model using mAIC, TIC and GIC as information criteria, 
-in particular we span the parameters using B-spline basis functions. Utilities for carrying 
-out post-estimation visualization, summarization, and inference are also provided.
+`surtvep` is an R package for fitting Cox non-proportional hazards models with time-varying coefficients. Both unpenalized procedures (Newton and proximal Newton) and penalized procedures (P-splines and smoothing splines) are included using B-spline basis functions for estimating time-varying coefficients.
+For penalized procedures, cross-validations, mAIC, TIC or GIC are implemented to select tuning parameters. Utilities for carrying out post-estimation visualization, summarization, point-wise confidence interval and hypothesis testing are also provided.
 
 # Introduction
 
@@ -107,25 +105,31 @@ The SUPPORT dataset is available in the "surtvep" package. The following code wi
         <th>Dataset</th>
         <th>Size</th>
         <th>Dataset</th>
-        <th>Data source</th>
+        <!-- <th>Data source</th> -->
     </tr>
     <tr>
-        <td>simulN2kOP2</td>
-        <td>25,000</td>
+        <td>ExampleData</td>
+        <td>4,000</td>
         <td>
-        Dataset from simulation study in <a href="#references">[2]</a>.
-        This is a simulation study with continuous time predictors
+        A simulated data set containing 2 continuous variables.
         </td>
-        <td><a href="https://github.com/havakv/pycox/blob/master/pycox/simulations/relative_risk.py">simulN2kOP2Continuous</a>
+        <!-- <td><a href="https://github.com/havakv/pycox/blob/master/pycox/simulations/relative_risk.py">simulN2kOP2Continuous</a> -->
     </tr>
     <tr>
-        <td>simulN2kOP2Binary</td>
-        <td>100,000</td>
+        <td>ExampleDataBinary</td>
+        <td>2,000</td>
         <td>
-        Dataset from simulation study in <a href="#references">[12]</a>.
-        This is a discrete time dataset with 1000 possible event-times.
+        A simulated data set containing 2 binary variables.
         </td>
-        <td><a href="https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py">simulN2kOP2Binary</a>
+        <!-- <td><a href="https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py">simulN2kOP2Binary</a> -->
+    </tr>
+        <tr>
+        <td>StrataExample</td>
+        <td>2,000</td>
+        <td>
+        A simulated data set containing 2 binary variables. Subjects in different strata have 
+        </td>
+        <!-- <td><a href="https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py">simulN2kOP2Binary</a> -->
     </tr>
 </table>
 
