@@ -34,6 +34,10 @@
 #' Generally, mAIC, TIC and GIC select similar parameters and the difference of resulting estimates are barely noticeable.
 #' See details in Luo et al. (2022).
 #' 
+#' @references 
+#' 
+#' Luo, L., He, K. Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#' \cr
 #' 
 IC <- function(fit, IC.prox, ...){
   

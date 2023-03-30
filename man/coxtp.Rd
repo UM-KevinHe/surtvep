@@ -23,24 +23,22 @@ coxtp(
   tau = 0.5,
   stop = "ratch",
   parallel = FALSE,
-  threads = 1L,
+  threads = 2L,
   fixedstep = FALSE,
-  InfoCrit = FALSE,
   ...
 )
 }
 \arguments{
 \item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1.}
 
-\item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation vector.}
+\item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation.}
 
-\item{time}{observed event time, which should be a vector with non-negative numeric values.}
+\item{time}{observed event time, which should be a vector with non-negative values.}
 
-\item{strata}{a vector of indicators defined in the data used for stratification. Such column in the data should be entered as a vector.
-If there exists a stratification group, please enter it as a vector.
-By default, an unstratified model is be implemented.}
+\item{strata}{a vector of indicators for stratification.
+Default = \code{NULL}, (i.e. no stratification group in the data), an unstratified model is implemented.}
 
-\item{penalty}{a character string specifying the spline term for penalized Newton method.
+\item{penalty}{a character string specifying the spline term for the penalized Newton method.
 This term is added to the log-partial likelihood, and the penalized log-partial likelihood serves as the new objective function to control the smoothness of the time-varying effects.
 Default is \code{P-spline}. Three options are \code{P-spline}, \code{Smooth-spline} and \code{NULL}.
 If \code{NULL}, the method will be the same as \code{coxtv} (unpenalized time-varying effects models) and \code{lambda} (defined below)
@@ -59,7 +57,7 @@ If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as
 We use the R function \code{splines::bs} to generate the B-splines.}
 
 \item{lambda}{a user-specified \code{lambda} sequence as the penalization coefficients in front of the spline term specified by \code{penalty}.
-This is the tuning parameter for penalization. Users can use \code{IC} to select the best tuning parameter based on the information criteria.
+This is the tuning parameter for penalization. The function \code{IC} can be used to select the best tuning parameter based on the information criteria.
 Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
 Default is \code{0}, which refers to Newton method without penalization.}
 
@@ -79,7 +77,7 @@ Users can specify the internal knot locations by themselves.}
 \item{ties}{a character string specifying the method for tie handling. If there are no tied events,
 the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties are present.}
 
-\item{tol}{tolerance used for stopping the algorithm. The algorithm continues until the method selected using \code{stop} converges.
+\item{tol}{tolerance used for stopping the algorithm. See details in \code{stop} below.
 The default value is  \code{1e-6}.}
 
 \item{iter.max}{maximum iteration number if the stopping criterion specified by \code{stop} is not satisfied. Default value is  20.}
@@ -99,10 +97,11 @@ Users should be careful with \code{static} as this may lead to under-fitting.}
 
 \item{stop}{a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.
 \code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
-\code{"relch"} means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the \code{tol}.
+\code{"relch"} means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the \code{tol}.
 \code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
 \code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} are met.
-Default value is \code{ratch}. If the maximum iteration steps \code{iter.max} is achieved, the algorithm stops before the stopping rule is met.}
+Default value is \code{ratch}.
+\code{iter.max}, if achieved, overrides any stop rule for algorithm termination.}
 
 \item{parallel}{if \code{TRUE}, then the parallel computation is enabled. The number of threads in use is determined by \code{threads}.}
 
@@ -113,28 +112,30 @@ Default value is \code{ratch}. If the maximum iteration steps \code{iter.max} is
 \value{
 A list of objects with S3 class \code{"coxtp"}. The length is the same as that of \code{lambda}; each represents the model output with each value of the tuning parameter \code{lambda}.
 \item{call}{the call that produced this object.}
-\item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension \code{len_unique_t} x \code{nvars}, where \code{len_unique_t} is the length of unique follow-up \code{time}.
-Each row represents the coefficients at the corresponding input observation time.}
+\item{beta}{the estimated time varying coefficient for each predictor at each unique time.
+It is a matrix of dimension \code{len_unique_t} by \code{nvars}, where \code{len_unique_t} is the length of unique observed event \code{time}.}
 
-\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension of the basis matrix is \code{nvars}-by-\code{nsplines};
-if \code{ties="Breslow"}, the dimension is \code{len_unique_t}-by-\code{nsplines}. The matrix is constructed using the \code{bs::splines} function.}
-\item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars}-by-\code{nsplines}.
+\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension of the basis matrix is \code{nvars} by \code{nsplines};
+if \code{ties="Breslow"}, the dimension is \code{len_unique_t} by \code{nsplines}. The matrix is constructed using the \code{bs::splines} function.}
+\item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars} by \code{nsplines}.
 Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
-\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} -by- \code{nsplines * nvars}.}
-\item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
+\item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} by \code{nsplines * nvars}.}
+\item{internal.knots}{the internal knot locations (breakpoints) that define the B-splines.}
 \item{nobs}{number of observations.}
-\item{spline}{the spline type user specified.}
-\item{theta.list}{a list of \code{ctrl.pts} of length \code{m}, contains the updated \code{ctrl.pts} after each algorithm iteration.}
-\item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative \code{Hessian} matrix.}
+\item{spline}{spline type.}
+\item{theta.list}{the history of \code{ctrl.pts} of length \code{m}, including \code{ctrl.pts} for each algorithm iteration.}
+\item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix,
+which is the inverse of the negative Hessian matrix.}
 }
 \description{
 Fit a Cox non-proportional hazards model via penalized maximum likelihood.
 }
 \details{
-The sequence of models implied by \code{lambda.spline} is fit by Newton method (proximal Newton method). The objective function is
-\deqn{loglik - P_{\lambda},}
-where \eqn{P_{\lambda}} can be \code{P-spline} or \code{Smooth-spline}. The \eqn{\lambda} is the tuning  parameter \eqn{\lambda}. Users can define the initial sequence.
-\code{IC} provides different information criteria to choose the tuning parameter \eqn{\lambda}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
+The sequence of models implied by \code{lambda.spline} is fit by Newton method (proximal Newton method).
+The objective function is \deqn{loglik - P_{\lambda},}
+where \eqn{P_{\lambda}} can be a penalty matrix for \code{P-spline} or \code{Smooth-spline}.
+The \eqn{\lambda} is the tuning  parameter. Users can define the initial sequence.
+The function \code{IC} provides different information criteria to choose the tuning parameter \eqn{\lambda}. \code{cv.coxtp} uses  the cross validation to choose the tuning parameter.
 }
 \examples{
 data(ExampleData)
@@ -157,7 +158,7 @@ Gray, R. J. (1994) Spline-based tests in survival analysis.
 \emph{Biometrics}, \strong{50}: 640-652.
 \cr
 
-Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+Luo, L., He, K. Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 \cr
 
 Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.

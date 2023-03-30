@@ -1,6 +1,6 @@
-#' plotting result from a fitted `coxtv` object
+#' plotting results from a fitted `coxtv` object
 #'
-#' Plotting result from a fitted `coxtv` object.
+#' Plotting results from a fitted `coxtv` object.
 #' 
 #' @param fit model get from coxtv.
 #'

@@ -1,6 +1,6 @@
-#' plotting result from a fitted `coxtp` object
+#' plotting results from a fitted `coxtp` object
 #' 
-#' Plotting result from a fitted `coxtp` object.
+#' Plotting results from a fitted `coxtp` object.
 #'
 #' @param fit model get from `coxtp`.
 #'

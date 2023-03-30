@@ -41,3 +41,7 @@ IC  <- IC(fit)
 
 
 }
+\references{
+Luo, L., He, K. Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+\cr
+}

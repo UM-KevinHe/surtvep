@@ -1,6 +1,6 @@
-#' example data for surtvep with 4000 observations of 2 variables
+#' example data for surtvep with 2000 observations of 2 variables
 #' 
-#' A simulated data set containing two 2 variables. 
+#' A simulated data set containing two variables. 
 #' @name ExampleData
 #' @docType data
 #' @usage data(ExampleData)
@@ -40,7 +40,7 @@
 #'
 #' @format a list containing the following elements:
 #' \describe{
-#'   \item{x}{simulated binary covariate V1 and V2. True time-dependent function is b(t)=1 and true time-dependent function is b(t)=sin(3*pi*t/4). }
+#'   \item{x}{simulated binary covariate V1 and V2. True time-dependent function is b(t)=1 and true time-dependent function is \eqn{b(t)=sin(3 \pi t/4)}.
 #'   \item{event}{simulated event variable, binary variable with 0, 1.}
 #'   \item{time}{simulated time variable, continuous variable with non-negative value.}
 #'   \item{strata}{simulated strata variable, patients in different stratums have different baseline hazards.}
@@ -97,7 +97,7 @@
 #'   malignancy. } 
 #'   \item{dzclass}{ ARF/MOSF, COPD/CHF/Cirrhosis, Coma and cancer disease classes. } 
 #'   \item{num.co}{ the number of comorbidities. }
-#'   \item{edu}{ years of education of patient. } 
+#'   \item{edu}{ years of education of patients. } 
 #'   \item{scoma}{ the SUPPORT coma score based on Glasgow D3. } 
 #'   \item{avtisst}{ average TISS, days 3-25. }
 #'   \item{race}{ indicates race: White, Black, Asian, Hispanic or other. }

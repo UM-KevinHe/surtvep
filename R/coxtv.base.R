@@ -3,11 +3,11 @@
 #' Fit a Cox non-proportional hazards model via maximum likelihood. 
 #' 
 #' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
-#' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
-#' @param time observed event time, which should be a vector with non-negative numeric values.
-#' @param strata a vector of indicators defined in the data used for stratification. Such column in the data should be entered as a vector.
-#' If there exists a stratification group, please enter it as a vector. 
-#' By default, an unstratified model is be implemented.
+#' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation. 
+#' @param time observed event time, which should be a vector with non-negative values.
+#' @param strata a vector of indicators for stratification. 
+#' Default = `NULL`, (i.e. no stratification group in the data), an unstratified model is implemented.
+#' 
 #' @param nsplines number of basis functions in the splines to span the time-varying effects, whose default value is 8. 
 #' We use the R function `splines::bs` to generate the B-splines. 
 #' 
@@ -22,12 +22,13 @@
 #' the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties are present.
 #' @param stop a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.  
 #' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
-#' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
+#' `"relch"` means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the `tol`.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
 #' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
-#' Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
+#' Default value is `ratch`. 
+#' `iter.max`, if achieved, overrides any stop rule for algorithm termination.
 #' 
-#' @param tol tolerance used for stopping the algorithm. The algorithm continues until the method selected using `stop` converges.
+#' @param tol tolerance used for stopping the algorithm. See details in `stop` below.
 #'  The default value is  `1e-6`.
 #' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. Default value is  20.
 #' @param method a character string specifying whether to use Newton method or proximal Newton method.  If `"Newton"` then Hessian is used, 
@@ -48,19 +49,20 @@
 #'
 #' @return An object with S3 class `coxtv`.
 #' \item{call}{the call that produced this object.}
-#' \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension `len_unique_t`-by-`nvars`, where `len_unique_t` is the length of unique follow-up `time`.
-#' Each row represents the coefficients at the corresponding input observation time.}
+#' \item{beta}{the estimated time varying coefficient for each predictor at each unique time. 
+#' It is a matrix of dimension `len_unique_t` by `nvars`, where `len_unique_t` is the length of unique observed event `time`.}
 #' 
-#' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension of the basis matrix is `nvars`-by-`nsplines`; 
-#' if `ties="Breslow"`, the dimension is `len_unique_t`-by-`nsplines`. The matrix is constructed using the `bs::splines` function.}
-#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars`-by-`nsplines`. 
+#' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension of the basis matrix is `nvars` by `nsplines`; 
+#' if `ties="Breslow"`, the dimension is `len_unique_t` by `nsplines`. The matrix is constructed using the `bs::splines` function.}
+#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars` by `nsplines`. 
 #' Each row represents a covariate's coefficient on the `nsplines` dimensional basis functions.}
-#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` -by- `nsplines * nvars`.}
-#' \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
+#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` by `nsplines * nvars`.}
+#' \item{internal.knots}{the internal knot locations (breakpoints) that define the B-splines.}
 #' \item{nobs}{number of observations.}
-#' \item{theta.list}{a list of `ctrl.pts` of length `m`, contains the updated `ctrl.pts` after each algorithm iteration.}
-#' \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, which is the inverse of the negative `Hessian` matrix.}
-#'
+#' \item{theta.list}{the history of `ctrl.pts` of length `m`, including `ctrl.pts` for each algorithm iteration.}
+#' \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, 
+#' which is the inverse of the negative Hessian matrix.}
+#' 
 #' @export 
 #' 
 #' @seealso \code{\link{coef}}, \code{\link{plot}}, and the \code{\link{coxtp}} function.
@@ -89,7 +91,7 @@
 #' \emph{Biometrics}, \strong{50}: 640-652.
 #' \cr
 #' 
-#' Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#' Luo, L., He, K. Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 #' \cr
 #' 
 #' Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
@@ -102,8 +104,11 @@
 #' 
 #' 
 #' 
-coxtv <- function(event , z , time ,strata= NULL, spline="P-spline", nsplines=8, ties="Breslow", 
-                     control, ...) {
+coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knots = NULL, 
+                  degree = 3, stop = 'ratch', tol = 1e-6, iter.max = 20, method = "ProxN", 
+                  gamma = 1e8, btr = "dynamic",
+                  tau = 0.5,
+                  parallel=FALSE, threads=2L,...) {
   
   
   
@@ -459,9 +464,9 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 
 
 
-#' get confidence interval of time-varying coefficients from a fitted object
+#' get confidence intervals of time-varying coefficients from a fitted object
 #' 
-#' Get confidence interval of time-varying coefficients from a fitted `coxtv` or `coxtp` object. 
+#' Get confidence intervals of time-varying coefficients from a fitted `coxtv` or `coxtp` object. 
 #' 
 #' @param fit fitted \code{"coxtv"} model.
 #' @param times the time points for which the confidence intervals to be estimated. 

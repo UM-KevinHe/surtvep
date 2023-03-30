@@ -25,7 +25,7 @@ COPD, CHF, Cirrhosis, Coma, Colon Cancer, Lung Cancer, MOSF with
 malignancy. }
 \item{dzclass}{ ARF/MOSF, COPD/CHF/Cirrhosis, Coma and cancer disease classes. }
 \item{num.co}{ the number of comorbidities. }
-\item{edu}{ years of education of patient. }
+\item{edu}{ years of education of patients. }
 \item{scoma}{ the SUPPORT coma score based on Glasgow D3. }
 \item{avtisst}{ average TISS, days 3-25. }
 \item{race}{ indicates race: White, Black, Asian, Hispanic or other. }

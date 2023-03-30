@@ -3,6 +3,7 @@
 #define STRICT_R_HEADERS // needed on Windows, not macOS
 #include <RcppArmadillo.h>
 #include <omp.h>
+#include "header.h"
 #include <RcppArmadilloExtensions/sample.h> // for Rcpp::RcppArmadillo::sample
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::plugins(cpp11)]]
@@ -13,15 +14,15 @@ using namespace Rcpp;
 using namespace std;
 
 
-// [[Rcpp::export]]
-arma::uvec stra_sampling_cpp(int size, int prop){
-  arma::uvec sample_id;
+// // [[Rcpp::export]]
+// arma::uvec stra_sampling_cpp(int size, int prop){
+//   arma::uvec sample_id;
   
-  int s2      = floor(size/prop*1.0);
-  sample_id   = arma::randperm(size,s2);
+//   int s2      = floor(size/prop*1.0);
+//   sample_id   = arma::randperm(size,s2);
 
-  return sample_id;
-}
+//   return sample_id;
+// }
 
 
 List objfun_fixtra(const arma::mat &Z_tv, const arma::mat &B_spline, const arma::mat &theta,
