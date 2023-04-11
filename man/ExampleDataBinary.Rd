@@ -3,14 +3,14 @@
 \docType{data}
 \name{ExampleDataBinary}
 \alias{ExampleDataBinary}
-\title{example data for surtvep with 2000 observations of 2 binary variables:}
+\title{example data for surtvep with 2000 observations of 2 binary variables}
 \format{
-A List containing the following elements:
+A list containing the following elements:
 \describe{
-\item{V1}{Simulated covariate V1, Binary variable. True time-dependent function is b(t)=1}
-\item{V2}{Simulated covariate V2, Binary variable. True time-dependent function is b(t)=exp(-1.5*t)}
-\item{event}{Simulated event variable, Binary varible with 0, 1 }
-\item{time}{Simulated time variable, Continous variable with non-negative value}
+\item{V1}{simulated binary covariate V1. True time-dependent function is b(t)=1. }
+\item{V2}{simulated binary covariate V2. True time-dependent function is b(t)=exp(-1.5*t). }
+\item{event}{simulated event variable, binary variable with 0, 1. }
+\item{time}{simulated time variable, continuous variable with non-negative value. }
 }
 }
 \usage{

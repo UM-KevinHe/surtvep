@@ -1,32 +1,16 @@
 # surtvep
 
-"surtvep" is an R package for time-varying effects analysis in large-scale time-to-event data, including Newton's method, Proximal Newton's method and their combination with P-spline and smoothing-spline. mAIC, TIC, GIC and cross-validation are provided to choose the penalization coefficient.
+`surtvep` is an R package for fitting Cox non-proportional hazards models with time-varying coefficients. Both unpenalized procedures (Newton and proximal Newton) and penalized procedures (P-splines and smoothing splines) are included using B-spline basis functions for estimating time-varying coefficients.
+For penalized procedures, cross-validations, mAIC, TIC or GIC are implemented to select tuning parameters. Utilities for carrying out post-estimation visualization, summarization, point-wise confidence interval and hypothesis testing are also provided.
 
-# Get Started
+# Introduction
 
-First you can install the 'surtvep' via:
+Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects is particularly important, as time-varying effects have already been reported in the clinical literature. However, there are currently no formal R packages for estimating the time-varying effects without pre-assuming the time-dependent function. Inaccurate pre-assumptions can greatly influence the estimation, leading to unreliable results. To address this issue, we developed a time-varying model using spline terms with penalization that does not require pre-assumption of the true time-dependent function, and implemented it in R.
 
-    #Install the package, need to install the devtools packages:
-    install.packages("devtools")
-    require("remotes")
-    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
+Our package offers several benefits over traditional methods. Firstly, traditional methods for modeling time-varying survival models often rely on expanding the original data into a repeated measurement format. However, even with moderate sample sizes, this leads to a large and computationally burdensome working dataset. Our package addresses this issue by proposing a computationally efficient Kronecker product-based proximal algorithm, which allows for the evaluation of time-varying effects in large-scale studies. Additionally, our package allows for parallel computing and can handle moderate to large sample sizes more efficiently than current methods.
 
-    #To install with Vignettes:
-    install.packages("devtools")
-    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp", build_vignettes =T)
-    
-We recommend to start with [01 introduction], which explains the general usage of the package in terms of data preprocessing, model training and evaluation procedure.
 
-Large-scale time-to-event data derived from national disease registries arise rapidly in medical studies. Detecting and accounting for time-varying effects are particularly important, as time-varying effects have already been reported in the clinical literature. However, there are no formal R packages for estimating the time-varying effect without pre-assuming the time-dependent function. However, in the real dataset, if we get the pre-assuming incorrect, the estimation could be largely influenced by the assumption. Thus, we decided to develop a time-varying model using spline terms with penalization which don't need pre-assumption for the true time-dependent function and implemented it in R.
-
-Following are some benefits of our packages:
-
-To begin with, traditional methods of modeling time-varying survival models typically rely on expanding the original data in a repeated measurement format, which, even with moderate sample size, usually leads to an intractably large working dataset. Consequently, the computational burden increases dramatically as the sample size grows, precluding the evaluation of time-varying effects in large-scale studies, thus, we propose a computationally efficient Kronecker product-based proximal algorithm, which enables us to extend existing methods of estimating time-varying effects for time-to-event data to a large-scale context. Detailed information about our method could be found here.
-
-Also, by allowing parallel computing, our packages could handle the moderate and large sample size quite well compared to current methods which we would compare at the end of this page.
-
-Specifically, when the data under analysis include a number of binary covariates with near-zero variation (e.g., in the SEER prostate cancer data, only 0.6% of the 716,553 patients had their tumors regional to the lymph nodes), the associated observed information matrix of a Newton-type method may have its minimum eigenvalue close to zero with a large condition number. Inverting such a nearly singular matrix is numerically unstable and the corresponding Newton updates are likely to be conned within a small neighborhood of the initial value, causing the estimates to be far from the optimal solutions. However, our proposed Proximal-Newtown method could handle this problem quite well by adding (how to describe the edited Hessian matrix)
-
+In our statistical software tutorial, we address a common issue encountered when analyzing data with binary covariates with near-zero variation. For example, in the SEER prostate cancer data, only 0.6% of the 716,553 patients had their tumors regional to the lymph nodes. In such cases, the associated observed information matrix of a Newton-type method may have a minimum eigenvalue close to zero and a large condition number. Inverting this nearly singular matrix can lead to numerical instability and the corresponding Newton updates may be confined within a small neighborhood of the initial value, resulting in estimates that are far from the optimal solutions. To address this problem, our proposed Proximal-Newtown method utilizes a modified Hessian matrix, which allows for accurate estimation in these scenarios.
 
 ## Models:
 <table>
@@ -38,21 +22,14 @@ Specifically, when the data under analysis include a number of binary covariates
     <tr>
         <td>Newton</td>
         <td>
-        Newton's method without penalization <a href="#references">[1]</a>.
-        </td>
-        <td><a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#model-fitting">tutorial</a></td>
-    </tr>
-    <tr>
-        <td>Proximal Newton</td>
-        <td>
-        Proximal Newton's method without penalization <a href="#references">[2]</a>.
+        Newton's method and Proximal Newton's method <a href="#references">[1]</a>.
         </td>
         <td><a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#model-fitting">tutorial</a></td>
     </tr>
       <tr>
         <td>Newton's method with penalization</td>
         <td>
-        Proximal Newton's method without penalization <a href="#references">[2]</a>.
+        Newton's method and Proximal Newton combined with P-spline or Smoothing-spline <a href="#references">[2]</a>.
         </td>
         <td><a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#model-fitting">tutorial</a></td>
     </tr>
@@ -128,25 +105,31 @@ The SUPPORT dataset is available in the "surtvep" package. The following code wi
         <th>Dataset</th>
         <th>Size</th>
         <th>Dataset</th>
-        <th>Data source</th>
+        <!-- <th>Data source</th> -->
     </tr>
     <tr>
-        <td>simulN2kOP2</td>
-        <td>25,000</td>
+        <td>ExampleData</td>
+        <td>4,000</td>
         <td>
-        Dataset from simulation study in <a href="#references">[2]</a>.
-        This is a simulation study with continuous time predictors
+        A simulated data set containing 2 continuous variables.
         </td>
-        <td><a href="https://github.com/havakv/pycox/blob/master/pycox/simulations/relative_risk.py">simulN2kOP2Continuous</a>
+        <!-- <td><a href="https://github.com/havakv/pycox/blob/master/pycox/simulations/relative_risk.py">simulN2kOP2Continuous</a> -->
     </tr>
     <tr>
-        <td>simulN2kOP2Binary</td>
-        <td>100,000</td>
+        <td>ExampleDataBinary</td>
+        <td>2,000</td>
         <td>
-        Dataset from simulation study in <a href="#references">[12]</a>.
-        This is a discrete time dataset with 1000 possible event-times.
+        A simulated data set containing 2 binary variables.
         </td>
-        <td><a href="https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py">simulN2kOP2Binary</a>
+        <!-- <td><a href="https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py">simulN2kOP2Binary</a> -->
+    </tr>
+        <tr>
+        <td>StrataExample</td>
+        <td>2,000</td>
+        <td>
+        A simulated data set containing 2 binary variables. Subjects in different strata have 
+        </td>
+        <!-- <td><a href="https://github.com/havakv/pycox/tree/master/pycox/simulations/discrete_logit_hazard.py">simulN2kOP2Binary</a> -->
     </tr>
 </table>
 
@@ -184,12 +167,7 @@ You can install 'surtvep' via:
     require("remotes")
     remotes::install_github("UM-KevinHe/surtvep", ref = "openmp")
 
-    #To install with Vignettes:
-    install.packages("devtools")
-    remotes::install_github("UM-KevinHe/surtvep", ref = "openmp", build_vignettes =T)
-
-We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">tutorial</a>, which explains the general usage of the package in terms of preprocessing, model training, penalziation parameter selection and evalutaion procedure.
-
+We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#quick-start" target="_blank">tutorial</a>, as it provides an overview of the package's usage, including preprocessing, model training, selection of penalization parameters, and post-estimation procedures.
 
 
 ## Detailed tutorial

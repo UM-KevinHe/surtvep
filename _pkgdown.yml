@@ -18,17 +18,16 @@ reference:
   contents:
   - tvef.ph
   - tvef.zero
+  - tvef.zero.time
 - title: Helper functions
   contents:
+  - get.tvcoef
   - confint.coxtp
   - confint.coxtv
   - plot.coxtp
   - plot.coxtv
-  - coxtp.baseline
-  - coxtp.predict
-  - coxtp.baseline
-  - coxtv.baseline
-  - coxtp.predict
+  - baseline
+  - plot.baseline
 - title: Package data sets
   contents:
   - ExampleData

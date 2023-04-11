@@ -63,7 +63,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>calculating information criteria from a <code>coxtp</code> object</h1>
-    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/IC.r" class="external-link"><code>R/IC.r</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/IC.R" class="external-link"><code>R/IC.R</code></a></small>
     <div class="hidden name"><code>IC.Rd</code></div>
     </div>
 
@@ -90,8 +90,8 @@ Default is <code>FALSE</code>.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <dl><dt>model.AIC</dt>
-<dd><p>an object with S3 class <code>"coxtp"</code> using AIC to select the tunning parameter.</p></dd>
+    <dl><dt>model.mAIC</dt>
+<dd><p>an object with S3 class <code>"coxtp"</code> using mAIC to select the tunning parameter.</p></dd>
 
 <dt>model.TIC</dt>
 <dd><p>an object with S3 class <code>"coxtp"</code> using TIC to select the tunning parameter.</p></dd>
@@ -99,21 +99,21 @@ Default is <code>FALSE</code>.</p></dd>
 <dt>model.GIC</dt>
 <dd><p>an object with S3 class <code>"coxtp"</code> using GIC to select the tunning parameter.</p></dd>
 
-<dt>AIC</dt>
-<dd><p>a sequence of AIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
+<dt>mAIC</dt>
+<dd><p>a sequence of mAIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
 
 <dt>TIC</dt>
-<dd><p>a sequence of AIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
+<dd><p>a sequence of TIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
 
 <dt>GIC</dt>
-<dd><p>a sequence of AIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
+<dd><p>a sequence of GIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
 
 </dl></div>
     <div id="details">
     <h2>Details</h2>
     <p>In order to select the proper smoothing parameter, we utilize the idea of information criteria.
 We provide four different information criteria to select the optimal smoothing parameter \(\lambda\).
-Generally, AIC, TIC and GIC selects similar parameters and the difference of resulting estimations are barely noticable.
+Generally, mAIC, TIC and GIC selects similar parameters and the difference of resulting estimations are barely noticable.
 See details in Lingfeng Luo et al. (2022)</p>
     </div>
 
@@ -129,18 +129,20 @@ See details in Lingfeng Luo et al. (2022)</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2920355; Stopping crit = 1.6361107e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2920353; Stopping crit = 3.7757230e-07;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2920353; Stopping crit = 5.0225062e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lambda 0.1 is done.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2954100; Stopping crit = 2.0664261e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lambda 1 is done.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3094946; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.3042222; Stopping crit = 1.7708812e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.3041817; Stopping crit = 1.3597425e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.3041817; Stopping crit = 6.0903559e-08;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.3041817; Stopping crit = 1.4914076e-15;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lambda 10 is done.</span>
 <span class="r-in"><span><span class="va">IC</span>  <span class="op">&lt;-</span> <span class="fu">IC</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in IC(fit):</span> object 'fit.smoothspline' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

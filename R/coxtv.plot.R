@@ -1,6 +1,8 @@
-#' plotting result from a `coxtv` object
+#' plotting result from a fitted `coxtv` object
 #'
-#' @param fit Model get from coxtv
+#' Plotting result from a fitted `coxtv` object.
+#' 
+#' @param fit model get from coxtv.
 #'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
@@ -75,7 +77,8 @@ plot.coxtv <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FALSE
       plt +
         scale_linetype_manual("", values="solid") +
         scale_fill_manual("", values="grey") +
-        ggtitle(paste0(tv, " (", term.event, ")")) + theme_bw() +
+        # ggtitle(paste0(tv, " (", term.event, ")")) + theme_bw() +
+        ggtitle(paste0(tv)) + theme_bw() +
         theme(plot.title=element_text(hjust=0),
               panel.background=element_blank(), panel.grid.major=element_blank(),
               panel.grid.minor=element_blank(), panel.border=element_blank(),

@@ -22,6 +22,9 @@
     <loc>https://um-kevinhe.github.io/surtvep/index.html</loc>
   </url>
   <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/baseline.html</loc>
+  </url>
+  <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/confint.coxtp.html</loc>
   </url>
   <url>
@@ -52,10 +55,16 @@
     <loc>https://um-kevinhe.github.io/surtvep/reference/ExampleDataBinary.html</loc>
   </url>
   <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/get.tvcoef.html</loc>
+  </url>
+  <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/IC.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/plot.baseline.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/plot.coxtp.html</loc>
@@ -74,5 +83,8 @@
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/tvef.zero.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/tvef.zero.time.html</loc>
   </url>
 </urlset>

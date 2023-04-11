@@ -1,39 +1,40 @@
-#' fit a Cox Non-proportional Hazards model:
+#' fit a Cox non-proportional hazards model
 #' 
-#' Fit a Cox Non-proportional Hazards model via maximum likelihood. 
+#' Fit a Cox non-proportional hazards model via maximum likelihood. 
 #' 
-#' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1
-#' @param z input covariate matrix, of dimension `nobs` x `nvars`; each row is an observation vector. 
-#' @param time observed event time, should be a vector with non-negative numeric values.
-#' @param strata stratification group defined in the data used for the stratified model. 
+#' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
+#' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
+#' @param time observed event time, which should be a vector with non-negative numeric values.
+#' @param strata a vector of indicators defined in the data used for stratification. Such column in the data should be entered as a vector.
 #' If there exists a stratification group, please enter it as a vector. 
-#' By default, a non-stratified model would be implemented.
-#' @param nsplines number of basis functions in the B-splines to span the time-varying effects, the default value is 8. 
-#' We use the r function `splines::bs` to generate the B-splines. 
+#' By default, an unstratified model is be implemented.
+#' @param nsplines number of basis functions in the splines to span the time-varying effects, whose default value is 8. 
+#' We use the R function `splines::bs` to generate the B-splines. 
 #' 
 #' @param knots the internal knot locations (breakpoints) that define the B-splines.
 #' The number of the internal knots should be `nsplines`-`degree`-1.
-#' If `NULL`, the locations of knots are chosen to include an equal number of events within each time interval. This choice leads to more stable results in most cases.
+#' If `NULL`, the locations of knots are chosen as quantiles of distinct failure time points.
+#' This choice leads to more stable results in most cases.
 #' Users can specify the internal knot locations by themselves.
 #' @param degree degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
 #' `degree = 2` results in the quadratic B-spline basis functions.
-#' @param ties a character string specifying the method for tie handling. If there are no tied
-#' death times, the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties occur.
+#' @param ties a character string specifying the method for tie handling. If there are no tied events, 
+#' the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties are present.
 #' @param stop a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.  
 #' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
 #' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met. 
+#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
 #' Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
 #' 
-#' @param tol convergence threshold for Newton's method. The algorithm continues until the method selected using `stop` converges.
+#' @param tol tolerance used for stopping the algorithm. The algorithm continues until the method selected using `stop` converges.
 #'  The default value is  `1e-6`.
-#' @param iter.max maximum Iteration number if the stopping criteria specified by `stop` is not satisfied. Default value is  20.
-#' @param method a character string specifying whether to use Newton's method or Proximal Newton's method.  If `"Newton"` then exact hessian is used, 
-#' while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+#' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. Default value is  20.
+#' @param method a character string specifying whether to use Newton method or proximal Newton method.  If `"Newton"` then Hessian is used, 
+#' while the default method `"ProxN"` implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
 
-#' @param gamma parameter for Proximal Newton's Method `"ProxN"`. Default value is `1e8`.
+#' @param gamma parameter for proximal Newton method `"ProxN"`. Default value is `1e8`.
 #' @param btr a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
 #' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
 #' which usually occurs when some predictors are categorical with low frequency for some categories. 
@@ -45,16 +46,16 @@
 #'
 #'
 #'
-#' @return An object with S3 class \code{"coxtv"}. 
+#' @return An object with S3 class `coxtv`.
 #' \item{call}{the call that produced this object.}
-#' \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension `len_unique_t` x `nvars`, where `len_unique_t` is the length of unique follow-up `time`.
+#' \item{beta}{the estimated time varying coefficient for each predictor at each unique time. It is a matrix of dimension `len_unique_t`-by-`nvars`, where `len_unique_t` is the length of unique follow-up `time`.
 #' Each row represents the coefficients at the corresponding input observation time.}
 #' 
-#' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension is `nvars` * `nsplines`; 
-#' if `ties="Breslow"`, the dimension is `len_unique_t` * `nsplines`. The matrix is constructed using `bs::splines` function.}
-#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars` x `nsplines`. 
+#' \item{bases}{the basis matrix used in model fitting. If `ties="None"`, the dimension of the basis matrix is `nvars`-by-`nsplines`; 
+#' if `ties="Breslow"`, the dimension is `len_unique_t`-by-`nsplines`. The matrix is constructed using the `bs::splines` function.}
+#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars`-by-`nsplines`. 
 #' Each row represents a covariate's coefficient on the `nsplines` dimensional basis functions.}
-#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` x `nsplines * nvars`.}
+#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` -by- `nsplines * nvars`.}
 #' \item{internal.knots}{the internal knot locations of the basis functions. The locations of knots are chosen to include an equal number of events within each time interval.}
 #' \item{nobs}{number of observations.}
 #' \item{theta.list}{a list of `ctrl.pts` of length `m`, contains the updated `ctrl.pts` after each algorithm iteration.}
@@ -62,7 +63,7 @@
 #'
 #' @export 
 #' 
-#' @seealso \code{coef}, \code{plot}, and the \code{coxtp} function.
+#' @seealso \code{\link{coef}}, \code{\link{plot}}, and the \code{\link{coxtp}} function.
 #'
 #' @examples 
 #' data(ExampleData)
@@ -77,27 +78,26 @@
 #' 
 #' 
 #' @details 
-#' The model is fit by Newton's method (Proximal Newton's method).
+#' The model is fit by Newton method (proximal Newton method).
 #' 
-#' @references
-#' Gray, R.~J.
-#' \emph{Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis. (1992), Journal of the American Statistical Association, Vol. 87, 942--951}.
+#' @references 
+#' Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
+#' \emph{Journal of the American Statistical Association}, \strong{87}: 942-951. 
 #' \cr
 #' 
-#' Gray, R.~J.
-#' \emph{Spline-based tests in survival analysis. (1994), Biometrics, Vol. 50, 640--652}.
+#' Gray, R. J. (1994) Spline-based tests in survival analysis.
+#' \emph{Biometrics}, \strong{50}: 640-652.
 #' \cr
 #' 
-#' Lingfeng Luo, Kevin He, Wenbo Wu and Jeremy M.G. Taylor 
-#' \emph{Using Information Criteria to Select Smoothing Parameters when Analyzing Survival Data with Time-Varying Coefficient Hazard Models (2022)}.
+#' Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 #' \cr
 #' 
-#' Wenbo Wu, Jeremy M G Taylor, Andrew F Brouwer, Lingfeng Luo, Jian Kang, Hui Jiang and Kevin He. 
-#' \emph{Scalable proximal Methods for cause-specific hazard modeling with time-varying coefficients (2022), Lifetime Data Analysis, Vol. 28(2), 194-218}.
+#' Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
+#' \emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
 #' \cr
 #' 
-#' Perperoglou, Aris, Saskia le Cessie, and Hans C. van Houwelingen. 
-#' \emph{A fast routine for fitting Cox models with time varying effects of the covariates (2006), Computer methods and programs in biomedicine, Vol. 81.2 154-161}.
+#' Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+#' \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 #' \cr
 #' 
 #' 
@@ -397,10 +397,13 @@ coxtv <- function(event , z , time ,strata= NULL, spline="P-spline", nsplines=8,
   class(res) <- "coxtv"
   attr(res, "spline") <- spline
   attr(res, "strata") <- strata
+  attr(res, "event") <- event
   if (length(term.ti)>0) {
     res$tief <- c(res$tief)
     names(res$tief) <- term.ti
   }
+  attr(res, "data") <- data
+  attr(res, "time")     <- time
   
   # colnames(res$info) <- rownames(res$info) <-
   #   c(rep(term.tv, each=nsplines), term.ti)
@@ -456,21 +459,26 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 
 
 
-#' get confidence interval from a 'coxtv' object
+#' get confidence interval of time-varying coefficients from a fitted object
 #' 
-#' @param fit fitted \code{"coxtv"} model
-#' @param times the time interval to be estamtied. The default value is the time of the fitted model
-#' @param parm the names of parameter
+#' Get confidence interval of time-varying coefficients from a fitted `coxtv` or `coxtp` object. 
+#' 
+#' @param fit fitted \code{"coxtv"} model.
+#' @param times the time points for which the confidence intervals to be estimated. 
+#' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
+#' @param parm the names of parameters.
 #' @param level the confidence level. Default is 0.95.
 #' 
 #' 
 #' @examples 
+#' \dontrun{
 #' data(ExampleData)
 #' z <- ExampleData$x
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
-#' confit(fit)
+#' confint(fit)
+#' }
 #' 
 #' @exportS3Method confint coxtv
 confint.coxtv <- function(fit, times, parm, level=0.95, ...) {
@@ -534,11 +542,7 @@ confint.coxtv <- function(fit, times, parm, level=0.95, ...) {
     return(mat.tv)
   })
   names(ls$tvef) <- parm.tv
-  # } 
-  # else if (spline=="P-spline") {
-  
-  # }
-  # }
+
   return(ls)
 }
 

@@ -290,15 +290,22 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   
   class(res) <- "coxtp"
 
-  row.names(res$ctrl.pts) <- term.tv
-  
+  row.names(res$ctrl.pts)   <- term.tv
+  attr(res, "data")         <- data
+  attr(res, "term.event")   <- term.event
+  attr(res, "term.tv")      <- term.tv
+  attr(res, "term.time")    <- term.time
+  attr(res, "SmoothMatrix") <- SmoothMatrix
   attr(res, "spline") <- spline
+  attr(res, "count.strata") <- count.strata
   # if (length(term.ti)>0) {
   #   fit$tief <- c(fit$tief)
   #   names(fit$tief) <- term.ti
   # }
   # colnames(fit$info) <- rownames(fit$info) <-
   #   c(rep(term.tv, each=nsplines), term.ti)
+  attr(res, "time")     <- time
+  attr(res, "ties")     <- ties
   attr(res, "nsplines") <- nsplines
   attr(res, "degree.spline") <- degree
   attr(res, "control") <- control
@@ -537,21 +544,23 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
 }
 
 
-#' get confidence interval from a 'coxtp' object
+#' @rdname confint.coxtv
 #' 
-#' @param fit fitted \code{"coxtp"} model
-#' @param times the time interval to be estamtied. The default value is the time of the fitted model
-#' @param parm the names of parameter
+#' @param fit fitted \code{"coxtp"} model.
+#' @param times the time interval to be estamtied. The default value is the time of the fitted model.
+#' @param parm the names of parameter.
 #' @param level the confidence level. Default is 0.95.
 #' 
 #' 
 #' @examples 
+#' \dontrun{
 #' data(ExampleData)
 #' z <- ExampleData$x
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtp(event = event, z = z, time = time)
-#' confit(fit)
+#' confint(fit$lambda1)
+#' }
 #' 
 #' @exportS3Method confint coxtp
 confint.coxtp <- function(fit, times, parm, level=0.95) {
@@ -571,13 +580,13 @@ confint.coxtp <- function(fit, times, parm, level=0.95) {
   knots <- attr(fit, "internal.knots"); nsplines <- attr(fit, "nsplines")
   method <- attr(fit, "control")$method
   term.tv <- rownames(fit$ctrl.pts)
-  # if (missing(parm)) {
+  if (missing(parm)) {
     parm <- term.tv
-  # } else if (length(parm)>0) {
-  #   indx <- pmatch(parm, term.tv, nomatch=0L)
-  #   if (any(indx==0L))
-  #     stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
-  # } else stop("Invalid parm!")
+  } else if (length(parm)>0) {
+    indx <- pmatch(parm, term.tv, nomatch=0L)
+    if (any(indx==0L))
+      stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
+  } else stop("Invalid parm!")
   rownames.info <- rep(term.tv, each=nsplines)
   if (method=="Newton") {
     invinfo <- solve(fit$info)

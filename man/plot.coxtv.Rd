@@ -2,7 +2,7 @@
 % Please edit documentation in R/coxtv.plot.R
 \name{plot.coxtv}
 \alias{plot.coxtv}
-\title{plotting result from a \code{coxtv} object}
+\title{plotting result from a fitted \code{coxtv} object}
 \usage{
 \method{plot}{coxtv}(
   fit,
@@ -27,10 +27,10 @@
 )
 }
 \arguments{
-\item{fit}{Model get from coxtv}
+\item{fit}{model get from coxtv.}
 }
 \description{
-plotting result from a \code{coxtv} object
+Plotting result from a fitted \code{coxtv} object.
 }
 \examples{
 data(ExampleData)

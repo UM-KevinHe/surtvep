@@ -33,3 +33,11 @@ Lambda_estimate_ties2 <- function(knot, delta, z, b_spline, theta, tieseq) {
     .Call(`_surtvep_Lambda_estimate_ties2`, knot, delta, z, b_spline, theta, tieseq)
 }
 
+ICcpp <- function(event, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMatrix, SplineType = "smooth-spline", method = "Newton", lambda = 1e8, factor = 1.0, parallel = FALSE, threads = 1L) {
+    .Call(`_surtvep_ICcpp`, event, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMatrix, SplineType, method, lambda, factor, parallel, threads)
+}
+
+ICcpp_bresties <- function(event, time, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMatrix, SplineType = "smooth-spline", method = "Newton", lambda = 1e8, factor = 1.0, parallel = FALSE, threads = 1L) {
+    .Call(`_surtvep_ICcpp_bresties`, event, time, Z_tv, B_spline, count_strata, theta, lambda_i, SmoothMatrix, SplineType, method, lambda, factor, parallel, threads)
+}
+
