@@ -103,7 +103,6 @@
 #' \cr
 #' 
 #' 
-#' 
 coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knots = NULL, 
                   degree = 3, stop = 'ratch', tol = 1e-6, iter.max = 20, method = "ProxN", 
                   gamma = 1e8, btr = "dynamic",
@@ -111,19 +110,21 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
                   parallel=FALSE, threads=2L,...) {
   
   
-  
-  
   if (!ties%in%c("Breslow", "none")) stop("Invalid ties!")
   # pass ... args to coxtv.control
   extraArgs <- list(...)
   if (length(extraArgs)) {
     controlargs <- names(formals(coxtv.control))
-    indx <- pmatch(names(extraArgs), controlargs, nomatch=0L)
-    if (any(indx==0L))
-      stop(gettextf("Argument(s) %s not matched!", 
-                    names(extraArgs)[indx==0L]), domain=NA)
+    if(!is.null(names(extraArgs))) {
+      indx <- pmatch(names(extraArgs), controlargs, nomatch=0L)
+      if (any(indx==0L))
+        stop(gettextf("Argument(s) %s not matched!",
+                      names(extraArgs)[indx==0L]), domain=NA)
+    }
   }
-  if (missing(control)) control <- coxtv.control(...)
+  # if (missing(control)) control <- coxtv.control(...)
+  control <- coxtv.control(...)
+  spline="P-spline" # lambda = 0 so it doesn't matter
   
   degree        <- control$degree
   TIC_prox      <- control$TIC_prox
@@ -137,7 +138,7 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
   } else {
     stratum=strata
   }
-  
+
   data <- data.frame(event=event, time=time, z, strata=stratum, stringsAsFactors=F)
   #Z.char <- paste0("X", 1:p)
   Z.char <- colnames(data)[c(3:(ncol(data)-1))]
@@ -157,7 +158,7 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
   # #Add time:
   # time  <-data[,idx.str]
   
-  
+
   if (is.null(idx.tv)) stop("No variable specified with time-variant effect!")
   term.ti <- terms[setdiff(1:length(terms), c(idx.r, idx.o, idx.str, idx.tv))]
   term.time <- gsub(".*\\(([^,]*),\\s+([^,]*)\\)", "\\1", terms[idx.r])
@@ -176,17 +177,21 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
                                    sum)==0]
   data <- data[!data[,term.str]%in%strata.noevent,] # drop strata with no event
   count.strata <- sapply(split(data[,term.str], data[,term.str]), length)
+  
+  
   if (any(!data[,term.event]%in%c(0,1)) |
       !is.numeric(data[,term.time]) |
       min(data[,term.time])<0) stop("Invalid Surv object!")
   # check spline-related arguments
-  if (!spline%in%c("P-spline", "Smooth-spline") | 
-      is.na(suppressWarnings(as.integer(nsplines[1]))) |
+
+  if (is.na(suppressWarnings(as.integer(nsplines[1]))) |
       as.integer(nsplines[1])<=degree+1) 
-    stop(sprintf("Invalid spline or nsplines (should be at least %.0f)!", 
+    stop(sprintf("Invalid nsplines (should be at least %.0f)!", 
                  degree+2))
+
   nsplines <- nsplines[1]
-  # model fitting
+  
+
   if (spline=="P-spline") {
     knots <- 
       quantile(data[data[,term.event]==1,term.time], 
@@ -382,7 +387,7 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
     
   }
   
-  
+
   res <- NULL
   res$theta.list  <- fit$theta_list
   res$VarianceMatrix <- fit$VarianceMatrix
@@ -419,8 +424,6 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
   attr(res, "response") <- term.event
   return(res)
 }
-
-
 
 
 coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,

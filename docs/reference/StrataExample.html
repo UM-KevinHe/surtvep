@@ -40,11 +40,17 @@
      
     <span class="caret"></span>
   </a>
-  <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/Model_Parameters.html">Model Parameters</a>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
     </li>
     <li>
-      <a href="../articles/reference.html">Reference</a>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/b1.html">Article B1</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -77,14 +83,14 @@
 
     <div id="format">
     <h2>Format</h2>
-    <p>a list containing the following elements:</p><dl><dt>x</dt>
-<dd><p>simulated binary covariate V1 and V2. True time-dependent function is b(t)=1 and true time-dependent function is b(t)=sin(3<em>pi</em>t/4).</p></dd>
+    <p>A list containing the following elements:</p><dl><dt>x</dt>
+<dd><p>simulated binary covariate V1 and V2. True time-independent function is b(t)=1 and true time-varying function is b(t)=sin(3tpi/4).</p></dd>
 
 <dt>event</dt>
-<dd><p>simulated event variable, binary varible with 0, 1.</p></dd>
+<dd><p>simulated event variable, binary variable with 0, 1.</p></dd>
 
 <dt>time</dt>
-<dd><p>simulated time variable, continous variable with non-negative value.</p></dd>
+<dd><p>simulated time variable, continuous variable with non-negative value.</p></dd>
 
 <dt>strata</dt>
 <dd><p>simulated strata variable, patients in different stratums have different baseline hazards.</p></dd>
@@ -100,11 +106,11 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Xueting Tao.</p>
+  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

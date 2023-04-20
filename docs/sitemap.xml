@@ -4,10 +4,16 @@
     <loc>https://um-kevinhe.github.io/surtvep/404.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/articles/index.html</loc>
+    <loc>https://um-kevinhe.github.io/surtvep/articles/Appendix.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/articles/Model_Parameters.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/articles/plotting.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/articles/reference.html</loc>
@@ -20,6 +26,18 @@
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/index.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/ExampleData.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/ExampleDataBinary.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/IC.html</loc>
+  </url>
+  <url>
+    <loc>https://um-kevinhe.github.io/surtvep/reference/StrataExample.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/baseline.html</loc>
@@ -49,16 +67,7 @@
     <loc>https://um-kevinhe.github.io/surtvep/reference/cv.coxtp.html</loc>
   </url>
   <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/ExampleData.html</loc>
-  </url>
-  <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/ExampleDataBinary.html</loc>
-  </url>
-  <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/get.tvcoef.html</loc>
-  </url>
-  <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/IC.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/index.html</loc>
@@ -71,9 +80,6 @@
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/plot.coxtv.html</loc>
-  </url>
-  <url>
-    <loc>https://um-kevinhe.github.io/surtvep/reference/StrataExample.html</loc>
   </url>
   <url>
     <loc>https://um-kevinhe.github.io/surtvep/reference/support.html</loc>

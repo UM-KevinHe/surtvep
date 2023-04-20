@@ -7,7 +7,7 @@
 \format{
 A list containing the following elements:
 \describe{
-\item{x}{simulated continuous covariate V1 and V2. The true time-independent function is b(t)=1 and the true time-dependent function is b(t)=sin(3\emph{pi}t/4).}
+\item{x}{simulated continuous covariate V1 and V2. The true time-independent function is b(t)=1 and the true time-varying function is b(t)=sin(3\emph{pi}t/4).}
 \item{event}{simulated event variable, binary variable with 0, 1.}
 \item{time}{simulated time variable, continuous variable with non-negative value.}
 }

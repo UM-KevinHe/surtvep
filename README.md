@@ -1,6 +1,6 @@
 # surtvep
 
-``surtvep" is an R package for fitting penalized Newton's method 
+`surtvep` is an R package for fitting penalized Newton's method 
 for the time-varying effects model using mAIC, TIC and GIC as information criteria, 
 in particular we span the parameters using B-spline basis functions. Utilities for carrying 
 out post-estimation visualization, summarization, and inference are also provided.

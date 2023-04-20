@@ -45,11 +45,17 @@ included only tracks follow-up time and death."><!-- mathjax --><script src="htt
      
     <span class="caret"></span>
   </a>
-  <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/Model_Parameters.html">Model Parameters</a>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
     </li>
     <li>
-      <a href="../articles/reference.html">Reference</a>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/b1.html">Article B1</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -86,96 +92,115 @@ included only tracks follow-up time and death.</p>
 
     <div id="format">
     <h2>Format</h2>
-    <p>A dataframe with 9104 observations and 34 variables after imputation
+    <p>A data frame with 9,104 observations and 34 variables after imputation
 and the removal of response variables like hospital charges, patient ratio
 of costs to charges and micro-costs. Ordinal variables, namely functional
 disability and income, were also removed. Finally, Surrogate activities of
 daily living were removed due to sparsity. There were 6 other model scores
 in the data-set and they were removed; only aps and sps were kept.</p><dl><dt>Age</dt>
-<dd><p>Stores a double representing age.</p></dd>
- <dt>death</dt>
-<dd><p>Death at any time up to NDI date: 31DEC94.</p></dd>
- <dt>sex</dt>
+<dd><p>stores a double representing age.</p></dd>
+
+<dt>death</dt>
+<dd><p>death at any time up to NDI date: 31DEC94.</p></dd>
+
+<dt>sex</dt>
 <dd><p>0=female, 1=male.</p></dd>
- <dt>slos</dt>
-<dd><p>Days from study entry to discharge.</p></dd>
- <dt>d.time</dt>
+
+<dt>slos</dt>
+<dd><p>days from study entry to discharge.</p></dd>
+
+<dt>d.time</dt>
 <dd><p>days of
 follow-up.</p></dd>
- <dt>dzgroup</dt>
-<dd><p>Each level of dzgroup: ARF/MOSF w/Sepsis,
+
+<dt>dzgroup</dt>
+<dd><p>each level of dzgroup: ARF/MOSF w/Sepsis,
 COPD, CHF, Cirrhosis, Coma, Colon Cancer, Lung Cancer, MOSF with
 malignancy.</p></dd>
- <dt>dzclass</dt>
-<dd><p>ARF/MOSF, COPD/CHF/Cirrhosis, Coma and cancer
-disease classes.</p></dd>
- <dt>num.co</dt>
+
+<dt>dzclass</dt>
+<dd><p>ARF/MOSF, COPD/CHF/Cirrhosis, Coma and cancer disease classes.</p></dd>
+
+<dt>num.co</dt>
 <dd><p>the number of comorbidities.</p></dd>
 
 <dt>edu</dt>
-<dd><p>years of education of patient.</p></dd>
- <dt>scoma</dt>
-<dd><p>The SUPPORT coma
-score based on Glasgow D3.</p></dd>
- <dt>avtisst</dt>
-<dd><p>Average TISS, days 3-25.</p></dd>
+<dd><p>years of education of patients.</p></dd>
+
+<dt>scoma</dt>
+<dd><p>the SUPPORT coma score based on Glasgow D3.</p></dd>
+
+<dt>avtisst</dt>
+<dd><p>average TISS, days 3-25.</p></dd>
 
 <dt>race</dt>
-<dd><p>Indicates race. White, Black, Asian, Hispanic or other.</p></dd>
+<dd><p>indicates race: White, Black, Asian, Hispanic or other.</p></dd>
 
 <dt>hday</dt>
-<dd><p>Day in Hospital at Study Admit</p></dd>
- <dt>diabetes</dt>
-<dd><p>Diabetes (Com
-27-28, Dx 73)</p></dd>
- <dt>dementia</dt>
-<dd><p>Dementia (Comorbidity 6)</p></dd>
- <dt>ca</dt>
-<dd><p>Cancer
-State</p></dd>
- <dt>meanbp</dt>
-<dd><p>Mean Arterial Blood Pressure Day 3.</p></dd>
- <dt>wblc</dt>
-<dd><p>White blood cell count on day 3.</p></dd>
- <dt>hrt</dt>
-<dd><p>Heart rate day 3.</p></dd>
+<dd><p>day in Hospital at Study Admit</p></dd>
+
+<dt>diabetes</dt>
+<dd><p>diabetes (Com27-28, Dx 73)</p></dd>
+
+<dt>dementia</dt>
+<dd><p>dementia (Comorbidity 6)</p></dd>
+
+<dt>ca</dt>
+<dd><p>cancer state</p></dd>
+
+<dt>meanbp</dt>
+<dd><p>mean arterial blood pressure day 3.</p></dd>
+
+<dt>wblc</dt>
+<dd><p>white blood cell count on day 3.</p></dd>
+
+<dt>hrt</dt>
+<dd><p>heart rate day 3.</p></dd>
 
 <dt>resp</dt>
-<dd><p>Respiration Rate day 3.</p></dd>
- <dt>temp</dt>
-<dd><p>Temperature, in
-Celsius, on day 3.</p></dd>
- <dt>pafi</dt>
-<dd><p>PaO2/(0.01*FiO2) Day 3.</p></dd>
- <dt>alb</dt>
-<dd><p>Serum albumin day 3.</p></dd>
- <dt>bili</dt>
-<dd><p>Bilirubin Day 3.</p></dd>
- <dt>crea</dt>
-<dd><p>Serum
-creatinine day 3.</p></dd>
- <dt>sod</dt>
-<dd><p>Serum sodium day 3.</p></dd>
- <dt>ph</dt>
-<dd><p>Serum pH
-(in arteries) day 3.</p></dd>
- <dt>glucose</dt>
-<dd><p>Serum glucose day 3.</p></dd>
- <dt>bun</dt>
-<dd><p>BUN day 3.</p></dd>
- <dt>urine</dt>
+<dd><p>respiration rate day 3.</p></dd>
+
+<dt>temp</dt>
+<dd><p>temperature, in Celsius, on day 3.</p></dd>
+
+<dt>pafi</dt>
+<dd><p>PaO2/(0.01*FiO2) day 3.</p></dd>
+
+<dt>alb</dt>
+<dd><p>serum albumin day 3.</p></dd>
+
+<dt>bili</dt>
+<dd><p>bilirubin day 3.</p></dd>
+
+<dt>crea</dt>
+<dd><p>serum creatinine day 3.</p></dd>
+
+<dt>sod</dt>
+<dd><p>serum sodium day 3.</p></dd>
+
+<dt>ph</dt>
+<dd><p>serum pH (in arteries) day 3.</p></dd>
+
+<dt>glucose</dt>
+<dd><p>serum glucose day 3.</p></dd>
+
+<dt>bun</dt>
+<dd><p>bun day 3.</p></dd>
+
+<dt>urine</dt>
 <dd><p>urine output day 3.</p></dd>
- <dt>adlp</dt>
-<dd><p>ADL patient
-day 3.</p></dd>
-  <dt>adlsc</dt>
-<dd><p>Imputed ADL calibrated to surrogate, if a surrogate
-was used for a follow up.</p></dd>
- <dt>sps</dt>
+
+<dt>adlp</dt>
+<dd><p>adl patient day 3.</p></dd>
+
+<dt>adlsc</dt>
+<dd><p>imputed adl calibrated to surrogate, if a surrogate was used for a follow up.</p></dd>
+
+<dt>sps</dt>
 <dd><p>SUPPORT physiology score</p></dd>
 
 <dt>aps</dt>
-<dd><p>Apache III physiology score</p></dd>
+<dd><p>apache III physiology score</p></dd>
  
 </dl></div>
     <div id="source">
@@ -187,9 +212,9 @@ note: must unzip and process this data before use.</p>
     <div id="details">
     <h2>Details</h2>
     <p>Some of the original data was missing. Before imputation, there were
-a total of 9105 individuals and 47 variables. Of those variables, a few
+a total of 9,104 individuals and 47 variables. Of those variables, a few
 were removed before imputation. We removed three response variables:
-hospital charges, patient ratio of costs to charge,s and patient
+hospital charges, patient ratio of costs to charges and patient
 micro-costs. Next, we removed hospital death as it was directly informative
 of our event of interest, namely death. We also removed functional
 disability and income as they are ordinal covariates. Finally, we removed 8
@@ -206,7 +231,14 @@ we imputed a single dataset using <span class="pkg">mice</span> with default set
 imputation, we noted that the covariate for surrogate activities of daily
 living was not imputed. This is due to collinearity between the other two
 covariates for activities of daily living. Therefore, surrogate activities
-of daily living was removed.</p>
+of daily living were removed.</p>
+    </div>
+    <div id="references">
+    <h2>References</h2>
+    <p>Knaus, W. A., Harrell, F. E., Lynn, J., Goldman, L., Phillips, R. S., Connors, A. F., ... and Wagner, D. P. (1995).
+The SUPPORT prognostic model: Objective estimates of survival for seriously ill hospitalized adults.
+<em>Annals of Internal Medicine</em>, <strong>122(3)</strong>: 191-203.
+<br></p>
     </div>
 
     <div id="ref-examples">
@@ -257,11 +289,11 @@ of daily living was removed.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Xueting Tao.</p>
+  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

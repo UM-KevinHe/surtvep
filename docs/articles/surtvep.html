@@ -58,11 +58,18 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/Model_Parameters.html">Model Parameters</a>
+<li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
     </li>
     <li>
-      <a href="../articles/reference.html">Reference</a>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/b1.html">Article B1</a>
     </li>
   </ul>
 </li>
@@ -107,6 +114,22 @@ functions. Utilities for carrying out post-fitting visualization,
 summarization, and inference are also provided. In this tutorial we
 introduce the use of <code>surtvep</code> through an example
 dataset.</p>
+<p>This tutorial aims to provide a comprehensive guide on survival
+estimation for the time-varying coefficient model using the
+<code>surtvep</code> package in R. The package addresses the challenges
+associated with large-scale time-to-event data and the estimation of
+time-varying effects in survival analysis. By implementing a
+computationally efficient Kronecker product-based proximal algorithm and
+incorporating various penalties to improve estimation,
+<code>surtvep</code> offers an efficient and flexible solution for
+handling time-varying coefficients in survival analysis.</p>
+<p>Throughout the tutorial, we will cover the key features and
+capabilities of the <code>surtvep</code> package, providing examples and
+use cases to illustrate the package’s functionality. By the end of this
+tutorial, you will have a solid understanding of how to use
+<code>surtvep</code> for survival estimation with time-varying
+coefficients, as well as how to leverage the package’s unique features
+to improve your analysis.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation:<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -115,11 +138,7 @@ dataset.</p>
 <code class="sourceCode R"><span><span class="co">#Install the package, need to install the devtools packages:</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span>, ref <span class="op">=</span> <span class="st">"Lingfeng_test"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#To install with Vignettes:</span></span>
-<span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="co"># devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span>, ref <span class="op">=</span> <span class="st">"Lingfeng_test"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
@@ -199,12 +218,20 @@ The dotted line indicates the that hazard ratio is 0, which means the
 predictor has no effect. Users may also wish to plot the effect of
 different covariates in the same plot: this can be done by setting
 <code>allinone = TRUE</code> in the plot command.</p>
+<p>The confidence interval shown presented on the figure can be
+calculated using the <code>confint</code> function.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ci.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit.tv</span><span class="op">)</span></span></code></pre></div>
+<p>Note that users can draw the plots by yourself with the necessary
+data given. We give some raw example <code>ggplot</code> codes. Please
+refer to <a href="#plotting-section">plotting</a> for more
+information.</p>
 <p>Next we fit the Newton’s method combined with penalization method. We
 specify a range of penalization coefficients first, then call the
 <code>coxtp</code> function. Detailed disucussion of how to specify the
 range of penalization coefficients and how to choose the appropriate one
 will be discussed in section Information Criteria.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">fit.penalize</span> <span class="op">=</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, lambda <span class="op">=</span> <span class="va">lambda_all</span>, method <span class="op">=</span> <span class="st">"ProxN"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span></span>
@@ -213,19 +240,28 @@ will be discussed in section Information Criteria.</p>
 <span><span class="co">#&gt; Iter 4: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span></span>
 <span><span class="co">#&gt; Iter 5: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span></span>
 <span><span class="co">#&gt; lambda 1 is done.</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.penalize</span><span class="op">$</span><span class="va">lambda1</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
 <p>With the tools introduced so far, users are able to fit the
 time-varying model. There are many more arguments in the package that
 give users a great deal of flexibility. To learn more, move on to later
 section.</p>
 </div>
 <div class="section level2">
-<h2 id="newtons-method">Newton’s method<a class="anchor" aria-label="anchor" href="#newtons-method"></a>
+<h2 id="cox-non-proportional-hazards-model">Cox non-proportional hazards model<a class="anchor" aria-label="anchor" href="#cox-non-proportional-hazards-model"></a>
 </h2>
-<p>In this section we introduce the Newton’s method for estimating
-time-varying effects in detail.</p>
+<p>While obtaining these estimates under the Cox proportional-hazards
+model is relatively straightforward, the assumption of constant hazard
+ratios is frequently violated in populations defined by an initial,
+acute event, such as myocardial infarction, or in studies with long-term
+follow-up.</p>
+<p>The Cox non-proportional hazards model is a flexible and powerful
+tool for modeling the time-varying effects of covariates in survival
+analysis, allowing for the estimation of hazard ratios that change over
+time. This model can capture complex relationships between predictor
+variables and the time-to-event outcome, providing a more accurate
+representation of the underlying processes.</p>
 <p>Let <span class="math inline">\(D_{i}\)</span> denote the time lag
 from transplantation to death and <span class="math inline">\(C_{i}\)</span> be the censoring time for patient
 <span class="math inline">\(i\)</span>, <span class="math inline">\(i=1,\ldots, n\)</span>. Here <span class="math inline">\(n_j\)</span> is the sample size. The observed time
@@ -237,19 +273,39 @@ that <span class="math inline">\(D_{i}\)</span> is independent from
 <span class="math inline">\(C_{i}\)</span> given <span class="math inline">\(\textbf{X}_{i}\)</span>. Consider the hazard
 function <span class="math display">\[
    \lambda(t|\boldsymbol{X}_{i}) =
-\lambda_{0}(t)\exp\{\boldsymbol{X}_{i}^T {\boldsymbol\beta}(t)\},
+\lambda_{0}(t)\exp\{\boldsymbol{X}_{i}^\top{\boldsymbol\beta}(t)\},
 %\nonumber
 \]</span> where <span class="math inline">\(\lambda_{0}(t)\)</span> is
-the baseline hazard. To estimate the time-varying coefficients <span class="math inline">\({\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots,
+the baseline hazard. The time-varying coefficients <span class="math inline">\(\beta(t)\)</span> represent the effect of
+predictors on the outcome are varying through different time points.</p>
+<p>To estimate the time-varying coefficients <span class="math inline">\({\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots,
 \beta_{P}(t)\}\)</span>, we span <span class="math inline">\(\boldsymbol\beta(\cdot)\)</span> by a set of cubic
 B-splines defined on a given number of knots: <span class="math display">\[\begin{eqnarray}
-   \beta_{p}(t)=\boldsymbol\theta_{p}^T  \boldsymbol{B}(t)=\sum_{k=1}^K
+   \beta_{p}(t)=\boldsymbol\theta_{p}^\top\boldsymbol{B}(t)=\sum_{k=1}^K
 \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber
-\end{eqnarray}\]</span> where <span class="math inline">\(\boldsymbol{B}(t)=\{B_1(t), \ldots,
-B_K(t)\}^T\)</span> forms a basis, <span class="math inline">\(K\)</span> is the number of basis functions, and
+\end{eqnarray}\]</span> where <span class="math inline">\(\boldsymbol{B}
+(t)=\{B_1(t), \ldots, B_K(t)\}^T\)</span> forms a basis, <span class="math inline">\(K\)</span> is the number of basis functions, and
 <span class="math inline">\(\boldsymbol\theta_{p}=(\theta_{p1}, \ldots,
 \theta_{pK})^T\)</span> is a vector of coefficients with <span class="math inline">\(\theta_{pk}\)</span> being the coefficient for the
-<span class="math inline">\(k\)</span>-th basis of the <span class="math inline">\(p\)</span>-th covariate.</p>
+<span class="math inline">\(k\)</span>-th basis of the <span class="math inline">\(p\)</span>-th covariate. Detailed inforamtion
+about the construction of the B-spline basis can seen in the <a href="Appendix.html">B-spline construction</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="newtons-method">Newton’s method<a class="anchor" aria-label="anchor" href="#newtons-method"></a>
+</h2>
+<p>In this section we introduce the Newton’s method for estimating
+time-varying effects in detail.</p>
+<!-- Let $D_{i}$ denote the time lag from transplantation to death and $C_{i}$ be the censoring time for patient $i$, $i=1,\ldots, n$. -->
+<!-- Here $n_j$ is the sample size. -->
+<!-- The observed time is $T_{i} = \min\{D_{i},C_{i}\}$, and the death indicator is given by $\delta_{i} = I(D_{i} \leq C_{i})$. -->
+<!-- Let $\boldsymbol{X}_{i}=(X_{i1}, \ldots, X_{iP})^T$ be a $P$-dimensional covariate vector. -->
+<!-- We assume that $D_{i}$ is independent from $C_{i}$ given $\textbf{X}_{i}$. -->
+<!-- Consider the hazard function $$ -->
+<!--    \lambda(t|\boldsymbol{X}_{i}) = \lambda_{0}(t)\exp\{\boldsymbol{X}_{i}^T {\boldsymbol\beta}(t)\}, %\nonumber -->
+<!-- $$ where $\lambda_{0}(t)$ is the baseline hazard. -->
+<!-- To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots, \beta_{P}(t)\}$, we span $\boldsymbol\beta(\cdot)$ by a set of cubic B-splines defined on a given number of knots: \begin{eqnarray} -->
+<!--    \beta_{p}(t)=\boldsymbol\theta_{p}^T  \boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber -->
+<!-- \end{eqnarray} where $\boldsymbol{B}(t)=\{B_1(t), \ldots, B_K(t)\}^T$ forms a basis, $K$ is the number of basis functions, and $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th covariate. -->
 <p>With a length-<span class="math inline">\(PK\)</span> parameter
 vector <span class="math inline">\(\boldsymbol\theta=vec(\boldsymbol\Theta)\)</span>,
 the vectorization of the coefficient matrix <span class="math inline">\(\boldsymbol\Theta=(\boldsymbol\theta_{1}, \ldots,
@@ -277,39 +333,36 @@ first and second derivative of the log partial likelihood.</p>
 <div class="section level3">
 <h3 id="commonly-used-function-arguments">Commonly used function arguments<a class="anchor" aria-label="anchor" href="#commonly-used-function-arguments"></a>
 </h3>
-<p><code>coxtp</code> provides various arguments for users to customize
+<p><code>coxtv</code> provides various arguments for users to customize
 the fit: we introduce some commonly used arguments here.</p>
 <ul>
-<li><p><code>strata</code> is for stratification group defined in the
-data used for the stratified model. If there exists a stratification
-group, please enter it as a vector. By default, a non-stratified model
-would be implemented.</p></li>
-<li><p><code>nsplines</code> number of basis functions in the B-splines
-to span the time-varying effects, the default value is 8. We use the r
-function <code><a href="https://rdrr.io/r/splines/bs.html" class="external-link">splines::bs</a></code> to generate the B-splines. Denoted as
-<span class="math inline">\(k\)</span> in our model
-introduction.</p></li>
-<li><p><code>ties</code> is specifying the method for tie handling. If
-there are no tied death times, the methods are equivalent. By default
-<code>"Breslow"</code> uses the Breslow approximation, which can be
-faster when many ties occur.</p></li>
-<li><p><code>tol</code> convergence threshold for Newton’s method. The
-algorithm continues until the method selected using <code>stop</code>
-converges. The default value is <code>1e-6</code>.</p></li>
-<li><p><code>iter.max</code> maximum Iteration number if the stopping
-criteria specified by <code>stop</code> is not satisfied. Default value
+<li><p><code>strata</code> is a vector of indicators for stratification.
+Default = <code>NULL</code>, (i.e. no stratification group in the data),
+an unstratified model is implemented.</p></li>
+<li><p><code>nsplines</code> number of basis functions in the splines to
+span the time-varying effects, whose default value is 8. We use the R
+function <code><a href="https://rdrr.io/r/splines/bs.html" class="external-link">splines::bs</a></code> to generate the B-splines.</p></li>
+<li><p><code>ties</code> a character string specifying the method for
+tie handling. If there are no tied events, the methods are equivalent.
+By default <code>"Breslow"</code> uses the Breslow approximation, which
+can be faster when many ties are present.</p></li>
+<li><p><code>tol</code> tolerance used for stopping the algorithm. See
+details in <code>stop</code> below. The default value is
+<code>1e-6</code>.</p></li>
+<li><p><code>iter.max</code> maximum iteration number if the stopping
+criterion specified by <code>stop</code> is not satisfied. Default value
 is 20.</p></li>
 <li><p><code>degree</code> degree of the piecewise polynomial for
 generating the B-spline basis functions—default is 3 for cubic splines.
 <code>degree = 2</code> results in the quadratic B-spline basis
 functions.</p></li>
 <li><p><code>method</code> a character string specifying whether to use
-Newton’s method or Proximal Newton’s method. If <code>"Newton"</code>
-then exact hessian is used, while default method <code>"ProxN"</code>
-implementing the proximal method which can be faster and more stable
-when there exists ill-conditioned second-order information of the
-log-partial likelihood.</p></li>
-<li><p><code>gammma</code> parameter for Proximal Newton’s Method
+Newton method or proximal Newton method. If <code>"Newton"</code> then
+Hessian is used, while the default method <code>"ProxN"</code>
+implements the proximal Newton which can be faster and more stable when
+there exists ill-conditioned second-order information of the log-partial
+likelihood.</p></li>
+<li><p><code>gammma</code> parameter for proximal Newton method
 <code>"ProxN"</code>. Default value is <code>1e8</code>.</p></li>
 <li><p><code>btr</code> a character string specifying the backtracking
 line-search approach. <code>"dynamic"</code> is a typical way to perform
@@ -322,22 +375,17 @@ frequency for some categories. Users should be careful with
 <code>static</code> as this may lead to under-fitting.</p></li>
 <li><p><code>tau</code> a scalar in (0,1) used to control the step size
 inside the backtracking line-search. The default value is 0.5.</p></li>
-<li>
-<p><code>stop</code> a character string specifying the stopping rule
-to determine convergence. Use <span class="math inline">\(loglik(m)\)</span> to denote the log-partial
-likelihood at iteration step m.<br></p>
-<p><code>"incre"</code> means we stop the algorithm when Newton’s
-increment is less than the <code>tol</code>. <code>"relch"</code> means
-we stop the algorithm when the <span class="math inline">\(loglik(m)\)</span> divided by the <span class="math inline">\(loglik(0)\)</span> is less than the
-<code>tol</code>. <code>"ratch"</code> means we stop the algorithm when
-<span class="math inline">\((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\)</span>
-is less than the <code>tol</code>. <code>"all"</code> means we stop the
-algorithm when all the stopping rules <code>"incre"</code>,
-<code>"relch"</code> and <code>"ratch"</code> is met. Default value is
-<code>ratch</code>. If the maximum iteration steps <code>iter.max</code>
-is achieved, the algorithm stops before the stopping rule is
-met.</p>
-</li>
+<li><p><code>stop</code> character string specifying the stopping rule
+to determine convergence. Use to denote the log-partial likelihood at
+iteration step m.<br><code>"incre"</code> means we stop the algorithm when Newton’s increment
+is less than the <code>tol</code>. <code>"relch"</code> means we stop
+the algorithm when the is less than the <code>tol</code>.
+<code>"ratch"</code> means we stop the algorithm when is less than the
+<code>tol</code>. <code>"all"</code> means we stop the algorithm when
+all the stopping rules <code>"incre"</code>, <code>"relch"</code> and
+<code>"ratch"</code> are met. Default value is <code>ratch</code>.
+<code>iter.max</code>, if achieved, overrides any stop rule for
+algorithm termination.</p></li>
 <li><p><code>parallel</code> if <code>TRUE</code>, then the parallel
 computation is enabled. The number of threads in use is determined by
 <code>threads</code>.</p></li>
@@ -345,9 +393,9 @@ computation is enabled. The number of threads in use is determined by
 to be used for parallel computation. Default is <code>2</code>. If
 <code>parallel</code> is false, then the value of <code>threads</code>
 has no effect.</p></li>
-<li><p><code>fixedstep</code> fixedstep if <code>TRUE</code>, the
-algorithm will be forced to run <code>iter.max</code> steps regardless
-of the stopping criterion specified.</p></li>
+<li><p><code>fixedstep</code> if <code>TRUE</code>, the algorithm will
+be forced to run <code>iter.max</code> steps regardless of the stopping
+criterion specified.</p></li>
 </ul>
 <p>In the following sections we brefily describe these useful arguments
 when calling <code>coxtv</code>.</p>
@@ -357,7 +405,7 @@ frequency, which is a relatively harsh setting to be estimated. The
 related true log-hazard function for each variable is <span class="math inline">\(\beta(t)=1\)</span> and <span class="math inline">\(\beta(t)=exp(-1.5*t)\)</span>, where t denotes
 time.</p>
 <p>Let’s check the data first:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleDataBinary"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -377,34 +425,33 @@ time.</p>
 <h3 id="proximal-newtons-method-method-proxn">Proximal Newton’s method: <code>method = "ProxN"</code><a class="anchor" aria-label="anchor" href="#proximal-newtons-method-method-proxn"></a>
 </h3>
 <p>The ‘method’ parameter has two options.
-<strong><code>method="Newton"</code></strong> and
-<strong><code>method="ProxN"</code></strong>. The proximal Newton’s
-method modified the second order derivative <span class="math inline">\(\nabla^2 \ell(\boldsymbol{\theta})\)</span> by
-adding small terms <span class="math inline">\(1/\lambda\)</span> to the
-the diagonal elements. The default value of <span class="math inline">\(\lambda\)</span> is <span class="math inline">\(10^8\)</span>, which can be modified by user. If
+<em><code>method="Newton"</code></em> and
+<em><code>method="ProxN"</code></em>. The proximal Newton’s method
+modified the second order derivative <span class="math inline">\(\nabla^2 \ell(\boldsymbol{\theta})\)</span> by
+adding small terms <span class="math inline">\(1/\gamma\)</span> to the
+the diagonal elements. The default value of <span class="math inline">\(\gamma\)</span> is <span class="math inline">\(10^8\)</span>, which can be modified by user. If
 the data set have predictors with extremely low frequency, users may
-consider a smaller <span class="math inline">\(\lambda\)</span>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+consider a smaller <span class="math inline">\(\gamma\)</span>.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.newton</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, method <span class="op">=</span> <span class="st">'Newton'</span><span class="op">)</span></span>
 <span><span class="va">fit.proxN</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, method <span class="op">=</span> <span class="st">'ProxN'</span><span class="op">)</span></span></code></pre></div>
 <p>Then we plot the fitted methods with all the curves on the same plot.
 No obvious change can be oberserved here. However, we do recommand
 using</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.newton</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.proxN</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-13-1.png" width="40%" height="44%"><img src="surtvep_files/figure-html/unnamed-chunk-13-2.png" width="40%" height="44%"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-14-1.png" width="40%" height="44%"><img src="surtvep_files/figure-html/unnamed-chunk-14-2.png" width="40%" height="44%"></p>
 </div>
 <div class="section level3">
 <h3 id="stratified-newtons-method-strata">Stratified Newton’s Method: <code>strata</code><a class="anchor" aria-label="anchor" href="#stratified-newtons-method-strata"></a>
 </h3>
-<p>When different facilities are present, we can extend the model to
-stratified version. We use <span class="math inline">\(j=1,\ldots,J\)</span> to denote the <span class="math inline">\(J\)</span> different centers Let <span class="math inline">\(D_{ij}\)</span> denote the time lag to death and
-<span class="math inline">\(C_{ij}\)</span> be the censoring time for
-patient <span class="math inline">\(i\)</span> in center <span class="math inline">\(j\)</span>, <span class="math inline">\(i=1,\ldots, n_j\)</span>, and <span class="math inline">\(j=1, \ldots, J\)</span>. Here <span class="math inline">\(n_j\)</span> is the sample size in center <span class="math inline">\(j\)</span>. The total number of patients is <span class="math inline">\(N=\sum_{j=1}^Jn_j\)</span>, the observed time is
+<p>When the data of patients are collected from different strata, we can
+extend the model to a stratified version. We use <span class="math inline">\(j=1,\ldots,J\)</span> to denote the <span class="math inline">\(J\)</span> different centers. Let <span class="math inline">\(D_{ij}\)</span> denote the time to death and <span class="math inline">\(C_{ij}\)</span> be the censoring time for patient
+<span class="math inline">\(i\)</span> in center <span class="math inline">\(j\)</span>, <span class="math inline">\(i=1,\ldots, n_j\)</span>, and <span class="math inline">\(j=1, \ldots, J\)</span>. Here <span class="math inline">\(n_j\)</span> is the sample size in center <span class="math inline">\(j\)</span>. The total number of patients is <span class="math inline">\(N=\sum_{j=1}^Jn_j\)</span>, the observed time is
 <span class="math inline">\(T_{ij} = \min\{D_{ij},C_{ij}\}\)</span>, and
 the death indicator is given by <span class="math inline">\(\delta_{ij}
-= I(D_{ij} \leq C_{ij})\)</span>.<br></p>
+= I(D_{ij} \leq C_{ij})\)</span>.</p>
 <p>Let <span class="math inline">\(\textbf{X}_{ij}=(X_{ij1}, \ldots,
 X_{ijP})^T\)</span> be a <span class="math inline">\(P\)</span>-dimensional covariate vector. We assume
 that <span class="math inline">\(D_{ij}\)</span> is independent from
@@ -419,12 +466,13 @@ log-partial likelihood function is <span class="math display">\[
 \]</span> where <span class="math inline">\(R_{ij}=\{i': 1 \leq
 i' \leq n_j, ~ T_{i' j}\geq T_{ij}\}\)</span> is the at-risk set
 for stratum <span class="math inline">\(j\)</span>.</p>
-<p>For the case with different stratums, usage is to include
-<code>strata</code> variable. First, we load a set of generated data
-with different stratums. In our simulation, we vary the baseline for
-different stratums by adding a small term generated by uniform
-distribution with mean = 0 and standard deviation= 0.5.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>For the case with different strata, the usage is to include the
+strata variable. First, we load a set of generated data with different
+stratums. In our simulation, we vary the baseline for different stratums
+by adding a small term to the baseline function. The small term is
+generated by uniform distribution with mean = 0 and standard deviation =
+0.5.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"StrataExample"</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">StrataExample</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">StrataExample</span><span class="op">$</span><span class="va">time</span></span>
@@ -433,10 +481,10 @@ distribution with mean = 0 and standard deviation= 0.5.</p>
 <p>The <code>strata</code> variable can be a <code>ns &gt;= 1</code>
 level factor, numerical numbers or strings. The stratified model can be
 easily fitted by calling</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.strata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, strata <span class="op">=</span> <span class="va">strata</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.strata</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-16-1.png" width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="step-size-adjustment-btr">Step size adjustment: <code>btr</code><a class="anchor" aria-label="anchor" href="#step-size-adjustment-btr"></a>
@@ -445,7 +493,7 @@ easily fitted by calling</p>
 <h4 id="model-results-meanings">Model results meanings:<a class="anchor" aria-label="anchor" href="#model-results-meanings"></a>
 </h4>
 <p>First, Let’s look at the <code>fit</code> result</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># summary(fit.tv)</span></span></code></pre></div>
 <p>There are 4 results saved under the fit result.</p>
 <ul>
@@ -545,7 +593,7 @@ of 5000, detail about ties and Breslow ties could refers to here(insert
 link)).</p>
 <p>We could also get the 95%CI for the estimation by the
 <code>confint.surtiver</code></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">CI</span><span class="op">$</span><span class="va">tvef</span><span class="op">$</span><span class="va">X1</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                           est     2.5%    97.5%</span></span>
@@ -647,29 +695,29 @@ contains binary predictors with low frequency, which may have
 ill-conditioned second-order information of the log-partial likelihood.
 Penalization plays an important role here as it helps to smooth the
 time-varying effects.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleDataBinary</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">time</span></span>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">event</span></span></code></pre></div>
 <p>First we fit the penalized model with
 <code>"Smooth-spline"</code>.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co"># fit.pspline &lt;- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")</span></span>
 <span><span class="va">fit.smoothspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda_spline<span class="op">=</span><span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"Smooth-spline"</span><span class="op">)</span></span></code></pre></div>
 <p>Then we use the <code>IC</code> function to select the tuning
 parameter.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">IC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.smoothspline</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">mAIC</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">TIC</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">GIC</span><span class="op">)</span></span></code></pre></div>
 <p>We can directly call the <code>plot</code> function to give the
 estimation plot.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">model.TIC</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-21-1.png" width="40%" height="44%"></p>
+<p><img src="surtvep_files/figure-html/unnamed-chunk-22-1.png" width="40%" height="44%"></p>
 <p>From the result above, we noticed that with different selection
 criteria, the best lambda selected is different. Here, we use the AIC
 criteria which set <code>lambda=1000</code>. The result for this model
@@ -698,14 +746,14 @@ it takes the value <span class="math display">\[\begin{align*}
 <p>The baseline estimation here refers to the baseline hazard at time t
 when holding all the covariates equals to zero. We use the model fitted
 result <code>fit_penalized</code> in section 4.2.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleData"</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span>
 <span></span>
 <span><span class="va">time2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">time</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">fit.smoothspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time2</span>, lambda<span class="op">=</span><span class="va">lambda_spline_all</span>, penalty <span class="op">=</span> <span class="st">"Smooth-spline"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Iter 1: Obj fun = -3.3551771; Stopping crit = 1.0000000e+00;</span></span>
@@ -718,7 +766,7 @@ result <code>fit_penalized</code> in section 4.2.</p>
 <span><span class="co">#&gt; Iter 2: Obj fun = -3.3534872; Stopping crit = 1.7917577e-02;</span></span>
 <span><span class="co">#&gt; Iter 3: Obj fun = -3.3534313; Stopping crit = 2.0350508e-04;</span></span>
 <span><span class="co">#&gt; Iter 4: Obj fun = -3.3534312; Stopping crit = 2.9285592e-07;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -3.3534312; Stopping crit = 6.8426414e-13;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3534312; Stopping crit = 6.8588179e-13;</span></span>
 <span><span class="co">#&gt; lambda 1 is done.</span></span>
 <span><span class="co">#&gt; Iter 1: Obj fun = -3.3657596; Stopping crit = 1.0000000e+00;</span></span>
 <span><span class="co">#&gt; Iter 2: Obj fun = -3.3617116; Stopping crit = 1.5203960e-02;</span></span>
@@ -729,14 +777,14 @@ result <code>fit_penalized</code> in section 4.2.</p>
 <span><span class="co">#&gt; Iter 1: Obj fun = -3.3732581; Stopping crit = 1.0000000e+00;</span></span>
 <span><span class="co">#&gt; Iter 2: Obj fun = -3.3702700; Stopping crit = 1.1595777e-02;</span></span>
 <span><span class="co">#&gt; Iter 3: Obj fun = -3.3702564; Stopping crit = 5.2957390e-05;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -3.3702564; Stopping crit = 5.4156966e-09;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -3.3702564; Stopping crit = 1.7232601e-15;</span></span>
+<span><span class="co">#&gt; Iter 4: Obj fun = -3.3702564; Stopping crit = 5.4156914e-09;</span></span>
+<span><span class="co">#&gt; Iter 5: Obj fun = -3.3702564; Stopping crit = 5.1697804e-15;</span></span>
 <span><span class="co">#&gt; lambda 100 is done.</span></span>
 <span><span class="va">IC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.smoothspline</span><span class="op">)</span></span>
 <span><span class="va">fit.mAIC</span> <span class="op">&lt;-</span> <span class="va">IC</span><span class="op">$</span><span class="va">model.mAIC</span></span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">base.est</span> <span class="op">=</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">fit.mAIC</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">base.est</span> <span class="op">=</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">fit.mAIC</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">base.est</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $time</span></span>
 <span><span class="co">#&gt;  [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8</span></span>
@@ -757,66 +805,10 @@ result <code>fit_penalized</code> in section 4.2.</p>
 <span><span class="co">#&gt; [19] 0.89639719 0.92176304 0.94672149 0.97375150 1.00634352 1.04475898</span></span>
 <span><span class="co">#&gt; [25] 1.06264625 1.08909982 1.11007006 1.11007006 1.14392881 1.14392881</span></span>
 <span><span class="co">#&gt; [31] 1.14392881</span></span></code></pre></div>
-<!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
-<!-- event=sim_data[,"event"] -->
-<!-- time=sim_data[,"time"] -->
-<!-- data=sim_data[,!colnames(sim_data) %in% c("event","time")] -->
-<!-- model1  = fit_penalized$model.AIC -->
-<!-- ##baseline -->
-<!-- plotdata=coxtp.baseline(fit=model1, delta=event,z=data,time=time) -->
-<!-- head(plotdata) -->
-<!-- ``` -->
-<!-- Let's check the result of baseline function first. -->
-<!-- The function returned a dataset containing the baseline estimation including 3 variables: -->
-<!-- -   `unique.time.`: The unique time listed in the original dataset used to fit the model -->
-<!-- -   `lambda`: refers to $\lambda_0(t)$ in the model, which is baseline hazard -->
-<!-- -   `Lambda`: refers to the cumulative baseline hazard in the model. -->
-<!-- Note that since our baseline estimation is based on Breslow Estimator, when there is no ties in the data, the baseline estimation could sometime results as 0 since there is no death at certain time-point. -->
-<!-- Thus, if we directly draw the plot, it would be something like this: -->
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-<!-- #Exclude censoring points -->
-<!-- baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) + -->
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-<!--   scale_y_continuous(name='baseline hazard', limits=c(0,0.1)) + -->
-<!--   ggtitle(" Baseline Hazard by time") + -->
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- baseline_plot -->
-<!-- ``` -->
 <p>As a result, we could either increase the time interval to make ties
 exists or remove the points that have <span class="math inline">\(\lambda=0\)</span>. The only differences would
 result in the baseline hazard, there is no influence on the cumulative
 baseline hazard.</p>
-<!-- ```{r} -->
-<!-- plotdata=plotdata[plotdata$lambda!=0,] -->
-<!-- ``` -->
-<!-- Next, we are going to visualize the result using `ggplot2` and `cowplot` function. -->
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-<!-- #Exclude censoring points -->
-<!-- baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) + -->
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-<!--   scale_y_continuous(name='baseline hazard', limits=c(0,0.1)) + -->
-<!--   ggtitle(" Baseline Hazard by time") + -->
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- cum_plot<-ggplot(plotdata,aes(x=unique.time., y=Lambda)) + geom_line(size = 0.6) + -->
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-<!--   scale_y_continuous(name='Cumulative baseline hazard') + -->
-<!--   ggtitle("Cumulative Baseline Hazard by time") + -->
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- plot_grid(baseline_plot,cum_plot,ncol = 2) -->
-<!-- ``` -->
-<p>One use of Cumulative baseline hazard is to calculate the survival
-function where cumulative hazard is the negative log of the survival
-probabilities. If we assume cumulative baseline hazard function as <span class="math inline">\(S(t)\)</span> and cumulative hazard function as
-<span class="math inline">\(H(t)\)</span>, then we have <span class="math inline">\(H(t)=-log(S(t))\)</span>. Thus, we could plot the
-survival function as follows:</p>
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-<!-- plotdata$survive=exp(-plotdata$Lambda) -->
-<!-- ggplot(plotdata,aes(x=unique.time., y=survive)) + geom_line(size = 0.6) + -->
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-<!--   scale_y_continuous(name='Survival Function') + -->
-<!--   ggtitle("Survival by time") + -->
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-<!-- ``` -->
 </div>
 </div>
 <div class="section level2">
@@ -840,7 +832,7 @@ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K-1\)</span> degrees of
 freedom.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tvef.ph.html">tvef.ph</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        chisq df          p</span></span>
 <span><span class="co">#&gt; X1  6.889955  7 0.44042707</span></span>
@@ -862,7 +854,7 @@ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 \left[\boldsymbol{C}_p \{- \triangledown^2
 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
 \end{align*}\]</span></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">test.zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.html">tvef.zero</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span></code></pre></div>
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K\)</span> degrees of
@@ -870,91 +862,8 @@ freedom.</p>
 <div class="section level4">
 <h4 id="testing-at-each-time-point">Testing at each time point<a class="anchor" aria-label="anchor" href="#testing-at-each-time-point"></a>
 </h4>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">test.zero.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.time.html">tvef.zero.time</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span></code></pre></div>
-<!-- # 6. Model performance -->
-<!-- ## 6.1 Internal comparison -->
-<!-- ### 6.1.1 Accurancy: -->
-<!-- For the non-penalized method, the estimation is largely depended on the number of knots chosen in the B-Spline base function. -->
-<!-- The example shown above is using the default knots, which is `nspline=8`. -->
-<!-- However, the estimation could be largely different if we choose other knots. -->
-<!-- Following is the code showing the performance of the estimation when choosing different knots: -->
-<!-- Following is the code showing the performance of the estimation when choosing different knots: -->
-<!-- ```{r} -->
-<!-- sim_data=surtvep::sim_data -->
-<!-- event=sim_data[,"event"] -->
-<!-- time=sim_data[,"time"] -->
-<!-- data=sim_data[,!colnames(sim_data) %in% c("event","time")] -->
-<!-- knot_list=c(6,8,10,20) -->
-<!-- labels=paste0("Knots=",knot_list) -->
-<!-- x=seq(0,3,length.out=sum(event==1)) -->
-<!-- y=1 -->
-<!-- for(knot in knot_list){ -->
-<!--   fit<-coxtp(event=event,z=data,time=time,nspline=knot) -->
-<!--   plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + -->
-<!--     theme(text = element_text(size = 10), -->
-<!--           axis.text.x = element_text(size = 8), -->
-<!--           axis.text.y=element_text(size = 8)) + -->
-<!--     ggtitle("") + geom_line(aes(x=x,y=y)) -->
-<!--   plot -->
-<!--   assign(paste0("plot",knot),plot) -->
-<!-- } -->
-<!-- library(cowplot) -->
-<!-- title <- ggdraw() + -->
-<!--   draw_label( -->
-<!--     "Non-penalized NR", -->
-<!--     fontface = 'bold', -->
-<!--     x = 0, -->
-<!--     hjust = 0, -->
-<!--     size=15 -->
-<!--   ) + -->
-<!--   theme( -->
-<!--     plot.margin = margin(0, 0, 0, 7) -->
-<!--   ) -->
-<!-- ``` -->
-<!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
-<!-- p1=plot_grid(plot6,plot8,plot10,plot20,ncol=2,labels=c(labels),label_size = 13) -->
-<!-- p1 -->
-<!-- ``` -->
-<!-- For the result above, the red line and shadow refer to the estimated function and 95%CI while the black line refers to the true function which is time-fixed(y=1). -->
-<!-- From the result above, we noticed that as the knots increase, the estimation becomes more and more inaccurate. -->
-<!-- This is happening because as the number of knots increases, the variance in the data was mistakenly captured as its influence. -->
-<!-- This makes the number of knots of selection in the non-penalized model very important. -->
-<!-- While for penalized model, since we have penalized term, the number of knots didn't matters much, instead, the $\lambda$ is more important. -->
-<!-- Following plot is the performance of estimation when we use the lambda_spline selected before, which is `lambda_spline= 1000` -->
-<!-- ```{r} -->
-<!-- knot_list=c(6,8,10,20) -->
-<!-- labels=paste0("Knots=",knot_list) -->
-<!-- x=seq(0,3,length.out=sum(event==1)) -->
-<!-- y=1 -->
-<!-- for(knot in knot_list){ -->
-<!--   fit<-coxtp(event=event,z=data,time=time,nspline=knot,lambda_spline = 1000) -->
-<!--   plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + -->
-<!--     theme(text = element_text(size = 10), -->
-<!--           axis.text.x = element_text(size = 8), -->
-<!--           axis.text.y=element_text(size = 8)) + -->
-<!--     ggtitle("") + -->
-<!--     geom_line(aes(x=x,y=y)) -->
-<!--   plot -->
-<!--   assign(paste0("plot",knot),plot) -->
-<!-- } -->
-<!-- ``` -->
-<!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
-<!-- library(cowplot) -->
-<!-- title <- ggdraw() + -->
-<!--   draw_label( -->
-<!--     paste0("Penalized NR,lambda=",1000), -->
-<!--     fontface = 'bold', -->
-<!--     x = 0, -->
-<!--     hjust = 0, -->
-<!--     size=15 -->
-<!--   ) + -->
-<!--   theme( -->
-<!--     plot.margin = margin(0, 0, 0, 7) -->
-<!--   ) -->
-<!-- p1=plot_grid(plot6,plot8,plot10,plot20,ncol=2,labels=c(labels),label_size = 13) -->
-<!-- p1 -->
-<!-- ``` -->
 <p>From the plot above, we could observe that with different knots
 selected, the performance is not different so much for different knots,
 all the estimates are relatively close to the real function. However, in
@@ -963,349 +872,125 @@ reason that we need to select the best lambda before actually fitting
 the model. The following plot is the performance of different lambda
 selected. For the following plot, the knot was set as default, which is
 <code>knot=8</code>.</p>
-<!-- ```{r} -->
-<!-- lambda_spline_all=c(0.001,0.01,0.1,1,10,100) -->
-<!-- labels=paste0("lambda=",lambda_spline_all) -->
-<!-- i=1 -->
-<!-- x=seq(0,3,length.out=sum(event==1)) -->
-<!-- y=1 -->
-<!-- for(lambda in lambda_spline_all){ -->
-<!--   fit<-coxtp(event=event,z=data,time=time,lambda_spline = lambda) -->
-<!--   plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + -->
-<!--     theme(text = element_text(size = 10), -->
-<!--           axis.text.x = element_text(size = 8), -->
-<!--           axis.text.y=element_text(size = 8)) + -->
-<!--     ggtitle("")  + -->
-<!--     geom_line(aes(x=x,y=y)) -->
-<!--   plot -->
-<!--   assign(paste0("plot",i),plot) -->
-<!--   i=i+1 -->
-<!-- } -->
-<!-- library(cowplot) -->
-<!-- title <- ggdraw() + -->
-<!--   draw_label( -->
-<!--     paste0("Penalized NR,knot=",8), -->
-<!--     fontface = 'bold', -->
-<!--     x = 0, -->
-<!--     hjust = 0, -->
-<!--     size=15 -->
-<!--   ) + -->
-<!--   theme( -->
-<!--     plot.margin = margin(0, 0, 0, 7) -->
-<!--   ) -->
-<!-- ``` -->
-<!-- ```{r,fig.height = 9, fig.width = 7, fig.align = "center"} -->
-<!-- p1=plot_grid(plot1,plot2,plot3,plot4,plot5,plot6,ncol=2,labels=labels,label_size = 13) -->
-<!-- p1 -->
-<!-- ``` -->
-<!-- As a result, as the lambda increase, the estimated function is more related to the true function. -->
-<!-- This is happening because that the true function is time-fixed function, thus, as the lambda increase, the real function tends to shrink to the fixed function. -->
-<!-- ### 6.1.2 Efficacy -->
-<!-- Next, we are going to compare the Efficacy of different methods. -->
-<!-- The main function we used to eliminate computation time by parallel. -->
-<!-- For the function, the default setting for parallel is `parallel=FALSE`. -->
-<!-- For parallel computation, we also need to define `threads`, which refers to the number of cores of the computer. -->
-<!-- Here we set `thread=4`. -->
-<!-- The following code and plot is to use to compare parallel and non-parallel time for different sample size: -->
-<!-- ```{r} -->
-<!-- library(stringi) -->
-<!-- library(stringr) -->
-<!-- library(dplyr) -->
-<!-- samplesize_list=c(1000,2000,3000,4000,5000) -->
-<!-- i=1 -->
-<!-- for(samplesize in samplesize_list){ -->
-<!--   print(i) -->
-<!--   sim_data_sub=sim_data[1:samplesize,] -->
-<!--   event_sub=sim_data_sub[,"event"] -->
-<!--   time_sub=sim_data_sub[,"time"] -->
-<!--   data_sub=sim_data_sub[,!colnames(sim_data_sub) %in% c("event","time")] -->
-<!--   non_parallel=bench::mark(coxtp(event=event_sub,z=data_sub,time=time_sub,lambda_spline = 100))[,1:8] -->
-<!--   parallel=bench::mark(coxtp(event=event_sub,z=data_sub,time=time_sub,lambda_spline = 100,parallel = T,threads = 4))[,1:8] -->
-<!--   non_parallel[,1]=samplesize -->
-<!--   parallel[,1]=samplesize -->
-<!--   if(i!=1){ -->
-<!--     non_parallel_list=rbind(non_parallel_list,non_parallel) -->
-<!--     parallel_list=rbind(parallel_list,parallel) -->
-<!--   } else { -->
-<!--     non_parallel_list=non_parallel -->
-<!--     parallel_list=parallel -->
-<!--   } -->
-<!--   i=i+1 -->
-<!-- } -->
-<!-- parallel_list$parallel="Parallel" -->
-<!-- non_parallel_list$parallel="None-Parallel" -->
-<!-- time_data=rbind(parallel_list,non_parallel_list) %>% -->
-<!--   mutate(median_time=str_remove(median,"s"), -->
-<!--          median_time=str_remove(median_time,"m"), -->
-<!--          median_time=as.numeric(median_time), -->
-<!--          median_time=ifelse(str_detect(median,"ms"),median_time/1000,median_time)) %>% -->
-<!--   rename(samplesize=expression) -->
-<!-- #Plot Time used: -->
-<!-- ``` -->
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center"} -->
-<!-- ggplot(time_data,aes(x=samplesize,y=median_time,group=parallel)) + -->
-<!--   geom_point(aes(color=parallel)) + -->
-<!--   geom_line(aes(color=parallel)) + -->
-<!--   labs(x="Sample Size",y="Seconds",title="Internal Computation time Comparison") -->
-<!-- ``` -->
-<!-- ## 6.2 External comparison -->
-<!-- ### 6.2.1 Accurancy -->
-<!-- In this section, we are going to compare the performance between our package and other time-varying survival packages. -->
-<!-- # 7. Simulation -->
-<!-- In this section, we will generate our model prediction to large dataset and illustrate how to do simulation based on our package -->
-<!-- To start with, we first divided our dataset into training and testing dataset: -->
-<!-- ```{r} -->
-<!-- sim_data=sim_data_p5 -->
-<!-- #Generate ID for sampling -->
-<!-- sim_data=cbind(sim_data,c(1:nrow(sim_data))) -->
-<!-- train_id=sample(c(1:nrow(sim_data)),2000,replace=F) -->
-<!-- train_data=sim_data[sim_data[,8] %in% train_id, ] -->
-<!-- test_data=sim_data[!sim_data[,8] %in% train_id, ] -->
-<!-- #Remove ID -->
-<!-- train_data=train_data[,1:7] -->
-<!-- test_data=test_data[,1:7] -->
-<!-- ``` -->
-<!-- Next, we are going to build the model using the training data. -->
-<!-- The step is similar as we have shown in previous step -->
-<!-- ```{r} -->
-<!-- event=train_data[,"event"] -->
-<!-- time=train_data[,"time"] -->
-<!-- data=train_data[,!colnames(train_data) %in% c("event","time")] -->
-<!-- lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000) -->
-<!-- fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline_all) -->
-<!-- fit_penalized$lambda.selected -->
-<!-- ``` -->
-<!-- From the result above, we noticed that the lambda.selected is 1. -->
-<!-- Next, we are going to predict the model using the test_data. -->
-<!-- Here we are going to treat the `test_data` as a whole new population data and want to predict the event probability by time. -->
-<!-- From previous illustration, we know that the function `cox.predict` could generate absolute hazard for one individual during the time period. -->
 </div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="real-data-example-support">Real Data Example <code>SUPPORT</code><a class="anchor" aria-label="anchor" href="#real-data-example-support"></a>
 </h2>
-<p>In this section, we illustrate the usage of our package by analyzing
-the time-varying effects on the real data <code>SUPPORT</code> (Study to
-Understand Prognoses Preferences Outcomes and Risks of Treatment). We
-use the processed <code>SUPPORT</code> data set included in the R
-package <span class="citation">(Bhatnagar et al. 2020)</span>.</p>
-<p>We study the time-varying effects of metastatic cancer as the
-illustration example and include</p>
-<p>First we load the data and get the survival outcome:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">support</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">support</span><span class="op">$</span><span class="va">d.time</span></span>
-<span><span class="va">death</span> <span class="op">&lt;-</span> <span class="va">support</span><span class="op">$</span><span class="va">death</span></span></code></pre></div>
-<p>Age, cancer status and diabetes status are included as covariates and
-considered as categorical variables. Age has 4 levels, cancer status has
-3 levels and diabetes has 2 levels. The following codes processed the
-covariates for model fitting.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#diabetes: </span></span>
-<span><span class="va">diabetes</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">diabetes</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co">#sex: female as the reference group</span></span>
-<span><span class="va">sex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">support</span><span class="op">$</span><span class="va">sex</span><span class="op">)</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co">#age: continuous variable</span></span>
-<span><span class="va">age</span> <span class="op">&lt;-</span><span class="va">support</span><span class="op">$</span><span class="va">age</span></span>
-<span><span class="va">age</span><span class="op">[</span><span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">&lt;=</span><span class="fl">50</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"&lt;50"</span></span>
-<span><span class="va">age</span><span class="op">[</span><span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">&gt;</span><span class="fl">50</span> <span class="op">&amp;</span> <span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">&lt;=</span><span class="fl">60</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"50-59"</span></span>
-<span><span class="va">age</span><span class="op">[</span><span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">&gt;</span><span class="fl">60</span> <span class="op">&amp;</span> <span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">&lt;</span><span class="fl">70</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"60-69"</span></span>
-<span><span class="va">age</span><span class="op">[</span><span class="va">support</span><span class="op">$</span><span class="va">age</span><span class="op">&gt;=</span><span class="fl">70</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"70+"</span></span>
-<span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">age</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"60-69"</span>, <span class="st">"&lt;50"</span>, <span class="st">"50-59"</span>, <span class="st">"70+"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">z_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">age</span><span class="op">)</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co"># cancer status: metastatic, yes, no</span></span>
-<span><span class="va">ca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">ca</span><span class="op">)</span></span>
-<span><span class="va">z_ca_mets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">ca</span> <span class="op">==</span> <span class="st">"metastatic"</span><span class="op">)</span></span>
-<span><span class="va">z_ca_non_mets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">ca</span> <span class="op">==</span> <span class="st">"yes"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">z_age</span>, <span class="va">z_ca_mets</span>, <span class="va">z_ca_non_mets</span>, <span class="va">sex</span>, <span class="va">diabetes</span><span class="op">)</span></span>
-<span><span class="co"># colnames(z) &lt;- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male")</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_50"</span>, <span class="st">"age_50_59"</span>, <span class="st">"age_70"</span>, <span class="st">"metastatic"</span>, <span class="st">"non_metastatic"</span>, <span class="st">"diabetes"</span>, <span class="st">"male"</span><span class="op">)</span></span></code></pre></div>
-<p>The Kaplan-Meier (KM) plots were generated using the following codes
-to visualize the survival probability over time for three categorical
-variables. Analysis of the KM plot for cancer status revealed a
-crossover point at approximately day 200, where the survival probability
-of the non-metastatic cancer group surpassed that of the cancer group,
-suggesting a violation of the non-proportional hazards assumption.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html" class="external-link">survminer</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: package 'survminer' was built under R version 4.1.3</span></span>
-<span><span class="co">#&gt; Warning: package 'ggpubr' was built under R version 4.1.3</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span>, <span class="va">z</span><span class="op">)</span></span>
-<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">metastatic</span> <span class="op">+</span> <span class="va">non_metastatic</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
-<span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">diabetes</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
-<span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">age_50</span> <span class="op">+</span> <span class="va">age_50_59</span> <span class="op">+</span> <span class="va">age_70</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit1</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non-cancer"</span>, <span class="st">"non-metastatic cancer"</span>, <span class="st">"metastatic cancer"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit2</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"diabetes"</span>, <span class="st">"non-diabetes"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-31-2.png" width="700"></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class="external-link">ggsurvplot</a></span><span class="op">(</span><span class="va">fit3</span>, data <span class="op">=</span> <span class="va">data</span>, legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"60-69"</span>, <span class="st">"70+"</span>, <span class="st">"50-59"</span>, <span class="st">"&lt;50"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-31-3.png" width="700"></p>
-<p>Fit the Newtons’ Method using <code>coxtv</code>:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit.coxtv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, nsplines <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.7809097; Stopping crit = 8.5517105e-02;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7668975; Stopping crit = 1.3701217e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7668366; Stopping crit = 5.9791110e-05;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7668365; Stopping crit = 1.0851983e-07;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7668365; Stopping crit = 1.3509639e-11;</span></span></code></pre></div>
-<p>We take a look at the estimation plots of cancer status using the
-<code>plot</code> function:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.coxtv</span>, parm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metastatic"</span>, <span class="st">"non_metastatic"</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-33-1.png" width="700"></p>
-<p>Conditioned on the diabetes status and age, we can observe a
-violation of the proportional hazards assumption. A significant
-difference in the hazard of death was observed between the metastatic
-cancer, non-metastatic cancer, and non-cancer groups. Specifically,
-patients with metastatic cancer exhibited a higher hazard of death
-during the initial 1500 days compared with non-cancer patients.</p>
-<p>However, upon examination of the estimation plot for non-metastatic
-cancer, a decrease at the beginning followed by an increase can be
-observed. The fluctuation in the plot is not deemed reliable, primarily
-due to the instability of the estimation. To address this issue, a
-penalty term was added to improve the estimation.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit.coxtp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812444; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7671833; Stopping crit = 1.9641947e-01;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671236; Stopping crit = 8.3225826e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671235; Stopping crit = 1.7825937e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7671235; Stopping crit = 1.4383743e-10;</span></span>
-<span><span class="co">#&gt; lambda 1 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812465; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7671838; Stopping crit = 1.9644253e-01;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671242; Stopping crit = 8.3187556e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671241; Stopping crit = 1.7283675e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7671518; Stopping crit = 3.8614177e-04;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -5.7671241; Stopping crit = 3.8599213e-04;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -5.7671241; Stopping crit = 1.7355348e-13;</span></span>
-<span><span class="co">#&gt; lambda 10 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.7812812; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7672135; Stopping crit = 1.9659361e-01;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7671540; Stopping crit = 8.3082429e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7671539; Stopping crit = 1.4655789e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7673043; Stopping crit = 2.1045372e-03;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -5.7671539; Stopping crit = 2.1001131e-03;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -5.7671539; Stopping crit = 8.0611971e-13;</span></span>
-<span><span class="co">#&gt; lambda 100 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.7814771; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.7674171; Stopping crit = 1.9704674e-01;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.7673576; Stopping crit = 8.3362394e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.7673575; Stopping crit = 1.3752688e-06;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.7675286; Stopping crit = 2.4012175e-03;</span></span>
-<span><span class="co">#&gt; Iter 6: Obj fun = -5.7673575; Stopping crit = 2.3954592e-03;</span></span>
-<span><span class="co">#&gt; Iter 7: Obj fun = -5.7673575; Stopping crit = 1.0322873e-12;</span></span>
-<span><span class="co">#&gt; lambda 1000 is done.</span></span>
-<span><span class="va">IC.support</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.coxtp</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.mAIC</span>, parm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metastatic"</span>, <span class="st">"non_metastatic"</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-35-1.png" width="700"></p>
-<p>Then we provide the hypothesis testing for each covariate.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#test the proportional hazards assumption</span></span>
-<span><span class="va">test.ph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.ph.html">tvef.ph</a></span><span class="op">(</span><span class="va">fit.coxtv</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">test.ph</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                     chisq df            p</span></span>
-<span><span class="co">#&gt; age_50          46.311169  9 5.271760e-07</span></span>
-<span><span class="co">#&gt; age_50_59       13.208472  9 1.533978e-01</span></span>
-<span><span class="co">#&gt; age_70           3.338770  9 9.493378e-01</span></span>
-<span><span class="co">#&gt; metastatic     389.789436  9 2.064355e-78</span></span>
-<span><span class="co">#&gt; non_metastatic   4.168983  9 8.999424e-01</span></span>
-<span><span class="co">#&gt; diabetes        19.018021  9 2.504010e-02</span></span>
-<span><span class="co">#&gt; male            44.476142  9 1.153035e-06</span></span>
-<span></span>
-<span><span class="co">#test the significance of each covariate</span></span>
-<span><span class="va">test.zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.html">tvef.zero</a></span><span class="op">(</span><span class="va">fit.coxtv</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">test.zero</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                    chisq df             p</span></span>
-<span><span class="co">#&gt; age_50          92.95934 10  1.384020e-15</span></span>
-<span><span class="co">#&gt; age_50_59       23.20617 10  1.001062e-02</span></span>
-<span><span class="co">#&gt; age_70          33.59559 10  2.162004e-04</span></span>
-<span><span class="co">#&gt; metastatic     997.76510 10 5.666717e-208</span></span>
-<span><span class="co">#&gt; non_metastatic 134.96747 10  4.517433e-24</span></span>
-<span><span class="co">#&gt; diabetes        25.96236 10  3.791138e-03</span></span>
-<span><span class="co">#&gt; male            48.35095 10  5.354766e-07</span></span></code></pre></div>
-<p>When testing for the proportional hazards assumption, age_50,
-non_cancer, non_metastatic, diabetes and male has p-value &lt; 0.05. We
-reject the null hypothesis and claim that these covariates have violated
-the proportional hazards assumption.</p>
-<p>All these covariates are significant based on the Wald test.</p>
-<p>Then we can use the following codes to get the baseline estimation
-and the baseline plot.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">IC.support</span><span class="op">$</span><span class="va">model.TIC</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">base</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-38-1.png" width="700"></p>
-<p>When dealing with data where ties are presented, we can also give
-baseline hazard and absolute hazard for each covariate.</p>
-<p>We utilized the Breslow’s approximation to estimate the baseline
-hazard at each event time. We round the unique event time first.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">time.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">support</span><span class="op">$</span><span class="va">d.time</span>, digits <span class="op">=</span> <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">fit.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">death</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time.discrete</span>, nsplines <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -5.8724904; Stopping crit = 6.9769675e-02;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -5.8627640; Stopping crit = 9.4651633e-03;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -5.8627181; Stopping crit = 4.5036507e-05;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -5.8627180; Stopping crit = 9.3247857e-08;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -5.8627180; Stopping crit = 1.1457318e-11;</span></span>
-<span></span>
-<span><span class="va">base.discrete</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">fit.discrete</span><span class="op">)</span></span></code></pre></div>
-<p>The following codes provide the absolute hazards plot.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">beta.abso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/get.tvcoef.html">get.tvcoef</a></span><span class="op">(</span><span class="va">fit.discrete</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">time_unique</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">time.discrete</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">haz_j</span>      <span class="op">&lt;-</span> <span class="va">base.discrete</span><span class="op">$</span><span class="va">hazard</span></span>
-<span></span>
-<span><span class="va">smooth_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">time_unique</span>, <span class="va">haz_j</span><span class="op">)</span></span>
-<span><span class="co"># loessMod10 &lt;- loess(haz_j ~ time_unique, data=smooth_data, span=0.10) # 10% smoothing span</span></span>
-<span><span class="va">loessMod30</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/loess.html" class="external-link">loess</a></span><span class="op">(</span><span class="va">haz_j</span> <span class="op">~</span> <span class="va">time_unique</span>, data<span class="op">=</span><span class="va">smooth_data</span>, span<span class="op">=</span><span class="fl">0.30</span><span class="op">)</span> <span class="co"># 30% smoothing span</span></span>
-<span><span class="co">#loessMod50 &lt;- loess(haz_j ~ time_unique, data=smooth_data, span=0.50) # 50% smoothing span</span></span>
-<span></span>
-<span><span class="va">haz_j_smooth30</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">loessMod30</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="va">exp_betax</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">time.discrete</span><span class="op">)</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">beta2</span>                   <span class="op">&lt;-</span> <span class="va">beta.abso</span></span>
-<span><span class="va">beta2</span><span class="op">$</span><span class="va">cancer</span>         <span class="op">&lt;-</span> <span class="fl">0</span></span>
-<span></span>
-<span><span class="va">exp_betax</span>               <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">beta2</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">haz_0_betax</span>             <span class="op">&lt;-</span> <span class="va">haz_j_smooth30</span> <span class="op">*</span> <span class="va">exp_betax</span></span></code></pre></div>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="va">plot_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">haz_0_betax</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">time_unique</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">metastatic</span>,  color <span class="op">=</span> <span class="st">"metastatic-cancer"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">non_metastatic</span>,    color <span class="op">=</span> <span class="st">"non-metastatic"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">cancer</span>,  color <span class="op">=</span> <span class="st">"non-cancer"</span><span class="op">)</span>,size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
-<span></span>
-<span>  <span class="co"># scale_x_continuous(name='Years since diagnosis', limits=c(0,12), breaks=c(0,4,8,12)) + </span></span>
-<span>  <span class="co"># scale_y_continuous(name='Absolute hazard', limits = c(0,0.2)) +</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">'Age at diagnosis'</span>, </span>
-<span>                     breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'non-cancer'</span>, <span class="st">'non-metastatic'</span>, <span class="st">'metastatic-cancer'</span><span class="op">)</span>,</span>
-<span>                     values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'non-cancer'</span><span class="op">=</span><span class="st">'dark green'</span>, <span class="st">'non-metastatic'</span><span class="op">=</span><span class="st">'red'</span>, <span class="st">'metastatic-cancer'</span> <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># ggtitle(" Cancer Death Mets Only") +</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">plot_age</span></span></code></pre></div>
-<p><img src="surtvep_files/figure-html/unnamed-chunk-41-1.png" width="700"></p>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-casebase" class="csl-entry">
-Bhatnagar, Sahir, Maxime Turgeon, Jesse Islam, Olli Saarela, and James
-Hanley. 2020. <span>“Casebase: Fitting Flexible Smooth-in-Time Hazards
-and Risk Functions via Logistic and Multinomial Regression.”</span> <a href="https://CRAN.R-project.org/package=casebase" class="external-link">https://CRAN.R-project.org/package=casebase</a>.
-</div>
-</div>
+<!-- In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment). -->
+<!-- We use the processed `SUPPORT` data set included in the R package [@casebase]. -->
+<!-- We study the time-varying effects of metastatic cancer as the illustration example and include -->
+<!-- First we load the data and get the survival outcome: -->
+<!-- ```{r, message = FALSE} -->
+<!-- data(support) -->
+<!-- time <- support$d.time -->
+<!-- death <- support$death -->
+<!-- ``` -->
+<!-- Age, cancer status and diabetes status are included as covariates and considered as categorical variables. -->
+<!-- Age has 4 levels, cancer status has 3 levels and diabetes has 2 levels. -->
+<!-- The following codes processed the covariates for model fitting. -->
+<!-- ```{r, message = FALSE} -->
+<!-- #diabetes:  -->
+<!-- diabetes <-  model.matrix(~factor(support$diabetes))[,-1] -->
+<!-- #sex: female as the reference group -->
+<!-- sex <- model.matrix(~support$sex)[,-1] -->
+<!-- #age: continuous variable -->
+<!-- age <-support$age -->
+<!-- age[support$age<=50] <- "<50" -->
+<!-- age[support$age>50 & support$age<=60] <- "50-59" -->
+<!-- age[support$age>60 & support$age<70] <- "60-69" -->
+<!-- age[support$age>=70] <- "70+" -->
+<!-- age <- factor(age, levels = c("60-69", "<50", "50-59", "70+")) -->
+<!-- z_age <- model.matrix(~age)[,-1] -->
+<!-- # cancer status: metastatic, yes, no -->
+<!-- ca <- factor(support$ca) -->
+<!-- z_ca_mets <- as.numeric(support$ca == "metastatic") -->
+<!-- z_ca_non_mets <- as.numeric(support$ca == "yes") -->
+<!-- z <- data.frame(z_age, z_ca_mets, z_ca_non_mets, sex, diabetes) -->
+<!-- # colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male") -->
+<!-- colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "non_metastatic", "diabetes", "male") -->
+<!-- ``` -->
+<!-- The Kaplan-Meier (KM) plots were generated using the following codes to visualize the survival probability over time for three categorical variables. Analysis of the KM plot for cancer status revealed a crossover point at approximately day 200, where the survival probability of the non-metastatic cancer group surpassed that of the cancer group, suggesting a violation of the non-proportional hazards assumption. -->
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- library(survminer) -->
+<!-- library(survival) -->
+<!-- data <- data.frame(time, death, z) -->
+<!-- fit1 <- survfit(Surv(time, death) ~ metastatic + non_metastatic, data = data) -->
+<!-- fit2 <- survfit(Surv(time, death) ~ diabetes, data = data) -->
+<!-- fit3 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data) -->
+<!-- ggsurvplot(fit1, data = data, legend.labs = c("non-cancer", "non-metastatic cancer", "metastatic cancer")) -->
+<!-- ggsurvplot(fit2, data = data, legend.labs = c("diabetes", "non-diabetes")) -->
+<!-- ggsurvplot(fit3, data = data, legend.labs = c("60-69", "70+", "50-59", "<50")) -->
+<!-- ``` -->
+<!-- Fit the Newtons' Method using `coxtv`: -->
+<!-- ```{r} -->
+<!-- fit.coxtv <- coxtv(event = death, z = z, time = time, nsplines = 10) -->
+<!-- ``` -->
+<!-- We take a look at the estimation plots of cancer status using the `plot` function: -->
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2)) -->
+<!-- ``` -->
+<!-- Conditioned on the diabetes status and age, we can observe a violation of the proportional hazards assumption. A significant difference in the hazard of death was observed between the metastatic cancer, non-metastatic cancer, and non-cancer groups. Specifically, patients with metastatic cancer exhibited a higher hazard of death during the initial 1500 days compared with non-cancer patients. -->
+<!-- However, upon examination of the estimation plot for non-metastatic cancer, a decrease at the beginning followed by an increase can be observed. The fluctuation in the plot is not deemed reliable, primarily due to the instability of the estimation. To address this issue, a penalty term was added to improve the estimation. -->
+<!-- ```{r, message = FALSE} -->
+<!-- fit.coxtp <- coxtp(event = death, z = z, time = time, lambda = c(1,10,100,1000)) -->
+<!-- IC.support <- IC(fit.coxtp) -->
+<!-- ``` -->
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2)) -->
+<!-- ``` -->
+<!-- Then we provide the hypothesis testing for each covariate. -->
+<!-- ```{r} -->
+<!-- #test the proportional hazards assumption -->
+<!-- test.ph <- tvef.ph(fit.coxtv) -->
+<!-- print(test.ph) -->
+<!-- #test the significance of each covariate -->
+<!-- test.zero <- tvef.zero(fit.coxtv) -->
+<!-- print(test.zero) -->
+<!-- ``` -->
+<!-- When testing for the proportional hazards assumption, age_50, non_cancer, non_metastatic, diabetes and male has p-value < 0.05. We reject the null hypothesis and claim that these covariates have violated the proportional hazards assumption. -->
+<!-- All these covariates are significant based on the Wald test. -->
+<!-- Then we can use the following codes to get the baseline estimation and the baseline plot. -->
+<!-- ```{r} -->
+<!-- base <- baseline(IC.support$model.TIC) -->
+<!-- ``` -->
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- plot(base) -->
+<!-- ``` -->
+<!-- When dealing with data where ties are presented, we can also give baseline hazard and absolute hazard for each covariate. -->
+<!-- We utilized the Breslow's approximation to estimate the baseline hazard at each event time. We round the unique event time first. -->
+<!-- ```{r, message = FALSE} -->
+<!-- time.discrete <- round(support$d.time, digits = -2) -->
+<!-- fit.discrete <- coxtv(event = death, z = z, time = time.discrete, nsplines = 10) -->
+<!-- base.discrete <- baseline(fit.discrete) -->
+<!-- ``` -->
+<!-- The following codes provide the absolute hazards plot. -->
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- beta.abso <- data.frame(get.tvcoef(fit.discrete)) -->
+<!-- time_unique<- unique(time.discrete) -->
+<!-- haz_j      <- base.discrete$hazard -->
+<!-- smooth_data <- data.frame(time_unique, haz_j) -->
+<!-- loessMod30 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing -->
+<!-- haz_j_smooth30 <- predict(loessMod30) -->
+<!-- exp_betax<- matrix(0,length(unique(time.discrete)),dim(z)[2]) -->
+<!-- beta2                   <- beta.abso -->
+<!-- beta2$cancer         <- 0 -->
+<!-- exp_betax               <- exp(beta2) -->
+<!-- haz_0_betax             <- haz_j_smooth30 * exp_betax -->
+<!-- ``` -->
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- library(ggplot2) -->
+<!-- plot_age <- ggplot(haz_0_betax, aes(x=time_unique)) + -->
+<!--   geom_line(aes(y=metastatic,  color = "metastatic-cancer"),size = 0.6) + -->
+<!--   geom_line(aes(y=non_metastatic,    color = "non-metastatic"),size = 0.6) + -->
+<!--   geom_line(aes(y=cancer,  color = "non-cancer"),size = 0.6) + -->
+<!--   scale_color_manual(name='Age at diagnosis', -->
+<!--                      breaks = c('non-cancer', 'non-metastatic', 'metastatic-cancer'), -->
+<!--                      values = c('non-cancer'='dark green', 'non-metastatic'='red', 'metastatic-cancer' = 'black')) + -->
+<!--   theme(plot.title = element_text(hjust = 0.2)) -->
+<!-- plot_age -->
+<!-- ``` -->
 </div>
   </div>
 
@@ -1321,12 +1006,12 @@ and Risk Functions via Logistic and Multinomial Regression.”</span> <a href="h
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Lingfeng Luo, Wenbo Wu, Xueting Tao.</p>
+<p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

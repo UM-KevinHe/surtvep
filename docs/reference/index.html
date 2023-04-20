@@ -40,11 +40,17 @@
      
     <span class="caret"></span>
   </a>
-  <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/Model_Parameters.html">Model Parameters</a>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
     </li>
     <li>
-      <a href="../articles/reference.html">Reference</a>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/b1.html">Article B1</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -76,11 +82,11 @@
       </tr><tr><td>
           <p><code><a href="coxtp.html">coxtp()</a></code> </p>
         </td>
-        <td><p>fit a Cox non-proportional hazards model with P-spline or Smoothing-spline, penalization tuning parameter chosen by information criteria or cross-validation</p></td>
+        <td><p>fit a Cox non-proportional hazards model with P-spline or Smoothing-spline, with penalization tuning parameter chosen by information criteria or cross-validation</p></td>
       </tr><tr><td>
           <p><code><a href="cv.coxtp.html">cv.coxtp()</a></code> </p>
         </td>
-        <td><p>fit a Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross validation</p></td>
+        <td><p>fit a cross-validated Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross validation</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="information-criteria">Information Criteria <a href="#information-criteria" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Calculating the Information Criteria to select the tunning paratmeter for the penalized methods</p>
@@ -116,15 +122,15 @@
       </tr><tr><td>
           <p><code><a href="confint.coxtv.html">confint(<i>&lt;coxtp&gt;</i>)</a></code> <code><a href="confint.coxtv.html">confint(<i>&lt;coxtv&gt;</i>)</a></code> </p>
         </td>
-        <td><p>get confidence interval of time-varying coefficients from a fitted object</p></td>
+        <td><p>get confidence intervals of time-varying coefficients from a fitted object</p></td>
       </tr><tr><td>
           <p><code><a href="plot.coxtp.html">plot(<i>&lt;coxtp&gt;</i>)</a></code> </p>
         </td>
-        <td><p>plotting result from a fitted <code>coxtp</code> object</p></td>
+        <td><p>plotting results from a fitted <code>coxtp</code> object</p></td>
       </tr><tr><td>
           <p><code><a href="plot.coxtv.html">plot(<i>&lt;coxtv&gt;</i>)</a></code> </p>
         </td>
-        <td><p>plotting result from a fitted <code>coxtv</code> object</p></td>
+        <td><p>plotting results from a fitted <code>coxtv</code> object</p></td>
       </tr><tr><td>
           <p><code><a href="baseline.html">baseline()</a></code> </p>
         </td>
@@ -132,7 +138,7 @@
       </tr><tr><td>
           <p><code><a href="plot.baseline.html">plot(<i>&lt;baseline&gt;</i>)</a></code> </p>
         </td>
-        <td><p>plotting baseline from a fitted <code>baseline</code> object</p></td>
+        <td><p>plotting baseline</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="package-data-sets">Package data sets <a href="#package-data-sets" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
@@ -140,7 +146,7 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="ExampleData.html">ExampleData</a></code> </p>
         </td>
-        <td><p>example data for surtvep with 4000 observations of 2 variables</p></td>
+        <td><p>example data for surtvep with 2000 observations of 2 variables</p></td>
       </tr><tr><td>
           <p><code><a href="ExampleDataBinary.html">ExampleDataBinary</a></code> </p>
         </td>
@@ -163,11 +169,11 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Xueting Tao.</p>
+  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

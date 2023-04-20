@@ -5,9 +5,9 @@ URL: https://github.com/UM-KevinHe/surtvep,
     https://um-kevinhe.github.io/surtvep/
 BugReports: https://github.com/UM-KevinHe/surtvep/issues
 Authors@R: c(
-    person("Lingfeng","Luo",role=c("aut"),email="lfluo@umich.edu"),
+    person("Lingfeng","Luo",role=c("aut","cre"),email="lfluo@umich.edu"),
     person("Wenbo","Wu",role=c("aut"),email="wenbowu@umich.edu"),
-    person("Xueting","Tao",role=c("aut","cre"), email="xuetao@umich.edu")
+    person("Kevin","He",role=c("aut"),email="kevinhe@umich.edu")
   )
 Description: surtvep is an R package for fitting Cox non-proportional hazards models with time-varying coefficients. 
   Both unpenalized procedures (Newton and proximal Newton) and penalized procedures (P-splines and smoothing splines) are included using B-spline basis functions for estimating time-varying coefficients. 
@@ -23,6 +23,7 @@ LinkingTo:
     RcppArmadillo
 Imports:
     Rcpp,
+    RcppArmadillo,
     mvtnorm,
     splines,
     survival,
