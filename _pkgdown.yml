@@ -9,9 +9,11 @@ vignettes:
   - vignettes/surtvep.Rmd
 
 navbar:
+ structure: 
+   right: [articles, articles2]
  components:
    articles:
-    text: Articles
+    text: Appendix
     menu:
     - text: Category A
     - text: B-spline construction
@@ -20,8 +22,20 @@ navbar:
       href: articles/a2.html
     - text: -------
     - text: "Category B"
-    - text: Article B1
-      href: articles/b1.html
+    - text: Plotting
+      href: articles/plotting.html
+   articles2:
+    text: Appendix2
+    menu:
+    - text: Category A
+    - text: B-spline construction
+      href: articles/Appendix.html
+    - text: Title A2
+      href: articles/a2.html
+    - text: -------
+    - text: "Category B"
+    - text: Plotting
+      href: articles/plotting.html
       
 reference:
 - title: Main Fitting Functions

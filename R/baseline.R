@@ -117,12 +117,18 @@ baseline <-  function(fit, ...){
 
 
 
-#' plotting baseline
+#' plotting the baseline hazard
 #' 
-#' Plotting baseline from a fitted `baseline` object.
+#' Plotting the baseline hazard from a fitted `baseline` object.
 #'
-#' @param fit model get from `baseline` function.
-#'
+#' @param fit fitted object from `baseline` function.
+#' @param xlab the title for the x axis.
+#' @param ylab the title for the y axis.
+#' @param xlim the limits of the x axis.
+#' @param ylim the limits of the y axis.
+#' @param title the title for the plot.
+#' @param ... other graphical parameters to pass to plot.
+
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #'
 #' @exportS3Method plot baseline
@@ -136,9 +142,9 @@ baseline <-  function(fit, ...){
 #' 
 #' fit   <- coxtv(event = event, z = z, time = time)
 #' base.est <- baseline(fit)
+#' plot(base.est)
 #' }
-plot.baseline <- function(fit, xlab, ylab, xlim, ylim,
-                                title,...){
+plot.baseline <- function(fit, xlab, ylab, xlim, ylim, title, ...){
   
   
   if (missing(xlab)) xlab <- "time"

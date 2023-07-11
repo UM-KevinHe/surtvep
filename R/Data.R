@@ -1,93 +1,94 @@
-#' example data for surtvep with 2000 observations of 2 variables
+#' example data with 2000 observations of 2 continuous variables
 #' 
-#' A simulated data set containing two variables. 
+#' A simulated data set containing 2 continuous variables. 
 #' @name ExampleData
 #' @docType data
 #' @usage data(ExampleData)
 #'
 #' @format A list containing the following elements:
 #' \describe{
-#'   \item{x}{simulated continuous covariate V1 and V2. The true time-independent function is b(t)=1 and the true time-varying function is b(t)=sin(3*pi*t/4).}
-#'   \item{event}{simulated event variable, binary variable with 0, 1.}
-#'   \item{time}{simulated time variable, continuous variable with non-negative value.}
+#'   \item{x}{simulated continuous covariate V1 and V2. The true time-independent function is \eqn{\beta(t)=1} and 
+#'   the true time-varying function is \eqn{\beta(t)=sin(3\pi t/4).}}
+#'   \item{event}{simulated failure event response; binary variable with 0 or 1.}
+#'   \item{time}{simulated observed event time; continuous variable with non-negative values.}
 #' }
 "ExampleData"
 
 
-#' example data for surtvep with 2000 observations of 2 binary variables
+#' example data with 2000 observations of 2 binary variables
 #' 
-#' A simulated data set containing two 2 variables. 
+#' A simulated data set containing 2 binary variables. 
 #' @name ExampleDataBinary
 #' @docType data
 #' @usage data(ExampleDataBinary)
 #'
 #' @format A list containing the following elements:
 #' \describe{
-#'   \item{V1}{simulated binary covariate V1. True time-varying function is b(t)=1. }
-#'   \item{V2}{simulated binary covariate V2. True time-varying function is b(t)=exp(-1.5*t). }
-#'   \item{event}{simulated event variable, binary variable with 0, 1. }
-#'   \item{time}{simulated time variable, continuous variable with non-negative value. }
+#'   \item{V1}{simulated binary covariate V1. True time-varying function is \eqn{\beta(t)=1}. }
+#'   \item{V2}{simulated binary covariate V2. True time-varying function is \eqn{\beta(t)=exp(-1.5t)}. }
+#'   \item{event}{simulated failure event response; binary variable with 0 or 1.}
+#'   \item{time}{simulated observed event time; continuous variable with non-negative values. }
 #' }
 "ExampleDataBinary"
 
 
 #' example data for stratified model illustration
 #' 
-#' A simulated data set containing two 2 variables. 
+#' A simulated data set containing 2 binary variables from 10 distinct clusters. 
 #' @name StrataExample
 #' @docType data
 #' @usage data(StrataExample)
 #'
 #' @format A list containing the following elements:
 #' \describe{
-#'   \item{x}{simulated binary covariate V1 and V2. True time-independent function is b(t)=1 and true time-varying function is b(t)=sin(3tpi/4).}
-#'   \item{event}{simulated event variable, binary variable with 0, 1.}
-#'   \item{time}{simulated time variable, continuous variable with non-negative value.}
-#'   \item{strata}{simulated strata variable, patients in different stratums have different baseline hazards.}
+#'   \item{x}{simulated binary covariate V1 and V2. True time-independent function is \eqn{\beta(t)=1} 
+#'   and true time-varying function is \eqn{\beta(t)=sin(3\pi t/4).}}
+#'   \item{event}{simulated failure event response; binary variable with 0 or 1.}
+#'   \item{time}{simulated observed event time; continuous variable with non-negative values. }
+#'   \item{strata}{simulated strata variable; patients in different stratums have different baseline hazards.}
 #' }
 "StrataExample"
 
 
-#' study to Understand Prognoses Preferences Outcomes and Risks of Treatment
+#' Study to Understand Prognoses Preferences Outcomes and Risks of Treatment
 #' (SUPPORT)
 #'
-#' @description The SUPPORT dataset tracks four response variables: hospital
+#' @description The SUPPORT dataset tracks five response variables: hospital
 #'   death, severe functional disability, hospital costs, and time until death
-#'   and death itself. The patients are followed for up to 5.56 years. Data
-#'   included only tracks follow-up time and death.
+#'   and death itself. The patients are followed for up to 5.56 years.
 #'
 #' @details Some of the original data was missing. Before imputation, there were
-#'   a total of 9,104 individuals and 47 variables. Of those variables, a few
-#'   were removed before imputation. We removed three response variables:
+#'   a total of 9,104 individuals and 47 variables. Following Bhatnagar et al. (2020), a few variables 
+#'   were removed. Three response variables were removed:
 #'   hospital charges, patient ratio of costs to charges and patient
-#'   micro-costs. Next, we removed hospital death as it was directly informative
-#'   of our event of interest, namely death. We also removed functional
-#'   disability and income as they are ordinal covariates. Finally, we removed 8
-#'   covariates related to the results of previous findings: we removed SUPPORT
+#'   micro-costs. Hospital death was also removed as it was directly informative
+#'   of the event of interest, namely death. Additionally, functional disability and
+#'   income were removed as they are ordinal covariates. Finally, 8
+#'   covariates were removed related to the results of previous findings: SUPPORT
 #'   day 3 physiology score (\code{sps}), APACHE III day 3 physiology score
 #'   (\code{aps}), SUPPORT model 2-month survival estimate, SUPPORT model
 #'   6-month survival estimate, Physician's 2-month survival estimate for pt.,
 #'   Physician's 6-month survival estimate for pt., Patient had Do Not
 #'   Resuscitate (DNR) order, and Day of DNR order (<0 if before study). Of
 #'   these, \code{sps} and \code{aps} were added on after imputation, as they
-#'   were missing only 1 observation. First we imputed manually using the normal
+#'   were missing only 1 observation. First the imputation is done manually using the normal
 #'   values for physiological measures recommended by Knaus et al. (1995). Next,
-#'   we imputed a single dataset using \pkg{mice} with default settings. After
-#'   imputation, we noted that the covariate for surrogate activities of daily
+#'   a single dataset was imputed using \pkg{mice} with default settings. After
+#'   imputation, the covariate for surrogate activities of daily
 #'   living was not imputed. This is due to collinearity between the other two
 #'   covariates for activities of daily living. Therefore, surrogate activities
-#'   of daily living were removed.
+#'   of daily living were removed. See details in the R package (casebase) by Bhatnagar et al. (2020).
 #'
 #' @format A data frame with 9,104 observations and 34 variables after imputation
 #'   and the removal of response variables like hospital charges, patient ratio
-#'   of costs to charges and micro-costs. Ordinal variables, namely functional
-#'   disability and income, were also removed. Finally, Surrogate activities of
-#'   daily living were removed due to sparsity. There were 6 other model scores
-#'   in the data-set and they were removed; only aps and sps were kept.
+#'   of costs to charges and micro-costs following Bhatnagar et al. (2020). 
+#'   Ordinal variables, namely functional disability and income, were also removed. 
+#'   Finally, Surrogate activities of daily living were removed due to sparsity. 
+#'   There were 6 other model scores in the data-set and they were removed; only aps and sps were kept.
 #'   \describe{ 
 #'   \item{Age}{ stores a double representing age. } 
 #'   \item{death}{
-#'   death at any time up to NDI date: 31DEC94. } 
+#'   death at any time up to NDI (National Death Index) date: 12/31/1994. } 
 #'   \item{sex}{ 0=female, 1=male. } 
 #'   \item{slos}{ days from study entry to discharge. } 
 #'   \item{d.time}{ days of
@@ -101,10 +102,10 @@
 #'   \item{scoma}{ the SUPPORT coma score based on Glasgow D3. } 
 #'   \item{avtisst}{ average TISS, days 3-25. }
 #'   \item{race}{ indicates race: White, Black, Asian, Hispanic or other. }
-#'   \item{hday}{ day in Hospital at Study Admit} 
-#'   \item{diabetes}{diabetes (Com27-28, Dx 73)} 
-#'   \item{dementia}{dementia (Comorbidity 6) } 
-#'   \item{ca}{cancer state} 
+#'   \item{hday}{ day in Hospital at Study Admit.} 
+#'   \item{diabetes}{diabetes (Com27-28, Dx 73).} 
+#'   \item{dementia}{dementia (Comorbidity 6).} 
+#'   \item{ca}{cancer state. } 
 #'   \item{meanbp}{ mean arterial blood pressure day 3. } 
 #'   \item{wblc}{ white blood cell count on day 3. } 
 #'   \item{hrt}{ heart rate day 3. }
@@ -121,19 +122,24 @@
 #'   \item{urine}{ urine output day 3. } 
 #'   \item{adlp}{ adl patient day 3. }  
 #'   \item{adlsc}{ imputed adl calibrated to surrogate, if a surrogate was used for a follow up.} 
-#'   \item{sps}{SUPPORT physiology score}
-#'   \item{aps}{apache III physiology score} }
+#'   \item{sps}{SUPPORT physiology score.}
+#'   \item{aps}{apache III physiology score.} }
 #'   
 #' @source Available at the following website:
 #'   \url{https://biostat.app.vumc.org/wiki/Main/SupportDesc}.
-#'    note: must unzip and process this data before use.
 #' 
 #' @references 
 #' 
-#' Knaus, W. A., Harrell, F. E., Lynn, J., Goldman, L., Phillips, R. S., Connors, A. F., ... and Wagner, D. P. (1995). 
+#' Bhatnagar, S., Turgeon, M., Islam, J., Hanley, J. A., and Saarela, O. (2020) casebase: Fitting Flexible Smooth-in-Time
+#' Hazards and Risk Functions via Logistic and Multinomial Regression. 
+#' \emph{R package version 0.9.0},
+#' <https://CRAN.R-project.org/package=casebase>.
+#' 
+#' Knaus, W. A., Harrell, F. E., Lynn, J., Goldman, L., Phillips, R. S., Connors, A. F., et al. (1995) 
 #' The SUPPORT prognostic model: Objective estimates of survival for seriously ill hospitalized adults. 
 #' \emph{Annals of Internal Medicine}, \strong{122(3)}: 191-203.
 #' \cr
+#' 
 #' 
 #' @examples
 #' \dontrun{

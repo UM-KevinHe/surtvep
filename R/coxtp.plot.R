@@ -1,9 +1,26 @@
 #' plotting results from a fitted `coxtp` object
 #' 
-#' Plotting results from a fitted `coxtp` object.
+#' This function creates a plot of the time-varying coefficients from a fitted `coxtp` model. 
 #'
-#' @param fit model get from `coxtp`.
-#'
+#' @param fit model obtained from `coxtp`.
+#' @param parm covariate name fitted in the model to be plotted. If `NULL`, all covariates are plotted.
+#' @param CI if `TRUE`, confidence intervals are displayed. Default value is `TRUE`.
+#' @param level the level of confidence interval. Default value is `0.95`.
+#' @param exponentiate if `TRUE`, exponential scale of the fitted coefficients (hazard ratio) for each covariate is plotted. 
+#' If `FALSE`, the fitted time-varying coefficients (log hazard ratio) are plotted.
+#' @param xlim the limits for the x axis.
+#' @param ylim the limits for the y axis.
+#' @param xlab the title for the x axis.
+#' @param ylab the title for the y axis.
+#' @param title the title for the plot.
+#' @param linetype the line type for the plot.
+#' @param color the aesthetics parameter for the plot.
+#' @param fill the aesthetics parameter for the plot.
+#' @param times the time points for which the time-varying coefficients to be plotted. 
+#' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
+#' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. Default value is `FALSE`.
+#' @param ... other graphical parameters to pass to plot.
+#' 
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
 #' @exportS3Method plot coxtp
@@ -16,9 +33,9 @@
 #' fit <- coxtp(event = event, z = z, time = time)
 #' plot(fit)
 #' 
-plot.coxtp <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
-                       xlab, ylab, xlim, ylim, save=FALSE, allinone=FALSE, 
-                       title, linetype, fill, color, labels, expand, ...) {
+plot.coxtp <- function(fit, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
+                       xlab, ylab, xlim, ylim, allinone=FALSE, 
+                       title, linetype, color, fill, times) {
   
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtp") stop("Object fit is not of class 'coxtp'!")
@@ -32,10 +49,11 @@ plot.coxtp <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FALSE
   missingfill <- missing(fill); missingcolor <- missing(color)
   defaultcols <- c("#F8766D","#A3A500","#00BF7D","#00B0F6","#E76BF3")
   defaultltys <- c("solid", "dashed", "dotted", "dotdash", "longdash")
-  if (missing(expand)) expand <- c(1,1)/100
+  expand <- c(1,1)/100
   ls.tvef <- confint(fit, times, parm, level)$tvef
   if (length(ls.tvef)==0) stop("No time-varying effect chosen!")
-  if (missing(labels)) labels <- names(ls.tvef)
+  # if (missing(labels)) labels <- names(ls.tvef)
+  labels <- names(ls.tvef)
   # if (!require(ggplot2)) install.packages('ggplot2')
   library(ggplot2)
   options(stringsAsFactors=F)
@@ -78,7 +96,7 @@ plot.coxtp <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FALSE
         scale_linetype_manual("", values="solid") +
         scale_fill_manual("", values="grey") +
         # ggtitle(paste0(tv, " (", term.event, ")")) + theme_bw() +
-        ggtitle(paste0(tv)) + theme_bw() +
+        # ggtitle(paste0(tv)) + theme_bw() +
         theme(plot.title=element_text(hjust=0),
               panel.background=element_blank(), panel.grid.major=element_blank(),
               panel.grid.minor=element_blank(), panel.border=element_blank(),
@@ -88,10 +106,11 @@ plot.coxtp <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FALSE
               legend.title=element_blank(), legend.text=element_text(size=14),
               legend.position=c(0.5, 1), legend.box="horizontal")
     })
-    if (save) {
-      return(ls.plts)
-    } else {
+    if (missingtitle) {
       return(ggpubr::ggarrange(plotlist=ls.plts, common.legend=T, ...))
+    } else {
+      final.plt <- ggpubr::ggarrange(plotlist=ls.plts, common.legend=T, ...)
+      return(ggpubr::annotate_figure(final.plt, top = ggpubr::text_grob( title, face = "bold", size = 14)))
     }
   } else {
     if (length(names(ls.tvef)) > 5) stop("Number of parameters greater than 5!")
@@ -159,11 +178,11 @@ plot.coxtp <- function(fit, times, parm, CI=TRUE, level=0.95, exponentiate=FALSE
             axis.text=element_text(size=14), text=element_text(size=14),
             legend.title=element_blank(), legend.text=element_text(size=14),
             legend.position=c(0.5, 1), legend.box="horizontal")
-    if (save) {
+    # if (save) {
       return(plt)
-    } else {
-      plt
-    }
+    # } else {
+      # plt
+    # }
   }
   
 }

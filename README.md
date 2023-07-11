@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # surtvep
 
 `surtvep` is an R package for fitting penalized Newton's method 

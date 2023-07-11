@@ -11,13 +11,13 @@ Authors@R: c(
   )
 Description: surtvep is an R package for fitting Cox non-proportional hazards models with time-varying coefficients. 
   Both unpenalized procedures (Newton and proximal Newton) and penalized procedures (P-splines and smoothing splines) are included using B-spline basis functions for estimating time-varying coefficients. 
-  For penalized procedures, cross-validations, mAIC, TIC or GIC are implemented to select tuning parameters. 
+  For penalized procedures, cross validations, mAIC, TIC or GIC are implemented to select tuning parameters. 
   Utilities for carrying out post-estimation visualization, summarization, point-wise confidence interval and hypothesis testing are also provided.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 LinkingTo:
     Rcpp,
     RcppArmadillo
@@ -30,7 +30,8 @@ Imports:
     ggplot2,
     ggrepel,
     splines2,
-    ggpubr
+    ggpubr,
+    mathjaxr
 Depends:
     R (>= 3.5)
 Suggests:

@@ -9,15 +9,16 @@ get.tvcoef(fit, times)
 \arguments{
 \item{fit}{model from \code{coxtv} or \code{coxtp}.}
 
-\item{times}{the observation time. If \code{NULL}, the observation time for fitting the model will be used.}
+\item{times}{time points to calculate the time-varying coefficients. If \code{NULL}, the observed event time for fitting the model will be used.}
 }
 \value{
-A matrix of the time-varying coefficients. The dimension is \code{length(times)} by \code{nvars}, where \code{nvars} is the number
+A matrix of the time-varying coefficients. The dimension is the length of \code{times} by \code{nvars}, where \code{nvars} is the number
 of covariates in the fitted mode.
 Each row represents the time-varying coefficients at the corresponding time.
 }
 \description{
-Gives the time-varying coefficients based on a fitted \code{coxtv} or \code{coxtp} subject. Users can specify  the observation  time.
+The function gives the time-varying coefficients based on a fitted \code{coxtv} or \code{coxtp} subject.
+Users can specify the time points to calculate the time-varying coefficients.
 }
 \examples{
 z     <- ExampleData$x

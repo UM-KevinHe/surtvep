@@ -1,12 +1,12 @@
-#' test the proportional hazards assumption from a `coxtv` or `coxtp` object
+#' testing the proportional hazards assumption from a `coxtv` or `coxtp` object
 #' 
-#' Test the proportional hazards assumption using a Wald test statistic.
+#' Testing the proportional hazards assumption using a Wald test statistic.
 #' 
-#' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model.
+#' @param fit fitted `coxtv` or `coxtp`  model.
 #' @param parm the names of parameters to be tested.
 #' 
 #' @return `tvef.ph` produces a matrix. Each row corresponds to a covariate from the fitted object. The three 
-#' columns give the value of the test statistic, degrees of freedom and P-value.
+#' columns give the test statistic, degrees of freedom and P-value.
 #' 
 #' 
 #' @examples 
@@ -17,7 +17,7 @@
 #' fit <- coxtv(event = event, z = z, time = time)
 #' tvef.ph(fit)
 #' 
-#' @seealso \code{\link{tevf.zero}} \code{\link{tvef.zero.time}}
+#' @seealso \code{\link{tvef.zero}} \code{\link{tvef.zero.time}}
 #' @export
 tvef.ph <- function(fit, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
@@ -60,15 +60,16 @@ tvef.ph <- function(fit, parm) {
 }
 
 
-#' test the significance of the covariates from a `coxtv` or `coxtp` object
+#' testing the significance of the covariates from a `coxtv` or `coxtp` object
 #' 
-#' Test the significance of the covariates from a `coxtv` or `coxtp` object using a Wald test statistic.
+#' Testing the significance of the covariates from a `coxtv` or `coxtp` object using a Wald test statistic.
+#' The null hypothesis \eqn{H_0: \beta(t) = 0} for any \eqn{t}, where  \eqn{t} denotes the event time.
 #' 
-#' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model.
+#' @param fit fitted `coxtv` or `coxtp`  model.
 #' @param parm the names of parameters to be tested.
 #' 
 #' @return `tvef.zero` produces a matrix. Each row corresponds to a covariate from the fitted object. The three 
-#' columns give the value of the test statistic, degrees of freedom and P-value.
+#' columns give the test statistic, degrees of freedom and P-value.
 #' 
 #' @examples 
 #' data(ExampleData)
@@ -123,18 +124,18 @@ tvef.zero <- function(fit, parm) {
 
 
 
-#' test the significance of the covariates from a `coxtv` or `coxtp` object using a Wald test statistic
+#' testing the significance of the covariates from a `coxtv` or `coxtp` object using a Wald test statistic
 #' 
-#' Test the significance of the covariates at each time point.
+#' Testing the significance of the covariates at each time point.
 #' 
-#' @param fit fitted \code{"coxtv"} or \code{"coxtp"}  model.
+#' @param fit fitted `coxtv` or `coxtp`  model.
 #' @param parm the names of parameters to be tested.
 #' @param times the time points to test if the covariate is significant or not.
 #' 
 #' @return `tvef.zero.time` produces a list of length `nvars`. Each element of the list is a matrix with respect to a
-#' covariate. The matrix is of dimension `len_unique_t` by 4, where `len_unique_t` is the length of unique follow-up time.
+#' covariate. The matrix is of dimension `len_unique_t` by 4, where `len_unique_t` is the length of unique observed event time.
 #' Each row corresponds to the testing result at that time.  The four 
-#' columns give the estimation, standard error, z-statistic and  P-value.
+#' columns give the estimations, standard error, z-statistic and  P-value.
 #' 
 #' @examples 
 #' data(ExampleData)

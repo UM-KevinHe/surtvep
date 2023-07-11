@@ -4,8 +4,8 @@
 #'
 #' @param fit model from `coxtp`.
 #' @param IC.prox when calculating information criteria, there might be numerical issues (e.g. the Hessian matrix is close to be singular).
-#' In such cases warnings will be given. 
-#' If `IC.prox = true`, we modified the diagonal of the Hessian matrix a bit, which can lead to more stable estimates.
+#' In such cases, warnings will be given. 
+#' If `IC.prox = TRUE`, we modify the diagonal of the Hessian matrix following the same approach as the proximal method detailed in Wu et al. (2022), which can lead to more stable estimates.
 #' Default is `FALSE`.
 #' 
 #' 
@@ -13,9 +13,9 @@
 #' \item{model.mAIC}{an object with S3 class \code{"coxtp"} using mAIC to select the tuning parameter.}
 #' \item{model.TIC}{an object with S3 class \code{"coxtp"} using TIC to select the tuning parameter.}
 #' \item{model.GIC}{an object with S3 class \code{"coxtp"} using GIC to select the tuning parameter.}
-#' \item{mAIC}{a sequence of mAIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
-#' \item{TIC}{a sequence of TIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
-#' \item{GIC}{a sequence of GIC values for the different tuning parameters `lambda` from \code{"coxtp"}.}
+#' \item{mAIC}{a sequence of mAIC values corresponding to each of the tuning parameter `lambda` from \code{"coxtp"}.}
+#' \item{TIC}{a sequence of TIC values corresponding to each of the tuning parameter `lambda` from \code{"coxtp"}.}
+#' \item{GIC}{a sequence of GIC values corresponding to each of the tuning parameter `lambda` from \code{"coxtp"}.}
 #' 
 #' @export
 #' 
@@ -32,14 +32,28 @@
 #' In order to select the proper smoothing parameter, we utilize the idea of information criteria. 
 #' We provide four different information criteria to select the optimal smoothing parameter \eqn{\lambda}.
 #' Generally, mAIC, TIC and GIC select similar parameters and the difference of resulting estimates are barely noticeable.
-#' See details in Luo et al. (2022).
+#' See details in the references. (2023).
 #' 
 #' @references 
-#' 
-#' Luo, L., He, K. Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#'
+#' Akaike H. (1998) Information theory and an extension of the maximum likelihood principle.
+#' \emph{In Selected Papers of Hirotugu Akaike}, pp. 199–213.
 #' \cr
 #' 
-IC <- function(fit, IC.prox, ...){
+#' Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#' \emph{Statistical Methods in Medical Research}, \strong{in press}.
+#' \cr
+#' 
+#' Takeuchi K. (1976) Distribution of information statistics and criteria for adequacy of models. 
+#' \emph{Math Sci}, \strong{153}: 12–18.
+#' \cr
+#' 
+#' Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
+#' \emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
+#' \cr
+#' 
+
+IC <- function(fit, IC.prox){
   
   if (class(fit)[1]!= "list" & class(fit)[2]!= "coxtp" ) stop("fit is not an output from coxtp")
   

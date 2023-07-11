@@ -53,7 +53,7 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    Appendix
      
     <span class="caret"></span>
   </a>
@@ -69,17 +69,55 @@
     </li>
 <li class="dropdown-header">Category B</li>
     <li>
-      <a href="../articles/b1.html">Article B1</a>
+      <a href="../articles/plotting.html">Plotting</a>
     </li>
   </ul>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Appendix
      
+    <span class="caret"></span>
   </a>
+  <ul class="dropdown-menu" role="menu">
+<li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
+    </li>
+    <li>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/plotting.html">Plotting</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Appendix2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
+    </li>
+    <li>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/plotting.html">Plotting</a>
+    </li>
+  </ul>
 </li>
       </ul>
 </div>
@@ -104,9 +142,9 @@
 
     
     
-<div class="section level2">
-<h2 id="introduction">Introduction:<a class="anchor" aria-label="anchor" href="#introduction"></a>
-</h2>
+<div class="section level3">
+<h3 id="introduction">Introduction:<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h3>
 <p><code>surtvep</code> is an R package for fitting penalized Newton’s
 method for the time-varying effects model using mAIC, TIC, GIC as
 information criteria, in particular we span the parameter using basis
@@ -131,18 +169,18 @@ tutorial, you will have a solid understanding of how to use
 coefficients, as well as how to leverage the package’s unique features
 to improve your analysis.</p>
 </div>
-<div class="section level2">
-<h2 id="installation">Installation:<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
+<div class="section level3">
+<h3 id="installation">Installation:<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Install the package, need to install the devtools packages:</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"UM-KevinHe/surtvep"</span>, ref <span class="op">=</span> <span class="st">"Lingfeng_test"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h2>
+<div class="section level3">
+<h3 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h3>
 <p>The purpose of this section is to give users a general sense of the
 package. We will briefly go over the main functions, basic operations
 and outputs. After this section, users may have a better idea of what
@@ -162,7 +200,7 @@ for illustration:</p>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></code></pre></div>
 <p>The command loads an input covariate matrix ‘z’, time-to-event
 outcome ‘time’ and ‘event’ from this saved R data archive. The saved
-data set is a simulation data set with continuous outcomes.</p>
+data set is a simulation data set with continuous covariates.</p>
 <p>We fit the Newton’s method without penalization use the most basic
 call to ‘coxtv’.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -248,9 +286,45 @@ time-varying model. There are many more arguments in the package that
 give users a great deal of flexibility. To learn more, move on to later
 section.</p>
 </div>
+<div class="section level3">
+<h3 id="structure">Structure<a class="anchor" aria-label="anchor" href="#structure"></a>
+</h3>
+<p>This section gives the flowchart for the <code>surtvep</code>
+package. Generally, <code>coxtv</code> utilizes proximal Newton’s method
+to estimate the time-varying coefficients. <code>coxtp</code> combines
+the Newton’s approach with penalization. <code>IC</code> calculates
+different information criteria to select the best tuning parameter in
+front of the penalty term. <code>cv.coxtp</code> uses cross-validation
+for tuning parameter selection.. <code>tvef.ph</code>,
+<code>tvef.ph.time</code> and <code>tvef.ph.zero</code> provides
+hypothesis testing for the fitted model. <code>get.tvef</code> retrieves
+the time-varying coefficients for the fitted model. <code>confint</code>
+provides confidence intervals for these coefficients.
+<code>baseline</code> offers the baseline estimations. <code>plot</code>
+visualizes the estimated time-varying coefficients. Other functions and
+details are provided in later sections.</p>
+</div>
 <div class="section level2">
-<h2 id="cox-non-proportional-hazards-model">Cox non-proportional hazards model<a class="anchor" aria-label="anchor" href="#cox-non-proportional-hazards-model"></a>
+<h2 id="r-out-width700px-out-height-800px-includetrue-fig-aligncenter-fig-capcyour-caption-echofalse-knitrinclude_graphicsflowchart-pdf">
+<code>{r, out.width="700px", out.height = "800px", include=TRUE, fig.align="center", fig.cap=c("your caption"), echo=FALSE} # knitr::include_graphics("Flowchart.pdf") #</code><a class="anchor" aria-label="anchor" href="#r-out-width700px-out-height-800px-includetrue-fig-aligncenter-fig-capcyour-caption-echofalse-knitrinclude_graphicsflowchart-pdf"></a>
 </h2>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"Flowchart.pdf"</span><span class="op">)</span> </span></code></pre></div>
+<div class="figure">
+<embed src="Flowchart.pdf" title="caption" height="100%" type="application/pdf"></embed><p class="caption">
+caption
+</p>
+</div>
+<!-- ![Flowchart](Flowchart.pdf) -->
+<div class="float">
+<embed src="Flowchart.pdf" style="width:80.0%" height="700"></embed><div class="figcaption">Alt</div>
+</div>
+<div class="float">
+<img src="../../../../../Dropbox%20(University%20of%20Michigan)/Lingfeng%20Research/R%20Tutorial%20Package/surtvep/articles/Flowchart.png" alt="Alt"><div class="figcaption">Alt</div>
+</div>
+<div class="section level3">
+<h3 id="cox-non-proportional-hazards-model">Cox non-proportional hazards model<a class="anchor" aria-label="anchor" href="#cox-non-proportional-hazards-model"></a>
+</h3>
 <p>While obtaining these estimates under the Cox proportional-hazards
 model is relatively straightforward, the assumption of constant hazard
 ratios is frequently violated in populations defined by an initial,
@@ -290,9 +364,9 @@ B-splines defined on a given number of knots: <span class="math display">\[\begi
 <span class="math inline">\(k\)</span>-th basis of the <span class="math inline">\(p\)</span>-th covariate. Detailed inforamtion
 about the construction of the B-spline basis can seen in the <a href="Appendix.html">B-spline construction</a>.</p>
 </div>
-<div class="section level2">
-<h2 id="newtons-method">Newton’s method<a class="anchor" aria-label="anchor" href="#newtons-method"></a>
-</h2>
+<div class="section level3">
+<h3 id="newtons-method">Newton’s method<a class="anchor" aria-label="anchor" href="#newtons-method"></a>
+</h3>
 <p>In this section we introduce the Newton’s method for estimating
 time-varying effects in detail.</p>
 <p>With a length-<span class="math inline">\(PK\)</span> parameter
@@ -319,9 +393,9 @@ is <span class="math display">\[
 adjusted by backtracking linesearch. <span class="math inline">\(\nabla
 \ell(\boldsymbol{\theta})\)</span> and <span class="math inline">\(\nabla^2 \ell(\boldsymbol{\theta})\)</span> is the
 first and second derivative of the log partial likelihood.</p>
-<div class="section level3">
-<h3 id="commonly-used-function-arguments">Commonly used function arguments<a class="anchor" aria-label="anchor" href="#commonly-used-function-arguments"></a>
-</h3>
+<div class="section level4">
+<h4 id="commonly-used-function-arguments">Commonly used function arguments<a class="anchor" aria-label="anchor" href="#commonly-used-function-arguments"></a>
+</h4>
 <p><code>coxtv</code> provides various arguments for users to customize
 the fit: we introduce some commonly used arguments here.</p>
 <ul>
@@ -395,7 +469,7 @@ frequency, which is a relatively harsh setting to be estimated. The
 related true log-hazard function for each variable is <span class="math inline">\(\beta_1(t)=1\)</span> and <span class="math inline">\(\beta_2(t)=exp(-1.5*t)\)</span>, where t denotes
 time.</p>
 <p>Let’s check the data first:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleDataBinary"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -411,9 +485,9 @@ time.</p>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">event</span></span></code></pre></div>
 <p>Both predictors are presented with frequency around 25%.</p>
 </div>
-<div class="section level3">
-<h3 id="proximal-newtons-method-method-proxn">Proximal Newton’s method: <code>method = "ProxN"</code><a class="anchor" aria-label="anchor" href="#proximal-newtons-method-method-proxn"></a>
-</h3>
+<div class="section level4">
+<h4 id="proximal-newtons-method-method-proxn">Proximal Newton’s method: <code>method = "ProxN"</code><a class="anchor" aria-label="anchor" href="#proximal-newtons-method-method-proxn"></a>
+</h4>
 <p>The ‘method’ parameter has two options.
 <em><code>method="Newton"</code></em> and
 <em><code>method="ProxN"</code></em>. The proximal Newton’s method
@@ -422,20 +496,20 @@ adding small terms <span class="math inline">\(1/\gamma\)</span> to the
 the diagonal elements. The default value of <span class="math inline">\(\gamma\)</span> is <span class="math inline">\(10^8\)</span>, which can be modified by user. If
 the data set have predictors with extremely low frequency, users may
 consider a smaller <span class="math inline">\(\gamma\)</span>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.newton</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, method <span class="op">=</span> <span class="st">'Newton'</span><span class="op">)</span></span>
 <span><span class="va">fit.proxN</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, method <span class="op">=</span> <span class="st">'ProxN'</span><span class="op">)</span></span></code></pre></div>
 <p>Then we plot the fitted methods with all the curves on the same plot.
 No obvious change can be oberserved here. However, we do recommand
 using</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.newton</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.proxN</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, allinone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-14-1.png" width="40%" height="44%"><img src="surtvep_files/figure-html/unnamed-chunk-14-2.png" width="40%" height="44%"></p>
 </div>
-<div class="section level3">
-<h3 id="stratified-newtons-method-strata">Stratified Newton’s Method: <code>strata</code><a class="anchor" aria-label="anchor" href="#stratified-newtons-method-strata"></a>
-</h3>
+<div class="section level4">
+<h4 id="stratified-newtons-method-strata">Stratified Newton’s Method: <code>strata</code><a class="anchor" aria-label="anchor" href="#stratified-newtons-method-strata"></a>
+</h4>
 <p>When the data of patients are collected from different strata, we can
 extend the model to a stratified version. We use <span class="math inline">\(j=1,\ldots,J\)</span> to denote the <span class="math inline">\(J\)</span> different centers. Let <span class="math inline">\(D_{ij}\)</span> denote the time to death and <span class="math inline">\(C_{ij}\)</span> be the censoring time for patient
 <span class="math inline">\(i\)</span> in center <span class="math inline">\(j\)</span>, <span class="math inline">\(i=1,\ldots, n_j\)</span>, and <span class="math inline">\(j=1, \ldots, J\)</span>. Here <span class="math inline">\(n_j\)</span> is the sample size in center <span class="math inline">\(j\)</span>. The total number of patients is <span class="math inline">\(N=\sum_{j=1}^Jn_j\)</span>, the observed time is
@@ -462,7 +536,7 @@ stratums. In our simulation, we vary the baseline for different stratums
 by adding a small term to the baseline function. The small term is
 generated by uniform distribution with mean = 0 and standard deviation =
 0.5.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"StrataExample"</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">StrataExample</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">StrataExample</span><span class="op">$</span><span class="va">time</span></span>
@@ -470,14 +544,14 @@ generated by uniform distribution with mean = 0 and standard deviation =
 <span><span class="va">strata</span> <span class="op">&lt;-</span> <span class="va">StrataExample</span><span class="op">$</span><span class="va">strata</span></span></code></pre></div>
 <p>The <code>strata</code> is a vector of indicators for stratification.
 The stratified model can be easily fitted by calling</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit.strata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtv.html">coxtv</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">z</span>, event <span class="op">=</span> <span class="va">event</span>, time<span class="op">=</span><span class="va">time</span>, strata <span class="op">=</span> <span class="va">strata</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.strata</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-16-1.png" width="672"></p>
 </div>
-<div class="section level3">
-<h3 id="step-size-adjustment-btr">Step size adjustment: <code>btr</code><a class="anchor" aria-label="anchor" href="#step-size-adjustment-btr"></a>
-</h3>
+<div class="section level4">
+<h4 id="step-size-adjustment-btr">Step size adjustment: <code>btr</code><a class="anchor" aria-label="anchor" href="#step-size-adjustment-btr"></a>
+</h4>
 <p><code>btr</code> is a character string specifying the backtracking
 line-search approach. <code>"dynamic"</code> is a typical way to perform
 backtracking line-search. See details in Convex Optimization by Boyd and
@@ -490,9 +564,9 @@ frequency for some categories.</p>
 under-fitting.</p>
 </div>
 </div>
-<div class="section level2">
-<h2 id="newtons-method-with-penalization">Newton’s Method with penalization:<a class="anchor" aria-label="anchor" href="#newtons-method-with-penalization"></a>
-</h2>
+<div class="section level3">
+<h3 id="newtons-method-with-penalization">Newton’s Method with penalization:<a class="anchor" aria-label="anchor" href="#newtons-method-with-penalization"></a>
+</h3>
 <p>The proximal Newton can help improve the estimation when the
 origional hessian matrix is very close to a singular one, which may
 often occur in the setting of time-varying effects, however,
@@ -507,9 +581,9 @@ maximizing <span class="math display">\[\begin{align}
 <p>We have different choices of <span class="math inline">\(P_\lambda(\boldsymbol{\theta})\)</span>. Potential
 choices are to use P-splines, and discrete penalties. Detailed
 discussions are provided below.</p>
-<div class="section level3">
-<h3 id="p-spline">P-spline<a class="anchor" aria-label="anchor" href="#p-spline"></a>
-</h3>
+<div class="section level4">
+<h4 id="p-spline">P-spline<a class="anchor" aria-label="anchor" href="#p-spline"></a>
+</h4>
 <p>The P-splines are low rank smoothers using a B-spline basis, usually
 defined on evenly spaced knots, with a difference penalty applied
 directly to the parameters <span class="math inline">\(\theta_{pk}\)</span>, to control function
@@ -542,9 +616,9 @@ in this basis coefficients:</p>
 \lambda\boldsymbol{\theta}^T\boldsymbol{S}\boldsymbol{\theta}
 \end{align}\]</span> with respect to <span class="math inline">\(\boldsymbol{\theta}\)</span>.</p>
 </div>
-<div class="section level3">
-<h3 id="smoothing-spline">Smoothing-spline<a class="anchor" aria-label="anchor" href="#smoothing-spline"></a>
-</h3>
+<div class="section level4">
+<h4 id="smoothing-spline">Smoothing-spline<a class="anchor" aria-label="anchor" href="#smoothing-spline"></a>
+</h4>
 <p>The reduced rank spline smoothers with derivative based penalties can
 be set up almost as easily, while retaining the sparsity of the basis
 and penalty and the ability to mix-and-match the orders of spline basis
@@ -561,9 +635,9 @@ where <span class="math inline">\(\boldsymbol{S}\)</span> is a banded
 diagonal matrix of known coefficients. The algebraic expression of <span class="math inline">\(\boldsymbol{S}\)</span> is complex, as discussed
 in . However, this has little impact on the computation time.</p>
 </div>
-<div class="section level3">
-<h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
-</h3>
+<div class="section level4">
+<h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h4>
 <p>The usage of Newton’s method with penalization <code>coxtp</code> is
 very similar to <code>coxtv</code> introduced above. The main difference
 comes from the penalization tuning parameter selection.</p>
@@ -584,93 +658,73 @@ penalization method. This setting contains binary predictors with low
 frequency, which may have ill-conditioned second-order information of
 the log-partial likelihood. Penalization plays an important role here as
 it helps to smooth the time-varying effects.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleDataBinary</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">time</span></span>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleDataBinary</span><span class="op">$</span><span class="va">event</span></span></code></pre></div>
 <p>First we fit the penalized model with
 <code>"Smooth-spline"</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_spline_all</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="co"># fit.pspline &lt;- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")</span></span>
 <span><span class="va">fit.smoothspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda_spline <span class="op">=</span> <span class="va">lambda_spline_all</span>, spline <span class="op">=</span> <span class="st">"Smooth-spline"</span><span class="op">)</span></span></code></pre></div>
 <p>Then we use the <code>IC</code> function to select the tuning
 parameter.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">IC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.smoothspline</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">mAIC</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 15205.84 15201.74 15199.47</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">TIC</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">GIC</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 15203.63 15199.85 15197.89</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">GIC</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 15205.59 15201.99 15200.02</span></span></code></pre></div>
 <p>We can directly call the <code>plot</code> function to give the
 estimation plot.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">model.TIC</span>,ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surtvep_files/figure-html/unnamed-chunk-20-1.png" width="40%" height="44%"></p>
 <p>From the result above, we notice that with different selection
 criteria, the best tuning parameter <span class="math inline">\(\lambda\)</span> selected is different for
-different selection criteria. Here, we use the TIC criteria which set
-<span class="math inline">\(\lambda=10\)</span>. The result for this
-model was saved in related criteria model and could be called as
-below:</p>
-<p>Compare with the non-penalized Model, we could see that the effect of
-“V1” was shrink to roughly linear in the penalized model.</p>
+different selection criteria. In this example, we use the TIC criterion.
+The result for this model is saved in the related criterion model and
+can be accessed as follows:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">model.mAIC</span> <span class="op">=</span> <span class="va">IC</span><span class="op">$</span><span class="va">model.mAIC</span></span>
+<span><span class="va">model.TIC</span> <span class="op">=</span> <span class="va">IC</span><span class="op">$</span><span class="va">model.TIC</span></span>
+<span><span class="va">model.GIC</span> <span class="op">=</span> <span class="va">IC</span><span class="op">$</span><span class="va">model.GIC</span></span></code></pre></div>
+<p>Compared to the non-penalized model, we can see that the effect of
+``V1” is shrunk to approximately linear in the penalized model.</p>
 </div>
 </div>
-<div class="section level2">
-<h2 id="baseline-estimation">Baseline estimation<a class="anchor" aria-label="anchor" href="#baseline-estimation"></a>
-</h2>
-<p>The Nelson-Aalen estimator (Breslow estimator) of the culmulative
+<div class="section level3">
+<h3 id="baseline-estimation">Baseline estimation<a class="anchor" aria-label="anchor" href="#baseline-estimation"></a>
+</h3>
+<p>The Nelson-Aalen estimator (Breslow estimator) of the cumulative
 function is given by <span class="math inline">\(\widetilde{\Lambda}(t)
 = \int_0^t \widetilde{\Lambda}_0(u)\)</span>, where <span class="math inline">\(\widetilde{\Lambda}(t)\)</span> is 0 except at the
-observed failure times <span class="math inline">\(t_i\)</span>, where
-it takes the value <span class="math display">\[\begin{align*}
+observed failure times <span class="math inline">\(t_i\)</span>, at
+which it takes the value <span class="math display">\[\begin{align*}
     d\Lambda_0 = {d_i}\left\{\mathop{\sum}\limits_{\ell \in R(T_i)} \exp
 \{\boldsymbol{X}_{i' }^T \boldsymbol{\Theta}  \boldsymbol{B}(T_{i})
 \}\right\}^{-1}.
 \end{align*}\]</span></p>
 <p>The baseline estimation here refers to the baseline hazard at time t
-when holding all the covariates equals to zero. We use the model fitted
-result <code>fit_penalized</code> in section 4.2.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+when holding all the covariates equal to zero.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleData"</span><span class="op">)</span></span>
 <span><span class="va">z</span>     <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span>
 <span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span>
 <span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span>
-<span></span>
 <span><span class="va">time2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">time</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda_spline_all</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">1</span>,<span class="fl">10</span>,<span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">fit.smoothspline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time2</span>, lambda<span class="op">=</span><span class="va">lambda_spline_all</span>, penalty <span class="op">=</span> <span class="st">"Smooth-spline"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -3.3551771; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -3.3500715; Stopping crit = 1.8372984e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -3.3500328; Stopping crit = 1.3917288e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -3.3500327; Stopping crit = 3.0106586e-07;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -3.3500327; Stopping crit = 2.7706982e-12;</span></span>
-<span><span class="co">#&gt; lambda 0.1 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -3.3584050; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -3.3534872; Stopping crit = 1.7917577e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -3.3534313; Stopping crit = 2.0350508e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -3.3534312; Stopping crit = 2.9285592e-07;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -3.3534312; Stopping crit = 6.8588179e-13;</span></span>
-<span><span class="co">#&gt; lambda 1 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -3.3657596; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -3.3617116; Stopping crit = 1.5203960e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -3.3616821; Stopping crit = 1.1071394e-04;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -3.3616821; Stopping crit = 4.5050421e-08;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -3.3616821; Stopping crit = 1.6677702e-14;</span></span>
-<span><span class="co">#&gt; lambda 10 is done.</span></span>
-<span><span class="co">#&gt; Iter 1: Obj fun = -3.3732581; Stopping crit = 1.0000000e+00;</span></span>
-<span><span class="co">#&gt; Iter 2: Obj fun = -3.3702700; Stopping crit = 1.1595777e-02;</span></span>
-<span><span class="co">#&gt; Iter 3: Obj fun = -3.3702564; Stopping crit = 5.2957390e-05;</span></span>
-<span><span class="co">#&gt; Iter 4: Obj fun = -3.3702564; Stopping crit = 5.4156914e-09;</span></span>
-<span><span class="co">#&gt; Iter 5: Obj fun = -3.3702564; Stopping crit = 5.1697804e-15;</span></span>
-<span><span class="co">#&gt; lambda 100 is done.</span></span>
 <span><span class="va">IC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IC.html">IC</a></span><span class="op">(</span><span class="va">fit.smoothspline</span><span class="op">)</span></span>
 <span><span class="va">fit.mAIC</span> <span class="op">&lt;-</span> <span class="va">IC</span><span class="op">$</span><span class="va">model.mAIC</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base.est</span> <span class="op">=</span> <span class="fu"><a href="../reference/baseline.html">baseline</a></span><span class="op">(</span><span class="va">fit.mAIC</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">base.est</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $time</span></span>
 <span><span class="co">#&gt;  [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8</span></span>
@@ -696,14 +750,14 @@ exists or remove the points that have <span class="math inline">\(\lambda=0\)</s
 result in the baseline hazard, there is no influence on the cumulative
 baseline hazard.</p>
 </div>
-<div class="section level2">
-<h2 id="hypothesis-tests-for-the-model">Hypothesis Tests for the model<a class="anchor" aria-label="anchor" href="#hypothesis-tests-for-the-model"></a>
-</h2>
+<div class="section level3">
+<h3 id="hypothesis-tests-for-the-model">Hypothesis Tests for the model<a class="anchor" aria-label="anchor" href="#hypothesis-tests-for-the-model"></a>
+</h3>
 <p>In this section we provide three tests for the model. The first is to
 test</p>
-<div class="section level3">
-<h3 id="testing-for-time-varying-effect">Testing for time-varying effect<a class="anchor" aria-label="anchor" href="#testing-for-time-varying-effect"></a>
-</h3>
+<div class="section level4">
+<h4 id="testing-for-time-varying-effect">Testing for time-varying effect<a class="anchor" aria-label="anchor" href="#testing-for-time-varying-effect"></a>
+</h4>
 <p>To test whether the effects are time-varying, we use the constant
 property of B-splines, that is, if <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK},\)</span> the
 corresponding covariate effect is time-independent. Specify a matrix
@@ -717,7 +771,7 @@ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K-1\)</span> degrees of
 freedom.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tvef.ph.html">tvef.ph</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        chisq df          p</span></span>
 <span><span class="co">#&gt; X1  6.889955  7 0.44042707</span></span>
@@ -725,9 +779,9 @@ freedom.</p>
 <p>For the second variable, We reject the null hypothesis and claim it
 has the time varying effect.</p>
 </div>
-<div class="section level3">
-<h3 id="testing-for-beta-effect">Testing for beta effect<a class="anchor" aria-label="anchor" href="#testing-for-beta-effect"></a>
-</h3>
+<div class="section level4">
+<h4 id="testing-for-beta-effect">Testing for beta effect<a class="anchor" aria-label="anchor" href="#testing-for-beta-effect"></a>
+</h4>
 <p>To test whether the effects are significant or not, we use the test
 statistic <span class="math inline">\(\theta_{p1}=\cdots=\theta_{pK} =
 0,\)</span> the corresponding covariate effect is time-independent.
@@ -739,15 +793,15 @@ S_p=(\boldsymbol{C}_p\boldsymbol{\widehat\theta})^T
 \left[\boldsymbol{C}_p \{- \triangledown^2
 \ell(\boldsymbol{\widehat\theta})\}^{-1}\boldsymbol{C}_p^T\right]^{-1}(\boldsymbol{C}_p\boldsymbol{\widehat\theta}).
 \end{align*}\]</span></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">test.zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.html">tvef.zero</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span></code></pre></div>
 <p>Under the null hypothesis that the effect is time-independent, <span class="math inline">\(S_p\)</span> is asymptotically chi-square
 distributed with <span class="math inline">\(K\)</span> degrees of
 freedom.</p>
-<div class="section level4">
-<h4 id="testing-at-each-time-point">Testing at each time point<a class="anchor" aria-label="anchor" href="#testing-at-each-time-point"></a>
-</h4>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="section level5">
+<h5 id="testing-at-each-time-point">Testing at each time point<a class="anchor" aria-label="anchor" href="#testing-at-each-time-point"></a>
+</h5>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">test.zero.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tvef.zero.time.html">tvef.zero.time</a></span><span class="op">(</span><span class="va">fit.proxN</span><span class="op">)</span></span></code></pre></div>
 <p>From the plot above, we could observe that with different knots
 selected, the performance is not different so much for different knots,
@@ -757,12 +811,7 @@ reason that we need to select the best lambda before actually fitting
 the model. The following plot is the performance of different lambda
 selected. For the following plot, the knot was set as default, which is
 <code>knot=8</code>.</p>
-</div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="real-data-example-support">Real Data Example <code>SUPPORT</code><a class="anchor" aria-label="anchor" href="#real-data-example-support"></a>
-</h2>
+<!-- ## Real Data Example `SUPPORT` -->
 <!-- In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment). -->
 <!-- We use the processed `SUPPORT` data set included in the R package [@casebase]. -->
 <!-- We study the time-varying effects of metastatic cancer as the illustration example and include -->
@@ -776,7 +825,7 @@ selected. For the following plot, the knot was set as default, which is
 <!-- Age has 4 levels, cancer status has 3 levels and diabetes has 2 levels. -->
 <!-- The following codes processed the covariates for model fitting. -->
 <!-- ```{r, message = FALSE} -->
-<!-- #diabetes:  -->
+<!-- #diabetes: -->
 <!-- diabetes <-  model.matrix(~factor(support$diabetes))[,-1] -->
 <!-- #sex: female as the reference group -->
 <!-- sex <- model.matrix(~support$sex)[,-1] -->
@@ -814,7 +863,7 @@ selected. For the following plot, the knot was set as default, which is
 <!-- ``` -->
 <!-- We take a look at the estimation plots of cancer status using the `plot` function: -->
 <!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2)) -->
+<!-- plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio") -->
 <!-- ``` -->
 <!-- Conditioned on the diabetes status and age, we can observe a violation of the proportional hazards assumption. A significant difference in the hazard of death was observed between the metastatic cancer, non-metastatic cancer, and non-cancer groups. Specifically, patients with metastatic cancer exhibited a higher hazard of death during the initial 1500 days compared with non-cancer patients. -->
 <!-- However, upon examination of the estimation plot for non-metastatic cancer, a decrease at the beginning followed by an increase can be observed. The fluctuation in the plot is not deemed reliable, primarily due to the instability of the estimation. To address this issue, a penalty term was added to improve the estimation. -->
@@ -823,7 +872,7 @@ selected. For the following plot, the knot was set as default, which is
 <!-- IC.support <- IC(fit.coxtp) -->
 <!-- ``` -->
 <!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2)) -->
+<!-- plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio") -->
 <!-- ``` -->
 <!-- Then we provide the hypothesis testing for each covariate. -->
 <!-- ```{r} -->
@@ -876,6 +925,38 @@ selected. For the following plot, the knot was set as default, which is
 <!--   theme(plot.title = element_text(hjust = 0.2)) -->
 <!-- plot_age -->
 <!-- ``` -->
+<!-- ## References -->
+<!-- ## Appendix: -->
+<!-- ## B-spline basis to represent time-varying effects -->
+<!-- To model time-varying coefficients $\beta(t)$, we use a set of B-spline basis functions, providing a flexible and accurate way to capture the nonlinear relationships between predictor variables and the time-to-event outcome over time. B-splines are piecewise polynomial functions that can be smoothly connected at a set of points called knots. The smoothness of the spline function makes it a suitable choice for modeling time-varying effects in survival analysis, as it allows for the estimation of smooth and continuous relationships between predictor variables and the time-to-event outcome. -->
+<!-- These B-spline basis functions are generated using the splines R package with a fixed number of basis functions. The number of knots and the degree of the B-spline (typically, cubic B-splines are used) can be adjusted to control the smoothness and complexity of the resulting model. Increasing the number of knots results in a more flexible model that can capture more complex relationships, whereas reducing the number of knots leads to a smoother and simpler model. However, it is essential to strike a balance between flexibility and over-fitting the data when choosing the number of knots and the degree of the B-spline. We introduced the usage of a penalty term in later sections to control the smoothness with a larger number of knots. -->
+<!-- To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots, \beta_{P}(t)\}$, we span $\boldsymbol\beta(\cdot)$ by a set of cubic B-splines defined on a given number of knots: \begin{eqnarray} -->
+<!--    \beta_{p}(t)=\boldsymbol\theta_{p}^\top\boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber -->
+<!-- \end{eqnarray} where $\boldsymbol{B} (t)=\{B_1(t), \ldots, B_K(t)\}^T$ forms a basis, $K$ is the number of basis functions, and $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th covariate. -->
+<!-- The following plot gives a illustration of the construction of B-spline basis functions.  -->
+<!-- ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE} -->
+<!-- # Use the example data for illustration: -->
+<!-- time.point <- seq(0, 1, length.out = 100) -->
+<!-- # Load splines packages -->
+<!-- library(splines) -->
+<!-- # Set the number of knots and the degree of the B-spline basis functions -->
+<!-- nsplines <- 8 -->
+<!-- degree <- 3 -->
+<!-- # Set the knot location  -->
+<!-- knots = quantile(time.point,  (1:(nsplines-degree-1))/(nsplines-degree)) -->
+<!-- # Generate B-spline basis functions using the bs() function -->
+<!-- basis_functions <- splines::bs(time.point, knots = knots, degree = degree, intercept=T) -->
+<!-- # Plot the B-spline basis functions -->
+<!-- plot(time.point, basis_functions[,1], type = "l", ylim = c(0, 1), xlab = "Time", ylab = "B-spline basis functions", main = "B-spline basis functions with degree = 3") -->
+<!-- for (i in 2:ncol(basis_functions)) { -->
+<!--   lines(time.point, basis_functions[,i], col = i) -->
+<!-- } -->
+<!-- # Add a legend to the plot -->
+<!-- legend("topleft", legend = paste("B-spline", 1:ncol(basis_functions)), col = 1:ncol(basis_functions), lty = 1, cex = 0.7) -->
+<!-- ``` -->
+</div>
+</div>
+</div>
 </div>
   </div>
 

@@ -26,20 +26,22 @@ coxtv(
 )
 }
 \arguments{
-\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1.}
+\item{event}{failure event response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1.}
 
 \item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation.}
 
 \item{time}{observed event time, which should be a vector with non-negative values.}
 
 \item{strata}{a vector of indicators for stratification.
-Default = \code{NULL}, (i.e. no stratification group in the data), an unstratified model is implemented.}
+Default = \code{NULL} (i.e. no stratification group in the data), an unstratified model is implemented.}
 
 \item{nsplines}{number of basis functions in the splines to span the time-varying effects, whose default value is 8.
 We use the R function \code{splines::bs} to generate the B-splines.}
 
 \item{ties}{a character string specifying the method for tie handling. If there are no tied events,
-the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties are present.}
+the methods are equivalent.
+By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties are present.
+If \code{ties = "none"}, no approximation will be used to handle ties.}
 
 \item{knots}{the internal knot locations (breakpoints) that define the B-splines.
 The number of the internal knots should be \code{nsplines}-\code{degree}-1.
@@ -50,13 +52,14 @@ Users can specify the internal knot locations by themselves.}
 \item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 \code{degree = 2} results in the quadratic B-spline basis functions.}
 
-\item{stop}{a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.
-\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
-\code{"relch"} means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the \code{tol}.
+\item{stop}{a character string specifying the stopping rule to determine convergence.
+\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+\code{"relch"} means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the \code{tol},
+where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 \code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
 \code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} are met.
 Default value is \code{ratch}.
-\code{iter.max}, if achieved, overrides any stop rule for algorithm termination.}
+If \code{iter.max} is achieved, it overrides any stop rule for algorithm termination.}
 
 \item{tol}{tolerance used for stopping the algorithm. See details in \code{stop} below.
 The default value is  \code{1e-6}.}
@@ -69,7 +72,8 @@ See details in Wu et al. (2022).}
 
 \item{gamma}{parameter for proximal Newton method \code{"ProxN"}. Default value is \code{1e8}.}
 
-\item{btr}{a character string specifying the backtracking line-search approach. \code{"dynamic"} is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+\item{btr}{a character string specifying the backtracking line-search approach. \code{"dynamic"} is a typical way to perform backtracking line-search.
+See details in Convex Optimization by Boyd and Vandenberghe (2004).
 \code{"static"} limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
 which usually occurs when some predictors are categorical with low frequency for some categories.
 Users should be careful with \code{static} as this may lead to under-fitting.}
@@ -85,13 +89,14 @@ Users should be careful with \code{static} as this may lead to under-fitting.}
 \value{
 An object with S3 class \code{coxtv}.
 \item{call}{the call that produced this object.}
-\item{beta}{the estimated time varying coefficient for each predictor at each unique time.
-It is a matrix of dimension \code{len_unique_t} by \code{nvars}, where \code{len_unique_t} is the length of unique observed event \code{time}.}
+\item{beta}{the estimated time-varying coefficient for each predictor at each unique time.
+It is a matrix of dimension \code{len_unique_t} by \code{nvars},
+where \code{len_unique_t} is the length of unique observed event \code{time}s.}
 
-\item{bases}{the basis matrix used in model fitting. If \code{ties="None"}, the dimension of the basis matrix is \code{nvars} by \code{nsplines};
+\item{bases}{the basis matrix used in model fitting. If \code{ties="none"}, the dimension of the basis matrix is \code{nvars} by \code{nsplines};
 if \code{ties="Breslow"}, the dimension is \code{len_unique_t} by \code{nsplines}. The matrix is constructed using the \code{bs::splines} function.}
 \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension \code{nvars} by \code{nsplines}.
-Each row represents a covariate's coefficient on the \code{nsplines} dimensional basis functions.}
+Each row represents a covariate's coefficient on the \code{nsplines}-dimensional basis functions.}
 \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is \code{nsplines * nvars} by \code{nsplines * nvars}.}
 \item{internal.knots}{the internal knot locations (breakpoints) that define the B-splines.}
 \item{nobs}{number of observations.}
@@ -114,23 +119,27 @@ fit <- coxtv(event = event, z = z, time = time)
 
 }
 \references{
+Boyd, S., Vandenberghe, L. (2004) Convex optimization.
+\emph{Cambridge University Press}.
+\cr
+
 Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
-\emph{Journal of the American Statistical Association}, \strong{87}: 942-951.
+\emph{Journal of the American Statistical Association}, \strong{87(420)}: 942-951.
 \cr
 
 Gray, R. J. (1994) Spline-based tests in survival analysis.
-\emph{Biometrics}, \strong{50}: 640-652.
+\emph{Biometrics}, \strong{50(3)}: 640-652.
 \cr
 
-Luo, L., He, K. Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
-\cr
-
-Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
-\emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
+Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 \cr
 
 Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
 \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
+\cr
+
+Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
+\emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
 \cr
 }
 \seealso{

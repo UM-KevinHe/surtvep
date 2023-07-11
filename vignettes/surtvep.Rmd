@@ -62,7 +62,7 @@ event <- ExampleData$event
 ```
 
 The command loads an input covariate matrix 'z', time-to-event outcome 'time' and 'event' from this saved R data archive.
-The saved data set is a simulation data set with continuous outcomes.
+The saved data set is a simulation data set with continuous covariates.
 
 We fit the Newton's method without penalization use the most basic call to 'coxtv'.
 
@@ -132,6 +132,23 @@ plot(fit.penalize$lambda1, ylim = c(-2,2))
 With the tools introduced so far, users are able to fit the time-varying model.
 There are many more arguments in the package that give users a great deal of flexibility.
 To learn more, move on to later section.
+
+
+## Structure
+
+This section gives the flowchart for the `surtvep` package. Generally, `coxtv` utilizes proximal Newton's method to estimate the time-varying coefficients. `coxtp` combines the Newton's approach with penalization. `IC` calculates different information criteria to select the best tuning parameter in front of the penalty term. `cv.coxtp` uses cross-validation for tuning parameter selection.. `tvef.ph`, `tvef.ph.time` and `tvef.ph.zero` provides hypothesis testing for the fitted model. `get.tvef` retrieves the time-varying coefficients for the fitted model. `confint` provides confidence intervals for these coefficients.  `baseline` offers the baseline estimations. `plot` visualizes the estimated time-varying coefficients. Other functions and details are provided in later sections.
+
+# ```{r, out.width="700px", out.height = "800px", include=TRUE, fig.align="center", fig.cap=c("your caption"), echo=FALSE}
+# knitr::include_graphics("Flowchart.pdf")
+# ```
+```{r label, out.height = "100%", fig.cap = "caption"}
+knitr::include_graphics("Flowchart.pdf") 
+```
+
+<!-- ![Flowchart](Flowchart.pdf) -->
+![Alt](Flowchart.pdf){width=80% height=700}
+
+![Alt](Flowchart.png)
 
 
 ## Cox non-proportional hazards model
@@ -403,40 +420,39 @@ print(IC$GIC)
 
 We can directly call the `plot` function to give the estimation plot.
 
-```{r,  fig.ncol = 1, fig.show="hold", out.width="40%",out.height="44%", message = FALSE, warning=FALSE}
+```{r, fig.ncol = 1, fig.show="hold", out.width="40%", out.height="44%", message = FALSE, warning=FALSE}
 plot(IC$model.TIC,ylim=c(-2,2))
 ```
 
 From the result above, we notice that with different selection criteria, the best tuning parameter $\lambda$ selected is different for different selection criteria. 
-Here, we use the TIC criteria. The result for this model is saved in the related criterion model and can be accessed as follows:
+In this example, we use the TIC criterion. The result for this model is saved in the related criterion model and can be accessed as follows:
 ```{r,message = FALSE}
 model.mAIC = IC$model.mAIC
 model.TIC = IC$model.TIC
 model.GIC = IC$model.GIC
 ```
 
-Compared to the non-penalized model, we can see that the effect of "V1" is shrunk to approximately linear in the penalized model.
+Compared to the non-penalized model, we can see that the effect of ``V1" is shrunk to approximately linear in the penalized model.
 
 
 ## Baseline estimation
 
-The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, where it takes the value \begin{align*}
+The Nelson-Aalen estimator (Breslow estimator) of the cumulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, at which it takes the value 
+\begin{align*}
     d\Lambda_0 = {d_i}\left\{\mathop{\sum}\limits_{\ell \in R(T_i)} \exp \{\boldsymbol{X}_{i' }^T \boldsymbol{\Theta}  \boldsymbol{B}(T_{i}) \}\right\}^{-1}.
 \end{align*}
 
-The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero.
-We use the model fitted result `fit_penalized` in section 4.2.
+The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equal to zero.
 
 ```{r}
 data("ExampleData")
 z     <- ExampleData$x
 time  <- ExampleData$time
 event <- ExampleData$event
-
 time2  <- round(time, digits = 1)
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE, results='hide'}
 lambda_spline_all=c(0.1,1,10,100)
 fit.smoothspline <- coxtp(event = event, z = z, time = time2, lambda=lambda_spline_all, penalty = "Smooth-spline")
 IC <- IC(fit.smoothspline)
@@ -450,7 +466,6 @@ base.est = baseline(fit.mAIC)
 ```{r}
 head(base.est)
 ```
-
 
 
 As a result, we could either increase the time interval to make ties exists or remove the points that have $\lambda=0$.
@@ -506,7 +521,7 @@ For the following plot, the knot was set as default, which is `knot=8`.
 
 
 
-## Real Data Example `SUPPORT`
+<!-- ## Real Data Example `SUPPORT` -->
 
 <!-- In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment). -->
 <!-- We use the processed `SUPPORT` data set included in the R package [@casebase]. -->
@@ -527,7 +542,7 @@ For the following plot, the knot was set as default, which is `knot=8`.
 <!-- The following codes processed the covariates for model fitting. -->
 
 <!-- ```{r, message = FALSE} -->
-<!-- #diabetes:  -->
+<!-- #diabetes: -->
 <!-- diabetes <-  model.matrix(~factor(support$diabetes))[,-1] -->
 
 <!-- #sex: female as the reference group -->
@@ -576,7 +591,7 @@ For the following plot, the knot was set as default, which is `knot=8`.
 <!-- We take a look at the estimation plots of cancer status using the `plot` function: -->
 
 <!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2)) -->
+<!-- plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio") -->
 <!-- ``` -->
 
 <!-- Conditioned on the diabetes status and age, we can observe a violation of the proportional hazards assumption. A significant difference in the hazard of death was observed between the metastatic cancer, non-metastatic cancer, and non-cancer groups. Specifically, patients with metastatic cancer exhibited a higher hazard of death during the initial 1500 days compared with non-cancer patients. -->
@@ -589,7 +604,7 @@ For the following plot, the knot was set as default, which is `knot=8`.
 <!-- ``` -->
 
 <!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2)) -->
+<!-- plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio") -->
 <!-- ``` -->
 
 
@@ -678,4 +693,45 @@ For the following plot, the knot was set as default, which is `knot=8`.
 
 
 
+<!-- ## References -->
 
+
+<!-- ## Appendix: -->
+
+<!-- ## B-spline basis to represent time-varying effects -->
+<!-- To model time-varying coefficients $\beta(t)$, we use a set of B-spline basis functions, providing a flexible and accurate way to capture the nonlinear relationships between predictor variables and the time-to-event outcome over time. B-splines are piecewise polynomial functions that can be smoothly connected at a set of points called knots. The smoothness of the spline function makes it a suitable choice for modeling time-varying effects in survival analysis, as it allows for the estimation of smooth and continuous relationships between predictor variables and the time-to-event outcome. -->
+
+<!-- These B-spline basis functions are generated using the splines R package with a fixed number of basis functions. The number of knots and the degree of the B-spline (typically, cubic B-splines are used) can be adjusted to control the smoothness and complexity of the resulting model. Increasing the number of knots results in a more flexible model that can capture more complex relationships, whereas reducing the number of knots leads to a smoother and simpler model. However, it is essential to strike a balance between flexibility and over-fitting the data when choosing the number of knots and the degree of the B-spline. We introduced the usage of a penalty term in later sections to control the smoothness with a larger number of knots. -->
+
+
+<!-- To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots, \beta_{P}(t)\}$, we span $\boldsymbol\beta(\cdot)$ by a set of cubic B-splines defined on a given number of knots: \begin{eqnarray} -->
+<!--    \beta_{p}(t)=\boldsymbol\theta_{p}^\top\boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber -->
+<!-- \end{eqnarray} where $\boldsymbol{B} (t)=\{B_1(t), \ldots, B_K(t)\}^T$ forms a basis, $K$ is the number of basis functions, and $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th covariate. -->
+
+<!-- The following plot gives a illustration of the construction of B-spline basis functions.  -->
+<!-- ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE} -->
+<!-- # Use the example data for illustration: -->
+<!-- time.point <- seq(0, 1, length.out = 100) -->
+
+<!-- # Load splines packages -->
+<!-- library(splines) -->
+
+<!-- # Set the number of knots and the degree of the B-spline basis functions -->
+<!-- nsplines <- 8 -->
+<!-- degree <- 3 -->
+
+<!-- # Set the knot location  -->
+<!-- knots = quantile(time.point,  (1:(nsplines-degree-1))/(nsplines-degree)) -->
+
+<!-- # Generate B-spline basis functions using the bs() function -->
+<!-- basis_functions <- splines::bs(time.point, knots = knots, degree = degree, intercept=T) -->
+
+<!-- # Plot the B-spline basis functions -->
+<!-- plot(time.point, basis_functions[,1], type = "l", ylim = c(0, 1), xlab = "Time", ylab = "B-spline basis functions", main = "B-spline basis functions with degree = 3") -->
+<!-- for (i in 2:ncol(basis_functions)) { -->
+<!--   lines(time.point, basis_functions[,i], col = i) -->
+<!-- } -->
+
+<!-- # Add a legend to the plot -->
+<!-- legend("topleft", legend = paste("B-spline", 1:ncol(basis_functions)), col = 1:ncol(basis_functions), lty = 1, cex = 0.7) -->
+<!-- ``` -->

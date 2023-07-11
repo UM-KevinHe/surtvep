@@ -36,7 +36,7 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    Appendix
      
     <span class="caret"></span>
   </a>
@@ -50,15 +50,47 @@
     <li class="divider">
     <li class="dropdown-header">Category B</li>
     <li>
-      <a href="../articles/b1.html">Article B1</a>
+      <a href="../articles/plotting.html">Plotting</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+      </ul><ul class="nav navbar-nav navbar-right"><li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Appendix
      
+    <span class="caret"></span>
   </a>
-</li>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
+    </li>
+    <li>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/plotting.html">Plotting</a>
+    </li>
+  </ul></li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Appendix2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
+    </li>
+    <li>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/plotting.html">Plotting</a>
+    </li>
+  </ul></li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -86,7 +118,7 @@
       </tr><tr><td>
           <p><code><a href="cv.coxtp.html">cv.coxtp()</a></code> </p>
         </td>
-        <td><p>fit a cross-validated Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross validation</p></td>
+        <td><p>fit a cross-validated Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross-validation</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="information-criteria">Information Criteria <a href="#information-criteria" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Calculating the Information Criteria to select the tunning paratmeter for the penalized methods</p>
@@ -102,15 +134,15 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="tvef.ph.html">tvef.ph()</a></code> </p>
         </td>
-        <td><p>test the proportional hazards assumption from a <code>coxtv</code> or <code>coxtp</code> object</p></td>
+        <td><p>testing the proportional hazards assumption from a <code>coxtv</code> or <code>coxtp</code> object</p></td>
       </tr><tr><td>
           <p><code><a href="tvef.zero.html">tvef.zero()</a></code> </p>
         </td>
-        <td><p>test the significance of the covariates from a <code>coxtv</code> or <code>coxtp</code> object</p></td>
+        <td><p>testing the significance of the covariates from a <code>coxtv</code> or <code>coxtp</code> object</p></td>
       </tr><tr><td>
           <p><code><a href="tvef.zero.time.html">tvef.zero.time()</a></code> </p>
         </td>
-        <td><p>test the significance of the covariates from a <code>coxtv</code> or <code>coxtp</code> object using a Wald test statistic</p></td>
+        <td><p>testing the significance of the covariates from a <code>coxtv</code> or <code>coxtp</code> object using a Wald test statistic</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="helper-functions">Helper functions <a href="#helper-functions" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
@@ -138,7 +170,7 @@
       </tr><tr><td>
           <p><code><a href="plot.baseline.html">plot(<i>&lt;baseline&gt;</i>)</a></code> </p>
         </td>
-        <td><p>plotting baseline</p></td>
+        <td><p>plotting the baseline hazard</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="package-data-sets">Package data sets <a href="#package-data-sets" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
@@ -146,11 +178,11 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="ExampleData.html">ExampleData</a></code> </p>
         </td>
-        <td><p>example data for surtvep with 2000 observations of 2 variables</p></td>
+        <td><p>example data with 2000 observations of 2 continuous variables</p></td>
       </tr><tr><td>
           <p><code><a href="ExampleDataBinary.html">ExampleDataBinary</a></code> </p>
         </td>
-        <td><p>example data for surtvep with 2000 observations of 2 binary variables</p></td>
+        <td><p>example data with 2000 observations of 2 binary variables</p></td>
       </tr><tr><td>
           <p><code><a href="StrataExample.html">StrataExample</a></code> </p>
         </td>
@@ -158,7 +190,7 @@
       </tr><tr><td>
           <p><code><a href="support.html">support</a></code> </p>
         </td>
-        <td><p>study to Understand Prognoses Preferences Outcomes and Risks of Treatment
+        <td><p>Study to Understand Prognoses Preferences Outcomes and Risks of Treatment
 (SUPPORT)</p></td>
       </tr></tbody></table></div>
 

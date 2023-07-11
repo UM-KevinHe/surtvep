@@ -36,7 +36,7 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    Appendix
      
     <span class="caret"></span>
   </a>
@@ -50,15 +50,47 @@
     <li class="divider">
     <li class="dropdown-header">Category B</li>
     <li>
-      <a href="../articles/b1.html">Article B1</a>
+      <a href="../articles/plotting.html">Plotting</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+      </ul><ul class="nav navbar-nav navbar-right"><li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Appendix
      
+    <span class="caret"></span>
   </a>
-</li>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
+    </li>
+    <li>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/plotting.html">Plotting</a>
+    </li>
+  </ul></li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Appendix2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
+    </li>
+    <li>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/plotting.html">Plotting</a>
+    </li>
+  </ul></li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -103,7 +135,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>event</dt>
-<dd><p>failure events response variable of length <code>nobs</code>, where <code>nobs</code> denotes the number of observations. It should be a vector containing 0 or 1.</p></dd>
+<dd><p>failure event response variable of length <code>nobs</code>, where <code>nobs</code> denotes the number of observations. It should be a vector containing 0 or 1.</p></dd>
 
 
 <dt>z</dt>
@@ -116,7 +148,7 @@
 
 <dt>strata</dt>
 <dd><p>a vector of indicators for stratification.
-Default = <code>NULL</code>, (i.e. no stratification group in the data), an unstratified model is implemented.</p></dd>
+Default = <code>NULL</code> (i.e. no stratification group in the data), an unstratified model is implemented.</p></dd>
 
 
 <dt>nsplines</dt>
@@ -126,7 +158,9 @@ We use the R function <code><a href="https://rdrr.io/r/splines/bs.html" class="e
 
 <dt>ties</dt>
 <dd><p>a character string specifying the method for tie handling. If there are no tied events,
-the methods are equivalent.  By default <code>"Breslow"</code> uses the Breslow approximation, which can be faster when many ties are present.</p></dd>
+the methods are equivalent.
+By default <code>"Breslow"</code> uses the Breslow approximation, which can be faster when many ties are present.
+If <code>ties = "none"</code>, no approximation will be used to handle ties.</p></dd>
 
 
 <dt>knots</dt>
@@ -143,13 +177,14 @@ Users can specify the internal knot locations by themselves.</p></dd>
 
 
 <dt>stop</dt>
-<dd><p>a character string specifying the stopping rule to determine convergence. Use \(loglik(m)\) to denote the log-partial likelihood at iteration step m.
-<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>.
-<code>"relch"</code> means we stop the algorithm when the \((loglik(m)-loglik(m-1))/(loglik(m))\) is less than the <code>tol</code>.
+<dd><p>a character string specifying the stopping rule to determine convergence.
+<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+<code>"relch"</code> means we stop the algorithm when the \((loglik(m)-loglik(m-1))/(loglik(m))\) is less than the <code>tol</code>,
+where \(loglik(m)\) denotes the log-partial likelihood at iteration step m.
 <code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
 <code>"all"</code> means we stop the algorithm when all the stopping rules <code>"incre"</code>, <code>"relch"</code> and <code>"ratch"</code> are met.
 Default value is <code>ratch</code>.
-<code>iter.max</code>, if achieved, overrides any stop rule for algorithm termination.</p></dd>
+If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm termination.</p></dd>
 
 
 <dt>tol</dt>
@@ -172,7 +207,8 @@ See details in Wu et al. (2022).</p></dd>
 
 
 <dt>btr</dt>
-<dd><p>a character string specifying the backtracking line-search approach. <code>"dynamic"</code> is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+<dd><p>a character string specifying the backtracking line-search approach. <code>"dynamic"</code> is a typical way to perform backtracking line-search.
+See details in Convex Optimization by Boyd and Vandenberghe (2004).
 <code>"static"</code> limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
 which usually occurs when some predictors are categorical with low frequency for some categories.
 Users should be careful with <code>static</code> as this may lead to under-fitting.</p></dd>
@@ -203,17 +239,18 @@ Users should be careful with <code>static</code> as this may lead to under-fitti
 <dd><p>the call that produced this object.</p></dd>
 
 <dt>beta</dt>
-<dd><p>the estimated time varying coefficient for each predictor at each unique time.
-It is a matrix of dimension <code>len_unique_t</code> by <code>nvars</code>, where <code>len_unique_t</code> is the length of unique observed event <code>time</code>.</p></dd>
+<dd><p>the estimated time-varying coefficient for each predictor at each unique time.
+It is a matrix of dimension <code>len_unique_t</code> by <code>nvars</code>,
+where <code>len_unique_t</code> is the length of unique observed event <code>time</code>s.</p></dd>
 
 
 <dt>bases</dt>
-<dd><p>the basis matrix used in model fitting. If <code>ties="None"</code>, the dimension of the basis matrix is <code>nvars</code> by <code>nsplines</code>;
+<dd><p>the basis matrix used in model fitting. If <code>ties="none"</code>, the dimension of the basis matrix is <code>nvars</code> by <code>nsplines</code>;
 if <code>ties="Breslow"</code>, the dimension is <code>len_unique_t</code> by <code>nsplines</code>. The matrix is constructed using the <code>bs::splines</code> function.</p></dd>
 
 <dt>ctrl.pts</dt>
 <dd><p>estimated coefficient of the basis matrix of dimension <code>nvars</code> by <code>nsplines</code>.
-Each row represents a covariate's coefficient on the <code>nsplines</code> dimensional basis functions.</p></dd>
+Each row represents a covariate's coefficient on the <code>nsplines</code>-dimensional basis functions.</p></dd>
 
 <dt>Hessian</dt>
 <dd><p>the Hessian matrix of the log-partial likelihood, of which the dimension is <code>nsplines * nvars</code> by <code>nsplines * nvars</code>.</p></dd>
@@ -239,18 +276,21 @@ which is the inverse of the negative Hessian matrix.</p></dd>
     <div id="references">
     <h2>References</h2>
     <p>Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
-<em>Journal of the American Statistical Association</em>, <strong>87</strong>: 942-951.
+<em>Journal of the American Statistical Association</em>, <strong>87(420)</strong>: 942-951.
 <br></p>
 <p>Gray, R. J. (1994) Spline-based tests in survival analysis.
-<em>Biometrics</em>, <strong>50</strong>: 640-652.
+<em>Biometrics</em>, <strong>50(3)</strong>: 640-652.
 <br></p>
-<p>Luo, L., He, K. Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+<p>Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 <br></p>
 <p>Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
 <em>Lifetime Data Analysis</em>, <strong>28(2)</strong>: 194-218.
 <br></p>
 <p>Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
 <em>Computer Methods and Programs in Biomedicine</em>, <strong>81(2)</strong>: 154-161.
+<br></p>
+<p>Boyd, S., Vandenberghe, L. (2004) Convex optimization.
+<em>Cambridge university press</em>.
 <br></p>
     </div>
     <div id="see-also">

@@ -3,19 +3,20 @@
 \docType{data}
 \name{ExampleData}
 \alias{ExampleData}
-\title{example data for surtvep with 2000 observations of 2 variables}
+\title{example data with 2000 observations of 2 continuous variables}
 \format{
 A list containing the following elements:
 \describe{
-\item{x}{simulated continuous covariate V1 and V2. The true time-independent function is b(t)=1 and the true time-varying function is b(t)=sin(3\emph{pi}t/4).}
-\item{event}{simulated event variable, binary variable with 0, 1.}
-\item{time}{simulated time variable, continuous variable with non-negative value.}
+\item{x}{simulated continuous covariate V1 and V2. The true time-independent function is \eqn{\beta(t)=1} and
+the true time-varying function is \eqn{\beta(t)=sin(3\pi t/4).}}
+\item{event}{simulated failure event response; binary variable with 0 or 1.}
+\item{time}{simulated observed event time; continuous variable with non-negative values.}
 }
 }
 \usage{
 data(ExampleData)
 }
 \description{
-A simulated data set containing two variables.
+A simulated data set containing 2 continuous variables.
 }
 \keyword{datasets}

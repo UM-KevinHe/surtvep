@@ -36,7 +36,7 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    Appendix
      
     <span class="caret"></span>
   </a>
@@ -50,15 +50,47 @@
     <li class="divider">
     <li class="dropdown-header">Category B</li>
     <li>
-      <a href="../articles/b1.html">Article B1</a>
+      <a href="../articles/plotting.html">Plotting</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+      </ul><ul class="nav navbar-nav navbar-right"><li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Appendix
      
+    <span class="caret"></span>
   </a>
-</li>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
+    </li>
+    <li>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/plotting.html">Plotting</a>
+    </li>
+  </ul></li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Appendix2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
+    <li>
+      <a href="../articles/Appendix.html">B-spline construction</a>
+    </li>
+    <li>
+      <a href="../articles/a2.html">Title A2</a>
+    </li>
+    <li class="divider">
+    <li class="dropdown-header">Category B</li>
+    <li>
+      <a href="../articles/plotting.html">Plotting</a>
+    </li>
+  </ul></li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -78,7 +110,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">IC</span><span class="op">(</span><span class="va">fit</span>, <span class="va">IC.prox</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">IC</span><span class="op">(</span><span class="va">fit</span>, <span class="va">IC.prox</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -89,8 +121,8 @@
 
 <dt>IC.prox</dt>
 <dd><p>when calculating information criteria, there might be numerical issues (e.g. the Hessian matrix is close to be singular).
-In such cases warnings will be given.
-If <code>IC.prox = true</code>, we modified the diagonal of the Hessian matrix a bit, which can lead to more stable estimates.
+In such cases, warnings will be given.
+If <code>IC.prox = TRUE</code>, we modify the diagonal of the Hessian matrix following the same approach as the proximal method detailed in Wu et al. (2022), which can lead to more stable estimates.
 Default is <code>FALSE</code>.</p></dd>
 
 </dl></div>
@@ -106,13 +138,13 @@ Default is <code>FALSE</code>.</p></dd>
 <dd><p>an object with S3 class <code>"coxtp"</code> using GIC to select the tuning parameter.</p></dd>
 
 <dt>mAIC</dt>
-<dd><p>a sequence of mAIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
+<dd><p>a sequence of mAIC values corresponding to each of the tuning parameter <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
 
 <dt>TIC</dt>
-<dd><p>a sequence of TIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
+<dd><p>a sequence of TIC values corresponding to each of the tuning parameter <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
 
 <dt>GIC</dt>
-<dd><p>a sequence of GIC values for the different tuning parameters <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
+<dd><p>a sequence of GIC values corresponding to each of the tuning parameter <code>lambda</code> from <code>"coxtp"</code>.</p></dd>
 
 </dl></div>
     <div id="details">
@@ -120,11 +152,21 @@ Default is <code>FALSE</code>.</p></dd>
     <p>In order to select the proper smoothing parameter, we utilize the idea of information criteria.
 We provide four different information criteria to select the optimal smoothing parameter \(\lambda\).
 Generally, mAIC, TIC and GIC select similar parameters and the difference of resulting estimates are barely noticeable.
-See details in Luo et al. (2022).</p>
+See details in the references. (2023).</p>
     </div>
     <div id="references">
     <h2>References</h2>
-    <p>Luo, L., He, K. Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+    <p>Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+<em>Statistical Methods in Medical Research</em>, <strong>in press</strong>.
+<br></p>
+<p>Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
+<em>Lifetime Data Analysis</em>, <strong>28(2)</strong>: 194-218.
+<br></p>
+<p>Akaike H. (1998) Information theory and an extension of the maximum likelihood principle.
+<em>In selected papers of Hirotugu Akaike</em>, pp. 199–213.
+<br></p>
+<p>Takeuchi K. (1976) Distribution of information statistics and criteria for adequacy of models.
+<em>Math Sci</em>, <strong>153</strong>: 12–18.
 <br></p>
     </div>
 
