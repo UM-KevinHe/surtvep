@@ -116,6 +116,7 @@
 #' \cr
 #' 
 #' Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#' \emph{Statistical Methods in Medical Research}, \strong{in press}.
 #' \cr
 #' 
 #' Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
@@ -154,12 +155,12 @@ cv.coxtp <- function(event , z, time, strata=NULL,
   
   p = ncol(z)
   
-  if(length(strata)==0){
-    stratum=rep(1, length(time))
-  } else {
-    stratum=strata
-  }
-
+  event  <- event[time_order <- order(time)]
+  z      <- z[time_order,]
+  strata <- strata[time_order]
+  time   <- time[time_order]
+  
+  stratum <- if (length(strata) == 0) rep(1, length(time)) else strata
   
   #######################################################################
   ### 5-fold cross-validation

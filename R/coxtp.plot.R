@@ -19,19 +19,18 @@
 #' @param times the time points for which the time-varying coefficients to be plotted. 
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. Default value is `FALSE`.
-#' @param ... other graphical parameters to pass to plot.
 #' 
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #' 
 #' @exportS3Method plot coxtp
 #' 
 #' @examples
-#' data(ExampleData)
-#' z <- ExampleData$x
-#' time <- ExampleData$time
-#' event <- ExampleData$event
-#' fit <- coxtp(event = event, z = z, time = time)
-#' plot(fit)
+# data(ExampleData)
+# z <- ExampleData$x
+# time <- ExampleData$time
+# event <- ExampleData$event
+# fit <- coxtp(event = event, z = z, time = time)
+# plot(fit$lambda1)
 #' 
 plot.coxtp <- function(fit, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, allinone=FALSE, 
@@ -107,9 +106,9 @@ plot.coxtp <- function(fit, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
               legend.position=c(0.5, 1), legend.box="horizontal")
     })
     if (missingtitle) {
-      return(ggpubr::ggarrange(plotlist=ls.plts, common.legend=T, ...))
+      return(ggpubr::ggarrange(plotlist=ls.plts, common.legend=T))
     } else {
-      final.plt <- ggpubr::ggarrange(plotlist=ls.plts, common.legend=T, ...)
+      final.plt <- ggpubr::ggarrange(plotlist=ls.plts, common.legend=T)
       return(ggpubr::annotate_figure(final.plt, top = ggpubr::text_grob( title, face = "bold", size = 14)))
     }
   } else {

@@ -13,7 +13,6 @@
 #' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unique failure time point.}
 #'
 #' @examples
-#' \dontrun{
 #' data(ExampleData)
 #' z <- ExampleData$x
 #' time  <- ExampleData$time
@@ -21,16 +20,12 @@
 #' 
 #' fit   <- coxtv(event = event, z = z, time = time)
 #' base.est <- baseline(fit)
-#' }
 #' 
 #' 
 baseline <-  function(fit, ...){
-  
-    
+
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtp" & class(fit)!="coxtv") stop("Object fit is not of class 'coxtv' or 'coxtp'!")
-  
-  
   
   data       <- attr(fit, "data")
   event  <- data$event
@@ -38,31 +33,21 @@ baseline <-  function(fit, ...){
   time   <- data$time
   z      <- subset(data, select = -c(event, strata, time))
   
-  # if(length(strata)==0){
-  #Calculated unique time and ties for the baseline calculation:
-  unique_time   <- unique(time)
+  event  <- event[time_order <- order(time)]
+  z      <- z[time_order,]
+  strata <- strata[time_order]
+  time   <- time[time_order]
   
-  tieseq <- NULL
-  index  <- NULL
-  for (i in 1:length(unique(time))) {
-    tieseq[i] <- length(which(time==unique(time)[i]))
-    index[[i]]  <- (which(time==unique(time)[i]))
-  }
+  base2 <- attr(fit, "basehazard")
+  base2 <- as.numeric(base2[[1]])
+  lambda <- rep(0, length(time))
+  lambda[event==1] <- base2
   
-  #call Rcpp
-  theta_IC <- fit$ctrl.pts
-  B.spline=splines::bs(unique_time,knots=fit$internal.knots,intercept=TRUE,degree=3)
-  k=ncol(fit$bases)
-  result1 <- Lambda_estimate_ties2(knot = k, delta = event,
-                                   z = as.matrix(z), b_spline = as.matrix(B.spline),
-                                   theta = theta_IC, tieseq = tieseq)
-  lambda   <- result1$lambda
   time2 <- unique(time)
   Lambda <- cumsum(lambda)
   
   baselinedata <- data.frame(unique(time),lambda,Lambda)
-  # colnames(baselinedata) <- c("time", "hazard", "Lambda")
-  
+
   res <- list("time" = unique(time),
               "hazard" = as.numeric(lambda),
               "cumulHaz" = Lambda)
@@ -70,45 +55,54 @@ baseline <-  function(fit, ...){
   class(res) <- "baseline"
   
   return(res)
-  # } else {
-  #   flevel=unique(strata)
-  #   for(f in flevel){
-  #     time_temp=time[strata==f]
-  #     event_temp=delta[strata==f]
-  #     data_temp=z[strata==f,]
-  # 
-  #     #Calculated unique time and ties for the baseline calculation:
-  #     unique_time   <- unique(time_temp)
-  #     tieseq <- NULL
-  #     index  <- NULL
-  #     for (i in 1:length(unique(time_temp))) {
-  #       tieseq[i] <- length(which(time_temp==unique(time_temp)[i]))
-  #       index[[i]]  <- (which(time_temp==unique(time_temp)[i]))
-  #     }
-  # 
-  #     #call Rcpp
-  #     theta_IC <- model1$theta_list[[length(model1$theta_list)]]
-  #     B.spline=bSpline(unique_time,knots=model1$knots,intercept=TRUE,degree=3)
-  #     k=ncol(model1$bases)
-  #     result1 <- Lambda_estimate_ties2(knot = k, delta = event_temp,
-  #                                      z = data_temp, b_spline = B.spline,
-  #                                      theta = theta_IC, tieseq = tieseq)
-  #     lambda   <- result1$lambda
-  #     time2 <- unique(time_temp)
-  #     Lambda <- cumsum(lambda)
-  # 
-  #     temp_data <- data.frame(unique(time_temp),lambda,Lambda)
-  #     temp_data$strata=f
-  #     if(f!=flevel[1]){
-  #       baselinedata=rbind(baselinedata,temp_data)
-  #     } else {
-  #       baselinedata=temp_data
-  #     }
-  # 
-  #   }
-  # }
   
-  # return(baselinedata)
+  # if (missing(fit)) stop ("Argument fit is required!")
+  # if (class(fit)!="coxtp" & class(fit)!="coxtv") stop("Object fit is not of class 'coxtv' or 'coxtp'!")
+  # 
+  # data       <- attr(fit, "data")
+  # event  <- data$event
+  # strata <- data$strata
+  # time   <- data$time
+  # z      <- subset(data, select = -c(event, strata, time))
+  # 
+  # event  <- event[time_order <- order(time)]
+  # z      <- z[time_order,]
+  # strata <- strata[time_order]
+  # time   <- time[time_order]
+  # stratum <- if (length(strata) == 0) rep(1, length(time)) else strata
+  # 
+  # # if(length(strata)==0){
+  # #Calculated unique time and ties for the baseline calculation:
+  # unique_time   <- unique(time)
+  # 
+  # tieseq <- NULL
+  # index  <- NULL
+  # for (i in 1:length(unique(time))) {
+  #   tieseq[i] <- length(which(time==unique(time)[i]))
+  #   index[[i]]  <- (which(time==unique(time)[i]))
+  # }
+  # 
+  # #call Rcpp
+  # theta_IC <- fit$ctrl.pts
+  # B.spline=splines::bs(unique_time,knots=fit$internal.knots,intercept=TRUE,degree=3)
+  # k=ncol(fit$bases)
+  # result1 <- Lambda_estimate_ties2(knot = k, delta = event,
+  #                                  z = as.matrix(z), b_spline = as.matrix(B.spline),
+  #                                  theta = theta_IC, tieseq = tieseq)
+  # lambda   <- result1$lambda
+  # time2 <- unique(time)
+  # Lambda <- cumsum(lambda)
+  # 
+  # baselinedata <- data.frame(unique(time),lambda,Lambda)
+  # # colnames(baselinedata) <- c("time", "hazard", "Lambda")
+  # 
+  # res <- list("time" = unique(time),
+  #             "hazard" = as.numeric(lambda),
+  #             "cumulHaz" = Lambda)
+  # 
+  # class(res) <- "baseline"
+  # 
+  # return(res)
   
 }
 
@@ -127,7 +121,6 @@ baseline <-  function(fit, ...){
 #' @param xlim the limits of the x axis.
 #' @param ylim the limits of the y axis.
 #' @param title the title for the plot.
-#' @param ... other graphical parameters to pass to plot.
 
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
 #'
@@ -144,7 +137,7 @@ baseline <-  function(fit, ...){
 #' base.est <- baseline(fit)
 #' plot(base.est)
 #' }
-plot.baseline <- function(fit, xlab, ylab, xlim, ylim, title, ...){
+plot.baseline <- function(fit, xlab, ylab, xlim, ylim, title){
   
   
   if (missing(xlab)) xlab <- "time"

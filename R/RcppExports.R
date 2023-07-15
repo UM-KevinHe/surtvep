@@ -21,10 +21,6 @@ VarianceMatrixCalculate_bresties <- function(event, time, Z_tv, B_spline, theta,
     .Call(`_surtvep_VarianceMatrixCalculate_bresties`, event, time, Z_tv, B_spline, theta, lambda_i, SmoothMatrix, SplineType, method, lambda, factor, parallel, threads)
 }
 
-surtiver_fixtra_fit_penalizestop_lambdafromlarge <- function(event, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType = "pspline", method = "Newton", lambda = 1e8, factor = 1.0, parallel = FALSE, threads = 1L, tol = 1e-10, iter_max = 20L, s = 1e-2, t = 0.6, btr = "dynamic", stop = "incre", TIC_prox = FALSE, fixedstep = TRUE, difflambda = FALSE, ICLastOnly = FALSE) {
-    .Call(`_surtvep_surtiver_fixtra_fit_penalizestop_lambdafromlarge`, event, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, lambda_spline, SmoothMatrix, effectsize, SplineType, method, lambda, factor, parallel, threads, tol, iter_max, s, t, btr, stop, TIC_prox, fixedstep, difflambda, ICLastOnly)
-}
-
 Lambda_estimate_ties2 <- function(knot, delta, z, b_spline, theta, tieseq) {
     .Call(`_surtvep_Lambda_estimate_ties2`, knot, delta, z, b_spline, theta, tieseq)
 }

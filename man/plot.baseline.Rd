@@ -4,7 +4,7 @@
 \alias{plot.baseline}
 \title{plotting the baseline hazard}
 \usage{
-\method{plot}{baseline}(fit, xlab, ylab, xlim, ylim, title, ...)
+\method{plot}{baseline}(fit, xlab, ylab, xlim, ylim, title)
 }
 \arguments{
 \item{fit}{fitted object from \code{baseline} function.}
@@ -18,8 +18,6 @@
 \item{ylim}{the limits of the y axis.}
 
 \item{title}{the title for the plot.}
-
-\item{...}{other graphical parameters to pass to plot.}
 }
 \description{
 Plotting the baseline hazard from a fitted \code{baseline} object.

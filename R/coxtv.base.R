@@ -144,13 +144,15 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
   lambda_spline <- control$lambda_spline
   ord           <- control$ord
   fixedstep     <- control$fixedstep
+  
+  # order the data by time
+  event  <- event[time_order <- order(time)]
+  z      <- z[time_order,]
+  strata <- strata[time_order]
+  time   <- time[time_order]
 
-  if(length(strata)==0){
-    stratum=rep(1, length(time))
-  } else {
-    stratum=strata
-  }
-
+  stratum <- if (length(strata) == 0) rep(1, length(time)) else strata
+  
   data <- data.frame(event=event, time=time, z, strata=stratum, stringsAsFactors=F)
   #Z.char <- paste0("X", 1:p)
   Z.char <- colnames(data)[c(3:(ncol(data)-1))]
@@ -246,7 +248,7 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
                                          as.matrix(data[,term.tv]), as.matrix(bases), 
                                          matrix(0, length(term.tv), nsplines), 
                                          matrix(0, 1), matrix(0, 1),
-                                         lambda_spline = lambda_spline,
+                                         lambda_spline = 0,
                                          SmoothMatrix  = matrix(0,1),
                                          effectsize    = control$effectsize,
                                          SplineType    = "pspline",
@@ -264,138 +266,6 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
       fit$bases <- bases
     }
   } else if (spline=="Smooth-spline"){
-    if (ties=="Breslow"){
-      knots <- 
-        quantile(data[data[,term.event]==1,term.time], 
-                 (1:(nsplines-degree-1))/(nsplines-degree))
-      uniqfailtimes.str <- unname(unlist(lapply(
-        split(data[data[,term.event]==1,term.time],
-              data[data[,term.event]==1,term.str]), unique)))
-      bases <- splines::bs(uniqfailtimes.str, degree=degree, intercept=T, 
-                           knots=knots, Boundary.knots=range(times))
-      p_diffm   <- 1
-      time      <-data[,term.time]
-      x_seq     <- as.vector(c(min(time), knots, max(time)))
-      h_j       <- diff(x_seq)
-      #step 1:
-      x_prime   <- x_seq
-      if(ord == 4){
-        knot_set2 <- c(min(time)-1,min(time)-1,min(time)-1, x_prime, max(time)+1, max(time)+1,max(time)+1)
-        G_matrix  <- splines::splineDesign(knots = knot_set2 , x=x_prime ,ord = 4, derivs = 2)
-      } else if(ord == 3){
-        knot_set2 <- c(min(time)-1,min(time)-1, x_prime, max(time)+1, max(time)+1)
-        G_matrix  <- splines::splineDesign(knots = knot_set2 , x=x_prime ,ord = 3, derivs = 1)
-      } else {
-        stop("ord must be 3 or 4")
-      }
-      P_matrix  <- matrix(0,p_diffm+1,p_diffm+1)
-      H_matrix  <- matrix(0,p_diffm+1,p_diffm+1)
-      for (i in 1:(p_diffm+1)) {
-        for (j in 1:(p_diffm+1)) {
-          P_matrix[i,j] <- (-1 + 2*(i-1)/p_diffm)^j
-          H_matrix[i,j] <- (1 + (-1)^(i+j-2))/(i+j-1)
-        }
-      }
-      W_tilde   <- t(solve(P_matrix))%*%H_matrix%*%solve(P_matrix)
-      W_matrix  <- matrix(0,dim(G_matrix)[1],dim(G_matrix)[1])
-      W_q       <- matrix(0,dim(G_matrix)[1],dim(G_matrix)[1])
-      for(q in 1:length(h_j)){
-        for (i in 1:(p_diffm+1)) {
-          for (j in 1:(p_diffm+1)) {
-            W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] = 
-              W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] + h_j[q]*W_tilde[i,j]/2
-          }
-        }
-      }
-      SmoothMatrix  <- t(G_matrix)%*%W_matrix%*%G_matrix
-  
-      fit <- 
-        surtiver_fixtra_fit_penalizestop_bresties(data[,term.event], data[,term.time], 
-                                                  count.strata, 
-                                                  as.matrix(data[,term.tv]), as.matrix(bases), 
-                                                  matrix(0, length(term.tv), nsplines), 
-                                                  matrix(0, 1), matrix(0, 1),
-                                                  lambda_spline = 0,
-                                                  SmoothMatrix  = SmoothMatrix,
-                                                  effectsize    = control$effectsize,
-                                                  SplineType    = "smooth-spline",
-                                                  method=control$method, 
-                                                  lambda=control$lambda, factor=control$factor,
-                                                  parallel=control$parallel, threads=control$threads, 
-                                                  tol=control$tol, iter_max=control$iter.max, 
-                                                  s=control$s, t=control$t, 
-                                                  btr=control$btr, stop=control$stop, TIC_prox = FALSE,
-                                                  fixedstep=control$fixedstep,
-                                                  difflambda = control$difflambda,
-                                                  ICLastOnly = control$ICLastOnly)
-      fit$uniqfailtimes <- uniqfailtimes.str
-      fit$bases <- bases
-      fit$knots <- knots
-    } else if (ties == "none"){
-      knots <- 
-        quantile(data[data[,term.event]==1,term.time], 
-                 (1:(nsplines-degree-1))/(nsplines-degree))
-      bases <- 
-        splines::bs(data[,term.time], degree=degree, intercept=T, 
-                    knots=knots, Boundary.knots=range(times))
-      p_diffm   <- 1
-      time      <-data[,term.time]
-      x_seq     <- as.vector(c(min(time), knots, max(time)))
-      h_j       <- diff(x_seq)
-      #step 1:
-      x_prime   <- x_seq
-      if(ord == 4){
-        knot_set2 <- c(min(time)-1,min(time)-1,min(time)-1, x_prime, max(time)+1, max(time)+1,max(time)+1)
-        G_matrix  <- splines::splineDesign(knots = knot_set2 , x=x_prime ,ord = 4, derivs = 2)
-      } else if(ord == 3){
-        knot_set2 <- c(min(time)-1,min(time)-1, x_prime, max(time)+1, max(time)+1)
-        G_matrix  <- splines::splineDesign(knots = knot_set2 , x=x_prime ,ord = 3, derivs = 1)
-      } else {
-        stop("ord must be 3 or 4")
-      }
-      P_matrix  <- matrix(0,p_diffm+1,p_diffm+1)
-      H_matrix  <- matrix(0,p_diffm+1,p_diffm+1)
-      for (i in 1:(p_diffm+1)) {
-        for (j in 1:(p_diffm+1)) {
-          P_matrix[i,j] <- (-1 + 2*(i-1)/p_diffm)^j
-          H_matrix[i,j] <- (1 + (-1)^(i+j-2))/(i+j-1)
-        }
-      }
-      W_tilde   <- t(solve(P_matrix))%*%H_matrix%*%solve(P_matrix)
-      W_matrix  <- matrix(0,dim(G_matrix)[1],dim(G_matrix)[1])
-      W_q       <- matrix(0,dim(G_matrix)[1],dim(G_matrix)[1])
-      for(q in 1:length(h_j)){
-        for (i in 1:(p_diffm+1)) {
-          for (j in 1:(p_diffm+1)) {
-            W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] = 
-              W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] + h_j[q]*W_tilde[i,j]/2
-          }
-        }
-      }
-      SmoothMatrix  <- t(G_matrix)%*%W_matrix%*%G_matrix
-      fit <- 
-        surtiver_fixtra_fit_penalizestop(data[,term.event], count.strata, 
-                                         as.matrix(data[,term.tv]), as.matrix(bases), 
-                                         matrix(0, length(term.tv), nsplines), 
-                                         matrix(0, 1), matrix(0, 1),
-                                         lambda_spline = lambda_spline,
-                                         SmoothMatrix  = SmoothMatrix,
-                                         effectsize    = control$effectsize,
-                                         SplineType    = "smooth-spline",
-                                         method=control$method, 
-                                         lambda=control$lambda, factor=control$factor,
-                                         parallel=control$parallel, threads=control$threads, 
-                                         tol=control$tol, iter_max=control$iter.max, 
-                                         s=control$s, t=control$t, 
-                                         btr=control$btr, stop=control$stop, TIC_prox = control$TIC_prox,
-                                         fixedstep=control$fixedstep,
-                                         difflambda = control$difflambda,
-                                         ICLastOnly = control$ICLastOnly)
-      # row.names(fit$ctrl.pts) <- term.tv
-      # fit$internal.knots <- unname(knots)
-      fit$uniqfailtimes <- times
-      fit$bases <- bases
-    }
     
   }
   
@@ -417,19 +287,18 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
   # rownames(fit$tvef) <- times
   
   class(res) <- "coxtv"
-  attr(res, "spline") <- spline
-  attr(res, "strata") <- strata
-  attr(res, "event") <- event
+  attr(res, "spline")     <- spline
+  attr(res, "strata")     <- strata
+  attr(res, "event")      <- event
+  attr(res, "basehazard") <- fit$hazard
+  
   if (length(term.ti)>0) {
     res$tief <- c(res$tief)
     names(res$tief) <- term.ti
   }
   attr(res, "data") <- data
   attr(res, "time")     <- time
-  
-  # colnames(res$info) <- rownames(res$info) <-
-  #   c(rep(term.tv, each=nsplines), term.ti)
-  
+
   attr(res, "nsplines") <- nsplines
   attr(res, "degree.spline") <- degree
   attr(res, "control") <- control

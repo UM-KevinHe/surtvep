@@ -41,22 +41,18 @@ tvef.ph <- function(fit, parm) {
   } else if (method=="ProxN") {
     invinfo <- solve(fit$info+diag(sqrt(.Machine$double.eps),dim(fit$info)[1]))
   }
-  # if (spline=="B-spline") {
-    mat.contrast <- diff(diag(nsplines))
-    ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm,], ncol=nsplines)
-    mat.test <- sapply(parm, function(tv) {
-      bread <- mat.contrast%*%ctrl.pts[parm%in%tv,]
-      idx <- rownames.info%in%tv
-      meat <- solve(mat.contrast%*%invinfo[idx,idx]%*%t(mat.contrast))
-      stat <- t(bread)%*%meat%*%bread
-      p.value <- pchisq(stat, nsplines-1, lower.tail=F)
-      return(c(stat, nsplines-1, p.value))})
-    colnames(mat.test) <- parm
-    rownames(mat.test) <- c("chisq", "df", "p")
-    return(t(mat.test))
-  # } else if (spline=="P-spline") {
-    
-  # }
+  mat.contrast <- diff(diag(nsplines))
+  ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm,], ncol=nsplines)
+  mat.test <- sapply(parm, function(tv) {
+    bread <- mat.contrast%*%ctrl.pts[parm%in%tv,]
+    idx <- rownames.info%in%tv
+    meat <- solve(mat.contrast%*%invinfo[idx,idx]%*%t(mat.contrast))
+    stat <- t(bread)%*%meat%*%bread
+    p.value <- pchisq(stat, nsplines-1, lower.tail=F)
+    return(c(stat, nsplines-1, p.value))})
+  colnames(mat.test) <- parm
+  rownames(mat.test) <- c("chisq", "df", "p")
+  return(t(mat.test))
 }
 
 

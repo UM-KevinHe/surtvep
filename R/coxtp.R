@@ -167,11 +167,13 @@ coxtp <- function(event , z , time ,strata=NULL, penalty="Smooth-spline", nsplin
   TIC_prox = FALSE
   ICLastOnly = FALSE
   
-  if(length(strata)==0){
-    stratum=rep(1, length(time))
-  } else {
-    stratum=strata
-  }
+  # order the data by time
+  event  <- event[time_order <- order(time)]
+  z      <- z[time_order,]
+  strata <- strata[time_order]
+  time   <- time[time_order]
+  
+  stratum <- if (length(strata) == 0) rep(1, length(time)) else strata
   
   InfoCrit = FALSE
   

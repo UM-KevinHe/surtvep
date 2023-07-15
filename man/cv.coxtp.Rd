@@ -158,6 +158,7 @@ Gray, R. J. (1994) Spline-based tests in survival analysis.
 \cr
 
 Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+\emph{Statistical Methods in Medical Research}, \strong{in press}.
 \cr
 
 Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
