@@ -20,7 +20,6 @@ The baseline estimation is the baseline hazard at each observed failure time whe
 holding all the covariates to be zero.
 }
 \examples{
-\dontrun{
 data(ExampleData)
 z <- ExampleData$x
 time  <- ExampleData$time
@@ -28,7 +27,6 @@ event <- ExampleData$event
 
 fit   <- coxtv(event = event, z = z, time = time)
 base.est <- baseline(fit)
-}
 
 
 }

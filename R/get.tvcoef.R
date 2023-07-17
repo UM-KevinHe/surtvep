@@ -1,11 +1,12 @@
 #' helper function to get time-varying coefficients
 #' 
-#' Gives the time-varying coefficients based on a fitted `coxtv` or `coxtp` subject. Users can specify  the observation  time.
+#' The function gives the time-varying coefficients based on a fitted `coxtv` or `coxtp` subject. 
+#' Users can specify the time points to calculate the time-varying coefficients.
 #'
 #' @param fit model from `coxtv` or `coxtp`.
-#' @param times the observation time. If `NULL`, the observation time for fitting the model will be used.
+#' @param times time points to calculate the time-varying coefficients. If `NULL`, the observed event time for fitting the model will be used.
 #' 
-#' @return A matrix of the time-varying coefficients. The dimension is `length(times)` x `nvars`, where `nvars` is the number
+#' @return A matrix of the time-varying coefficients. The dimension is the length of `times` by `nvars`, where `nvars` is the number
 #' of covariates in the fitted mode.
 #' Each row represents the time-varying coefficients at the corresponding time.
 #' 

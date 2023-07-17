@@ -3,7 +3,7 @@
 \name{confint.coxtp}
 \alias{confint.coxtp}
 \alias{confint.coxtv}
-\title{get confidence interval of time-varying coefficients from a fitted object}
+\title{get confidence intervals of time-varying coefficients from a fitted object}
 \usage{
 \method{confint}{coxtp}(fit, times, parm, level = 0.95)
 
@@ -20,7 +20,7 @@ The default value is the unique observed event times in the dataset fitting the 
 \item{level}{the confidence level. Default is 0.95.}
 }
 \description{
-Get confidence interval of time-varying coefficients from a fitted \code{coxtv} or \code{coxtp} object.
+Get confidence intervals of time-varying coefficients from a fitted \code{coxtv} or \code{coxtp} object.
 }
 \examples{
 \dontrun{

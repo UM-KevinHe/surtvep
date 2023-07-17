@@ -4,23 +4,23 @@
 \alias{IC}
 \title{calculating information criteria from a \code{coxtp} object}
 \usage{
-IC(fit, IC.prox, ...)
+IC(fit, IC.prox)
 }
 \arguments{
 \item{fit}{model from \code{coxtp}.}
 
 \item{IC.prox}{when calculating information criteria, there might be numerical issues (e.g. the Hessian matrix is close to be singular).
-In such cases warnings will be given.
-If \code{IC.prox = true}, we modified the diagonal of the Hessian matrix a bit, which can lead to more stable estimates.
+In such cases, warnings will be given.
+If \code{IC.prox = TRUE}, we modify the diagonal of the Hessian matrix following the same approach as the proximal method detailed in Wu et al. (2022), which can lead to more stable estimates.
 Default is \code{FALSE}.}
 }
 \value{
 \item{model.mAIC}{an object with S3 class \code{"coxtp"} using mAIC to select the tuning parameter.}
 \item{model.TIC}{an object with S3 class \code{"coxtp"} using TIC to select the tuning parameter.}
 \item{model.GIC}{an object with S3 class \code{"coxtp"} using GIC to select the tuning parameter.}
-\item{mAIC}{a sequence of mAIC values for the different tuning parameters \code{lambda} from \code{"coxtp"}.}
-\item{TIC}{a sequence of TIC values for the different tuning parameters \code{lambda} from \code{"coxtp"}.}
-\item{GIC}{a sequence of GIC values for the different tuning parameters \code{lambda} from \code{"coxtp"}.}
+\item{mAIC}{a sequence of mAIC values corresponding to each of the tuning parameter \code{lambda} from \code{"coxtp"}.}
+\item{TIC}{a sequence of TIC values corresponding to each of the tuning parameter \code{lambda} from \code{"coxtp"}.}
+\item{GIC}{a sequence of GIC values corresponding to each of the tuning parameter \code{lambda} from \code{"coxtp"}.}
 }
 \description{
 This function is to calculate information criteria from a \code{coxtp} object to select the penalization tuning parameter.
@@ -29,7 +29,7 @@ This function is to calculate information criteria from a \code{coxtp} object to
 In order to select the proper smoothing parameter, we utilize the idea of information criteria.
 We provide four different information criteria to select the optimal smoothing parameter \eqn{\lambda}.
 Generally, mAIC, TIC and GIC select similar parameters and the difference of resulting estimates are barely noticeable.
-See details in Luo et al. (2022).
+See details in the references. (2023).
 }
 \examples{
 data(ExampleData)
@@ -40,4 +40,21 @@ fit <- coxtp(event = event, z = z, time = time)
 IC  <- IC(fit)
 
 
+}
+\references{
+Akaike H. (1998) Information theory and an extension of the maximum likelihood principle.
+\emph{In Selected Papers of Hirotugu Akaike}, pp. 199–213.
+\cr
+
+Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+\emph{Statistical Methods in Medical Research}, \strong{in press}.
+\cr
+
+Takeuchi K. (1976) Distribution of information statistics and criteria for adequacy of models.
+\emph{Math Sci}, \strong{153}: 12–18.
+\cr
+
+Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
+\emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
+\cr
 }

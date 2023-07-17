@@ -1,8 +1,8 @@
 #define ARMA_NO_DEBUG
-#define ARMA_DONT_USE_OPENMP
 #define STRICT_R_HEADERS // needed on Windows, not macOS
 #include <RcppArmadillo.h>
 #include <omp.h>
+#include "header.h"
 #include <RcppArmadilloExtensions/sample.h> // for Rcpp::RcppArmadillo::sample
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::plugins(cpp11)]]
@@ -11,17 +11,6 @@
 using namespace Rcpp;
 // using namespace arma;
 using namespace std;
-
-
-// [[Rcpp::export]]
-arma::uvec stra_sampling_cpp(int size, int prop){
-  arma::uvec sample_id;
-  
-  int s2      = floor(size/prop*1.0);
-  sample_id   = arma::randperm(size,s2);
-
-  return sample_id;
-}
 
 
 List objfun_fixtra(const arma::mat &Z_tv, const arma::mat &B_spline, const arma::mat &theta,
@@ -865,7 +854,9 @@ List TIC_J_penalized_second_bresties(const arma::mat &Z_tv, const arma::mat &B_s
 }
 
 
-List spline_udpate(const arma::mat &Z_tv, const arma::mat &B_spline, arma::mat &theta, 
+List spline_udpate(const arma::mat &Z_tv, const arma::mat &B_spline, 
+                  const IntegerVector &count_strata,
+                  arma::mat &theta, 
                   const arma::mat &Z_ti, const arma::vec &beta_ti, 
                   arma::mat &S_matrix,
                   double &lambda_i,
@@ -1130,10 +1121,9 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
   }
 
   arma::mat theta = theta_init; arma::vec beta_ti = beta_ti_init;
-  // double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
-  //   inc, rhs_btr = 0;
+
   double logplkd;
-  List objfun_list, update_list;
+  List objfun_list, update_list, hazard_list;
   NumericVector logplkd_vec, iter_NR_all;
   objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti, n_strata,
                               idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata,
@@ -1163,7 +1153,6 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
   arma::vec TIC2_secondterm = arma::zeros<arma::vec> (n_lambda);
   arma::vec GIC_secondterm = arma::zeros<arma::vec> (n_lambda);
   NumericVector AIC_all, TIC_all, TIC2_all, GIC_all;
-  //mat likelihood_mat = arma::zeros<arma::mat>(iter_max, n_lambda);    for fixed step usage
 
   arma::mat S_matrix;
   if(SplineType == "pspline") {
@@ -1175,15 +1164,13 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
 
   arma::vec lambda_effct = arma::zeros<arma::vec> (p*K);
   arma::mat lambda_i_mat;
-  //List VarianceMatrix, VarianceMatrix2, VarianceMatrix_I, VarianceMatrix_J;
   arma::mat VarianceMatrix;
   arma::mat info;
 
   for (int i = 0; i < n_lambda; ++i)
   {
-    //generate a lambda matrix if different lambda is used for different covariate:
-    if(difflambda){
-
+    if(difflambda)
+    {
       for (int j = 0; j < p; ++j)
       {
         arma::vec sublambda = arma::zeros<arma::vec> (K);
@@ -1205,7 +1192,8 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
       lambda_S_matrix = lambda_i_mat%S_matrix;
     }
 
-    SplineUdpate    = spline_udpate(Z_tv, B_spline, theta_ilambda,
+    SplineUdpate    = spline_udpate(Z_tv, B_spline, 
+                                    count_strata, theta_ilambda,
                                     Z_ti, beta_ti, 
                                     S_matrix, lambda_i, lambda_i_mat, lambda_S_matrix, difflambda,
                                     ti, n_strata, idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata, istart, iend,
@@ -1221,20 +1209,14 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
     theta_list              = SplineUdpate["theta_list"];
     int iter_tmp            = SplineUdpate["iter_NRstop"];
     arma::mat VarianceMatrix_tmp        = SplineUdpate["VarianceMatrix"];
+    hazard_list            = SplineUdpate["hazard"];
 
     theta_all.slice(i)    = theta_ilambda;
     logplkd_vec.push_back(logplkd);
     iter_NR_all.push_back(iter_tmp);
     VarianceMatrix = VarianceMatrix_tmp;
     info           = info_tmp;
-    //Variance matrix:
-    // arma::mat VarianceMatrix_tmp = info_lambda_inv*J_p*info_lambda_inv;
-    // arma::mat VarianceMatrix_tmp2 = info_lambda_inv*J*info_lambda_inv;     
-    // VarianceMatrix.push_back(VarianceMatrix_tmp);
-    // VarianceMatrix2.push_back(VarianceMatrix_tmp2);
-    // VarianceMatrix_I.push_back(info_lambda_inv);
-    // VarianceMatrix_J.push_back(inv(J_p));
-    Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
+
 
   }
 
@@ -1253,7 +1235,8 @@ List surtiver_fixtra_fit_penalizestop(const arma::vec &event, const IntegerVecto
                       _["iter_NR_all"]=iter_NR_all,
                       _["VarianceMatrix"]=VarianceMatrix,
                       _["info"] = info,
-                      _["grad_list"]=grad_list);
+                      _["grad_list"]=grad_list,
+                      _["hazard"]=hazard_list);
 }
 
 
@@ -1371,6 +1354,7 @@ List stepinc_fixtra_spline_bresties(const arma::mat &Z_tv, const arma::mat &B_sp
 
 
 List spline_udpate_bresties(const arma::mat &Z_tv, const arma::vec &time, 
+                  const IntegerVector &count_strata,
                   const arma::mat &B_spline, 
                   arma::mat &theta,
                   const arma::mat &Z_ti, const arma::vec &beta_ti, 
@@ -1491,37 +1475,6 @@ List spline_udpate_bresties(const arma::mat &Z_tv, const arma::vec &time,
           break;
       }
 
-      // if(penalizestop == true){
-
-      //   List J_tmp;
-      //   J_tmp = TIC_J_penalized_second_bresties(Z_tv, B_spline, theta, n_strata, idx_B_sp, idx_fail, idx_Z_strata, TIC_prox, 
-      //                           lambda_i, lambda_i_mat, difflambda, S_matrix);
-      //   arma::mat J    = J_tmp["info_J"];
-      //   arma::mat J_p  = J_tmp["info_J_p"];
-      //   arma::mat J_p_GIC = J_tmp["info_J_p_gic"];
-
-      //   double df;
-      //   arma::mat info = update_list["info"];
-      //   arma::mat info_lambda = info + lambda_S_matrix;
-      //   arma::mat info_lambda_inv;
-      //   info_lambda_inv = inv(info_lambda);
-
-      //   //AIC:
-      //   df = trace(info * info_lambda_inv);
-      //   AIC_all.push_back(-2*logplkd*N + 2*df);
-      //   //TIC
-      //   df = trace(info*info_lambda_inv*J*info_lambda_inv);
-      //   TIC_all.push_back(-2*logplkd*N + 2*df);
-      //   //TIC2:
-      //   df = trace(info*info_lambda_inv*J_p*info_lambda_inv);
-      //   TIC2_all.push_back(-2*logplkd*N + 2*df);
-      //   //GIC:
-      //   df = trace(info_lambda_inv*J_p_GIC);
-      //   GIC_all.push_back(-2*logplkd*N + 2*df);
-
-      //   VarianceMatrix = info_lambda_inv*J_p*info_lambda_inv;
-      // }
-
     }
 
     if (iter < iter_max){
@@ -1534,6 +1487,13 @@ List spline_udpate_bresties(const arma::mat &Z_tv, const arma::vec &time,
                                           n_strata, idx_B_sp, idx_fail, n_Z_strata,
                                           idx_Z_strata, istart, iend, parallel, threads);
     logplkd = objfun_list["logplkd"];
+
+    CharacterVector names_strata = count_strata.names();
+    vector<arma::vec> hazard = objfun_list["hazard"];
+    List hazard_list;
+    for (unsigned int i = 0; i < n_strata; ++i) {
+      hazard_list.push_back(hazard[i], as<string>(names_strata[i]));
+    }
 
     if(ICLastOnly == true){
       List J_tmp;
@@ -1596,7 +1556,8 @@ List spline_udpate_bresties(const arma::mat &Z_tv, const arma::vec &time,
                         _["TIC2_trace"]=TIC2_trace,
                         _["GIC_trace"]=GIC_trace,
                         _["theta_list"]=theta_list,
-                        _["VarianceMatrix"]=VarianceMatrix);
+                        _["VarianceMatrix"]=VarianceMatrix,
+                        _["hazard"]=hazard_list);
 }
 
 
@@ -1694,7 +1655,7 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
   List theta_list = List::create(theta), beta_ti_list = List::create(beta_ti);
 
   double logplkd;
-  List objfun_list, update_list;
+  List objfun_list, update_list, hazard_list;;
   NumericVector logplkd_vec;
   objfun_list = obj_fixtra_bresties(Z_tv, B_spline, theta, Z_ti, beta_ti, 
                                     ti, n_strata, idx_B_sp, idx_fail, 
@@ -1725,7 +1686,6 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
   arma::vec GIC_secondterm = arma::zeros<arma::vec> (n_lambda);
   NumericVector AIC_all, TIC_all, TIC2_all, GIC_all;
   NumericVector AIC_trace, TIC_trace, TIC2_trace, GIC_trace;
-  //mat likelihood_mat = arma::zeros<arma::mat>(iter_max, n_lambda);    for fixed step usage
 
   arma::mat S_matrix;
   if(SplineType == "pspline") {
@@ -1737,7 +1697,6 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
 
   arma::vec lambda_effct = arma::zeros<arma::vec> (p*K);
   arma::mat lambda_i_mat;
-  // List VarianceMatrix, VarianceMatrix2, VarianceMatrix_I, VarianceMatrix_J;
   arma::mat VarianceMatrix;
   arma::mat info;
 
@@ -1766,7 +1725,8 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
       lambda_S_matrix = lambda_i_mat%S_matrix;
     }
 
-    SplineUdpate    = spline_udpate_bresties(Z_tv, time, B_spline, theta_ilambda,
+    SplineUdpate    = spline_udpate_bresties(Z_tv, time, count_strata, B_spline, 
+                                            theta_ilambda,
                                             Z_ti, beta_ti, 
                                             S_matrix, lambda_i, lambda_i_mat, lambda_S_matrix, difflambda,
                                             ti, n_strata, idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata, istart, iend,
@@ -1775,24 +1735,24 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
 
     arma::mat info_tmp              = SplineUdpate["info"];
     arma::vec grad              = SplineUdpate["grad"];
-    double logplkd        = SplineUdpate["logplkd"];
-    AIC_all               = SplineUdpate["AIC_all"];
-    TIC_all               = SplineUdpate["TIC_all"];
+    double logplkd         = SplineUdpate["logplkd"];
+    AIC_all                = SplineUdpate["AIC_all"];
+    TIC_all                = SplineUdpate["TIC_all"];
     TIC2_all               = SplineUdpate["TIC2_all"];
-    GIC_all               = SplineUdpate["GIC_all"];
-    theta_list            = SplineUdpate["theta_list"];
-    AIC_trace             = SplineUdpate["AIC_trace"];
-    TIC_trace             = SplineUdpate["TIC_trace"];
+    GIC_all                = SplineUdpate["GIC_all"];
+    theta_list             = SplineUdpate["theta_list"];
+    AIC_trace              = SplineUdpate["AIC_trace"];
+    TIC_trace              = SplineUdpate["TIC_trace"];
     TIC2_trace             = SplineUdpate["TIC2_trace"];
-    GIC_trace             = SplineUdpate["GIC_trace"];
+    GIC_trace              = SplineUdpate["GIC_trace"];
+    hazard_list            = SplineUdpate["hazard"];
+
     arma::mat VarianceMatrix_tmp        = SplineUdpate["VarianceMatrix"];
 
     theta_all.slice(i)    = theta_ilambda;
     logplkd_vec.push_back(logplkd);
     VarianceMatrix = VarianceMatrix_tmp;
     info = info_tmp;
-    // Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
-
 
   }
 
@@ -1811,7 +1771,8 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
                       _["logplkd_vec"]=logplkd_vec,
                       _["SplineType"]=SplineType,
                       _["VarianceMatrix"]=VarianceMatrix,
-                      _["info"]=info);
+                      _["info"]=info,
+                      _["hazard"]=hazard_list);
 }
 
 
@@ -2247,390 +2208,398 @@ List VarianceMatrixCalculate_bresties(const arma::vec &event, const arma::vec &t
 
 
 
-// this function is for lambda from large to small
-List spline_udpate_lambdafromlarge(const arma::mat &Z_tv, const arma::mat &B_spline, arma::mat &theta, 
-                  const arma::mat &Z_ti, const arma::vec &beta_ti, 
-                  arma::mat &S_matrix,
-                  double &lambda_i,
-                  arma::mat &lambda_i_mat, arma::mat &lambda_S_matrix, 
-                  const bool &difflambda,
-                  const bool &ti,
-                  const unsigned int n_strata,
-                  vector<arma::uvec> &idx_B_sp, vector<arma::uvec> &idx_fail,
-                  vector<unsigned int> n_Z_strata,
-                  vector<vector<unsigned int>> &idx_Z_strata,
-                  vector<vector<unsigned int>> &istart,
-                  vector<vector<unsigned int>> &iend,
-                  const std::string &method="Newton", const double &lambda=1e8, const double &factor = 1.0,
-                  const bool &parallel=false, const unsigned int &threads=1,
-                  const unsigned int &iter_max=20,
-                  const double &tol=1e-10, 
-                  const double &s=1e-2, const double &t=0.6,
-                  const std::string &btr="dynamic",
-                  const std::string &stop="incre",
-                  const bool &TIC_prox = false,
-                  const bool &fixedstep = false,
-                  const bool &ICLastOnly = false) {
+// // this function is for lambda from large to small
+// List spline_udpate_lambdafromlarge(const arma::mat &Z_tv, const arma::mat &B_spline, arma::mat &theta, 
+//                   const arma::mat &Z_ti, const arma::vec &beta_ti, 
+//                   arma::mat &S_matrix,
+//                   double &lambda_i,
+//                   arma::mat &lambda_i_mat, arma::mat &lambda_S_matrix, 
+//                   const bool &difflambda,
+//                   const bool &ti,
+//                   const unsigned int n_strata,
+//                   vector<arma::uvec> &idx_B_sp, vector<arma::uvec> &idx_fail,
+//                   vector<unsigned int> n_Z_strata,
+//                   vector<vector<unsigned int>> &idx_Z_strata,
+//                   vector<vector<unsigned int>> &istart,
+//                   vector<vector<unsigned int>> &iend,
+//                   const std::string &method="Newton", const double &lambda=1e8, const double &factor = 1.0,
+//                   const bool &parallel=false, const unsigned int &threads=1,
+//                   const unsigned int &iter_max=20,
+//                   const double &tol=1e-10, 
+//                   const double &s=1e-2, const double &t=0.6,
+//                   const std::string &btr="dynamic",
+//                   const std::string &stop="incre",
+//                   const bool &TIC_prox = false,
+//                   const bool &fixedstep = false,
+//                   const bool &ICLastOnly = false) {
 
-  int N     = Z_tv.n_rows;    //sample size 
-  int p     = Z_tv.n_cols;
-  int K     = theta.n_cols;
+//   int N     = Z_tv.n_rows;    //sample size 
+//   int p     = Z_tv.n_cols;
+//   int K     = theta.n_cols;
 
-  unsigned int iter = 0, btr_max = 1000, btr_ct = 0, iter_NRstop = 0;
-  bool NRstop = false;
-  double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
-    inc, rhs_btr = 0;
-  List objfun_list, update_list;
-  NumericVector logplkd_vec;
-  arma::mat theta_init_allzero = arma::zeros<arma::mat>(p, K);
-  objfun_list = objfun_fixtra(Z_tv, B_spline, theta_init_allzero, Z_ti, beta_ti, ti, n_strata,
-                            idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata,
-                            istart, iend, parallel, threads);
-  logplkd = objfun_list["logplkd"];
-  logplkd -= lambda_i*as_scalar(vectorise(theta,1)*S_matrix*vectorise(theta,1).t())/(N*1.0);
-  List theta_list = List::create(theta);
+//   unsigned int iter = 0, btr_max = 1000, btr_ct = 0, iter_NRstop = 0;
+//   bool NRstop = false;
+//   double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
+//     inc, rhs_btr = 0;
+//   List objfun_list, update_list;
+//   NumericVector logplkd_vec;
+//   arma::mat theta_init_allzero = arma::zeros<arma::mat>(p, K);
+//   objfun_list = objfun_fixtra(Z_tv, B_spline, theta_init_allzero, Z_ti, beta_ti, ti, n_strata,
+//                             idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata,
+//                             istart, iend, parallel, threads);
+//   logplkd = objfun_list["logplkd"];
+//   logplkd -= lambda_i*as_scalar(vectorise(theta,1)*S_matrix*vectorise(theta,1).t())/(N*1.0);
+//   List theta_list = List::create(theta);
     
-  NumericVector AIC_all, TIC_all, TIC2_all, GIC_all;
-  arma::mat VarianceMatrix;
+//   NumericVector AIC_all, TIC_all, TIC2_all, GIC_all;
+//   arma::mat VarianceMatrix;
 
-  while (iter < iter_max) {
-    ++iter;
-    update_list = stepinc_fixtra_spline(Z_tv, B_spline, theta, Z_ti, beta_ti, 
-                                        S_matrix, lambda_i, lambda_i_mat, difflambda,
-                                        ti, n_strata,
-                                        idx_B_sp, idx_fail, idx_Z_strata, istart, iend,
-                                        method, lambda*pow(factor,iter-1), parallel, threads);
-    v = 1.0; // reset step size
-    arma::mat step = update_list["step"];
-    inc = update_list["inc"];
-    if (btr=="none") {
-      theta += step;
-      crit = inc / 2;
-      objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti,
-                                  n_strata, idx_B_sp, idx_fail, n_Z_strata,
-                                  idx_Z_strata, istart, iend, parallel, threads);
-      logplkd = objfun_list["logplkd"];
-      logplkd -= lambda_i*as_scalar(vectorise(theta,1)*S_matrix*vectorise(theta,1).t())/(N*1.0);
-    } else {
-      arma::mat theta_tmp = theta + step;
-      objfun_list = objfun_fixtra(Z_tv, B_spline, theta_tmp, Z_ti, beta_ti, ti,
-                              n_strata, idx_B_sp, idx_fail, n_Z_strata,
-                              idx_Z_strata, istart, iend, parallel,
-                              threads);
-      double logplkd_tmp = objfun_list["logplkd"];
-      logplkd_tmp -= lambda_i*as_scalar(vectorise(theta_tmp,1)*S_matrix*vectorise(theta_tmp,1).t())/(N*1.0);
-      diff_logplkd = logplkd_tmp - logplkd;
-      if (btr=="dynamic")      rhs_btr = inc;
-      else if (btr=="static")  rhs_btr = 1.0;
-      //btr_ct = 0;
-      while (diff_logplkd < s * v * rhs_btr && btr_ct < btr_max) {
-        ++btr_ct;
-        v *= t;
-        theta_tmp   = theta + v * step;
-        objfun_list = objfun_fixtra(Z_tv, B_spline, theta_tmp, Z_ti, beta_ti, ti,
-                                    n_strata, idx_B_sp, idx_fail, n_Z_strata,
-                                    idx_Z_strata, istart, iend, parallel,
-                                    threads);
-        double logplkd_tmp = objfun_list["logplkd"];
-        logplkd_tmp -= lambda_i*as_scalar(vectorise(theta_tmp,1)*S_matrix*vectorise(theta_tmp,1).t())/(N*1.0);
-        diff_logplkd  = logplkd_tmp - logplkd;
-      }
-      theta = theta_tmp;
-      //if (iter==1) logplkd_init = logplkd;
-      if (stop=="incre")
-        crit = inc / 2;
-      else if (stop=="relch")
-        crit = abs(diff_logplkd/(diff_logplkd+logplkd));
-      else if (stop=="ratch")
-        crit = abs(diff_logplkd/(diff_logplkd+logplkd-logplkd_init));
-      logplkd += diff_logplkd;
-    }
-    Rcout << "Iter " << iter << ": Obj fun = " << setprecision(7) << fixed << 
-     logplkd << "; Stopping crit = " << setprecision(7) << scientific << 
-       crit << ";" << endl;
-    logplkd_vec.push_back(logplkd);
-    theta_list.push_back(theta);
+//   while (iter < iter_max) {
+//     ++iter;
+//     update_list = stepinc_fixtra_spline(Z_tv, B_spline, theta, Z_ti, beta_ti, 
+//                                         S_matrix, lambda_i, lambda_i_mat, difflambda,
+//                                         ti, n_strata,
+//                                         idx_B_sp, idx_fail, idx_Z_strata, istart, iend,
+//                                         method, lambda*pow(factor,iter-1), parallel, threads);
+//     v = 1.0; // reset step size
+//     arma::mat step = update_list["step"];
+//     inc = update_list["inc"];
+//     if (btr=="none") {
+//       theta += step;
+//       crit = inc / 2;
+//       objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti,
+//                                   n_strata, idx_B_sp, idx_fail, n_Z_strata,
+//                                   idx_Z_strata, istart, iend, parallel, threads);
+//       logplkd = objfun_list["logplkd"];
+//       logplkd -= lambda_i*as_scalar(vectorise(theta,1)*S_matrix*vectorise(theta,1).t())/(N*1.0);
+//     } else {
+//       arma::mat theta_tmp = theta + step;
+//       objfun_list = objfun_fixtra(Z_tv, B_spline, theta_tmp, Z_ti, beta_ti, ti,
+//                               n_strata, idx_B_sp, idx_fail, n_Z_strata,
+//                               idx_Z_strata, istart, iend, parallel,
+//                               threads);
+//       double logplkd_tmp = objfun_list["logplkd"];
+//       logplkd_tmp -= lambda_i*as_scalar(vectorise(theta_tmp,1)*S_matrix*vectorise(theta_tmp,1).t())/(N*1.0);
+//       diff_logplkd = logplkd_tmp - logplkd;
+//       if (btr=="dynamic")      rhs_btr = inc;
+//       else if (btr=="static")  rhs_btr = 1.0;
+//       //btr_ct = 0;
+//       while (diff_logplkd < s * v * rhs_btr && btr_ct < btr_max) {
+//         ++btr_ct;
+//         v *= t;
+//         theta_tmp   = theta + v * step;
+//         objfun_list = objfun_fixtra(Z_tv, B_spline, theta_tmp, Z_ti, beta_ti, ti,
+//                                     n_strata, idx_B_sp, idx_fail, n_Z_strata,
+//                                     idx_Z_strata, istart, iend, parallel,
+//                                     threads);
+//         double logplkd_tmp = objfun_list["logplkd"];
+//         logplkd_tmp -= lambda_i*as_scalar(vectorise(theta_tmp,1)*S_matrix*vectorise(theta_tmp,1).t())/(N*1.0);
+//         diff_logplkd  = logplkd_tmp - logplkd;
+//       }
+//       theta = theta_tmp;
+//       //if (iter==1) logplkd_init = logplkd;
+//       if (stop=="incre")
+//         crit = inc / 2;
+//       else if (stop=="relch")
+//         crit = abs(diff_logplkd/(diff_logplkd+logplkd));
+//       else if (stop=="ratch")
+//         crit = abs(diff_logplkd/(diff_logplkd+logplkd-logplkd_init));
+//       logplkd += diff_logplkd;
+//     }
+//     Rcout << "Iter " << iter << ": Obj fun = " << setprecision(7) << fixed << 
+//      logplkd << "; Stopping crit = " << setprecision(7) << scientific << 
+//        crit << ";" << endl;
+//     logplkd_vec.push_back(logplkd);
+//     theta_list.push_back(theta);
 
-    //force the algorithms to run specified steps
-    if(!fixedstep) {
-      if(crit < tol)
-        break;
-    }
-    //record NR's stopping step:
-    if(NRstop==false){
-      if(crit < tol){
-        iter_NRstop = iter;
-        NRstop=true;
-      }
-    }
+//     //force the algorithms to run specified steps
+//     if(!fixedstep) {
+//       if(crit < tol)
+//         break;
+//     }
+//     //record NR's stopping step:
+//     if(NRstop==false){
+//       if(crit < tol){
+//         iter_NRstop = iter;
+//         NRstop=true;
+//       }
+//     }
 
-  }
+//   }
 
-  if (iter < iter_max){
-    cout << "Algorithm converged after " << iter << " iterations!" << endl;
-  } else{
-    cout << "Algorithm stopped after reaching maximum iterations!" << endl;
-  }
+//   if (iter < iter_max){
+//     cout << "Algorithm converged after " << iter << " iterations!" << endl;
+//   } else{
+//     cout << "Algorithm stopped after reaching maximum iterations!" << endl;
+//   }
 
-  objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti,
-                              n_strata, idx_B_sp, idx_fail, n_Z_strata,
-                              idx_Z_strata, istart, iend, parallel, threads);
-  logplkd = objfun_list["logplkd"];
-  if(ICLastOnly == true){
-    List J_tmp;
-    J_tmp = TIC_J_penalized_second(Z_tv, B_spline, theta, n_strata, idx_B_sp, idx_fail, idx_Z_strata, TIC_prox, 
-                            lambda_i, lambda_i_mat, difflambda, S_matrix);
-    arma::mat J    = J_tmp["info_J"];
-    arma::mat J_p  = J_tmp["info_J_p"];
-    arma::mat J_p_GIC = J_tmp["info_J_p_gic"];
+//   objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti,
+//                               n_strata, idx_B_sp, idx_fail, n_Z_strata,
+//                               idx_Z_strata, istart, iend, parallel, threads);
+//   logplkd = objfun_list["logplkd"];
 
-    double df;
-    arma::mat info = update_list["info"];
-    arma::mat info_lambda = info + lambda_S_matrix;
-    arma::mat info_lambda_inv;
-    info_lambda_inv = inv(info_lambda);
-    //AIC:
-    df = trace(info * info_lambda_inv);
-    AIC_all.push_back(-2*logplkd*N + 2*df);
-    //TIC
-    df = trace(info*info_lambda_inv*J*info_lambda_inv);
-    TIC_all.push_back(-2*logplkd*N + 2*df);
-    //TIC2:
-    df = trace(info*info_lambda_inv*J_p*info_lambda_inv);
-    TIC2_all.push_back(-2*logplkd*N + 2*df);
-    //GIC:
-    df = trace(info_lambda_inv*J_p_GIC);
-    GIC_all.push_back(-2*logplkd*N + 2*df);
+//   CharacterVector names_strata = count_strata.names();
+//   vector<arma::vec> hazard = objfun_list["hazard"];
+//   List hazard_list;
+//   for (unsigned int i = 0; i < n_strata; ++i) {
+//     hazard_list.push_back(hazard[i], as<string>(names_strata[i]));
+//   }
 
-    VarianceMatrix = info_lambda_inv*J_p*info_lambda_inv;
-  }
-  else{
-    arma::mat info = update_list["info"];
-    VarianceMatrix = info;
-  }  
+//   if(ICLastOnly == true){
+//     List J_tmp;
+//     J_tmp = TIC_J_penalized_second(Z_tv, B_spline, theta, n_strata, idx_B_sp, idx_fail, idx_Z_strata, TIC_prox, 
+//                             lambda_i, lambda_i_mat, difflambda, S_matrix);
+//     arma::mat J    = J_tmp["info_J"];
+//     arma::mat J_p  = J_tmp["info_J_p"];
+//     arma::mat J_p_GIC = J_tmp["info_J_p_gic"];
 
-  arma::mat info = update_list["info"];
-  arma::vec grad = update_list["grad"];
+//     double df;
+//     arma::mat info = update_list["info"];
+//     arma::mat info_lambda = info + lambda_S_matrix;
+//     arma::mat info_lambda_inv;
+//     info_lambda_inv = inv(info_lambda);
+//     //AIC:
+//     df = trace(info * info_lambda_inv);
+//     AIC_all.push_back(-2*logplkd*N + 2*df);
+//     //TIC
+//     df = trace(info*info_lambda_inv*J*info_lambda_inv);
+//     TIC_all.push_back(-2*logplkd*N + 2*df);
+//     //TIC2:
+//     df = trace(info*info_lambda_inv*J_p*info_lambda_inv);
+//     TIC2_all.push_back(-2*logplkd*N + 2*df);
+//     //GIC:
+//     df = trace(info_lambda_inv*J_p_GIC);
+//     GIC_all.push_back(-2*logplkd*N + 2*df);
 
-  return List::create(_["theta"]=theta,
-                      _["logplkd"]=logplkd, 
-                      _["info"]=info, 
-                      _["grad"]=grad,
-                      _["logplkd_vec"]=logplkd_vec,
-                      _["AIC_all"]=AIC_all,
-                      _["TIC_all"]=TIC_all,
-                      _["TIC2_all"]=TIC2_all,
-                      _["GIC_all"]=GIC_all,
-                      _["theta_list"]=theta_list,
-                      _["iter_NRstop"]=iter_NRstop,
-                      _["VarianceMatrix"]=VarianceMatrix);
-}
+//     VarianceMatrix = info_lambda_inv*J_p*info_lambda_inv;
+//   }
+//   else{
+//     arma::mat info = update_list["info"];
+//     VarianceMatrix = info;
+//   }  
+
+//   arma::mat info = update_list["info"];
+//   arma::vec grad = update_list["grad"];
+
+//   return List::create(_["theta"]=theta,
+//                       _["logplkd"]=logplkd, 
+//                       _["info"]=info, 
+//                       _["grad"]=grad,
+//                       _["logplkd_vec"]=logplkd_vec,
+//                       _["AIC_all"]=AIC_all,
+//                       _["TIC_all"]=TIC_all,
+//                       _["TIC2_all"]=TIC2_all,
+//                       _["GIC_all"]=GIC_all,
+//                       _["theta_list"]=theta_list,
+//                       _["iter_NRstop"]=iter_NRstop,
+//                       _["VarianceMatrix"]=VarianceMatrix,
+//                       _["hazard"]=hazard_list);
+// }
 
 
 
-// this function is for lambda from large to small
-// [[Rcpp::export]]
-List surtiver_fixtra_fit_penalizestop_lambdafromlarge(const arma::vec &event, const IntegerVector &count_strata,
-                             const arma::mat &Z_tv, const arma::mat &B_spline, const arma::mat &theta_init,
-                             const arma::mat &Z_ti, const arma::vec &beta_ti_init,
-                             const arma::vec &lambda_spline,
-                             const arma::mat &SmoothMatrix,
-                             const arma::vec &effectsize,
-                             const std::string &SplineType = "pspline",
-                             const std::string &method="Newton",
-                             const double lambda=1e8, const double &factor=1.0,
-                             const bool &parallel=false, const unsigned int &threads=1,
-                             const double &tol=1e-10, const unsigned int &iter_max=20,
-                             const double &s=1e-2, const double &t=0.6,
-                             const std::string &btr="dynamic",
-                             const std::string &stop="incre",
-                             const bool &TIC_prox = false,
-                             const bool &fixedstep = true,
-                             const bool &difflambda = false,
-                             const bool &ICLastOnly = false) {
+// // this function is for lambda from large to small
+// // [[Rcpp::export]]
+// List surtiver_fixtra_fit_penalizestop_lambdafromlarge(const arma::vec &event, const IntegerVector &count_strata,
+//                              const arma::mat &Z_tv, const arma::mat &B_spline, const arma::mat &theta_init,
+//                              const arma::mat &Z_ti, const arma::vec &beta_ti_init,
+//                              const arma::vec &lambda_spline,
+//                              const arma::mat &SmoothMatrix,
+//                              const arma::vec &effectsize,
+//                              const std::string &SplineType = "pspline",
+//                              const std::string &method="Newton",
+//                              const double lambda=1e8, const double &factor=1.0,
+//                              const bool &parallel=false, const unsigned int &threads=1,
+//                              const double &tol=1e-10, const unsigned int &iter_max=20,
+//                              const double &s=1e-2, const double &t=0.6,
+//                              const std::string &btr="dynamic",
+//                              const std::string &stop="incre",
+//                              const bool &TIC_prox = false,
+//                              const bool &fixedstep = true,
+//                              const bool &difflambda = false,
+//                              const bool &ICLastOnly = false) {
 
-  bool ti = arma::norm(Z_ti, "inf") > sqrt(arma::datum::eps);
-  IntegerVector cumsum_strata = cumsum(count_strata);
-  unsigned int n_strata = cumsum_strata.length();
-  cumsum_strata.push_front(0);
+//   bool ti = arma::norm(Z_ti, "inf") > sqrt(arma::datum::eps);
+//   IntegerVector cumsum_strata = cumsum(count_strata);
+//   unsigned int n_strata = cumsum_strata.length();
+//   cumsum_strata.push_front(0);
 
-  vector<arma::uvec> idx_fail, idx_B_sp;
-  vector<vector<unsigned int>> idx_Z_strata;
-  // each element of idx_Z_strata contains start/end row indices of Z_strata
-  vector<unsigned int> n_fail, n_Z_strata;
-  for (unsigned int i = 0; i < n_strata; ++i) {
-    arma::uvec idx_fail_tmp =
-      find(event.rows(cumsum_strata[i], cumsum_strata[i+1]-1)==1);
-    n_fail.push_back(idx_fail_tmp.n_elem);
-    vector<unsigned int> idx_Z_strata_tmp;
-    idx_Z_strata_tmp.push_back(cumsum_strata[i]+idx_fail_tmp(0));
-    idx_Z_strata_tmp.push_back(cumsum_strata[i+1]-1);
-    idx_Z_strata.push_back(idx_Z_strata_tmp);
-    n_Z_strata.push_back(cumsum_strata[i+1]-cumsum_strata[i]-
-      idx_fail_tmp(0));
-    idx_B_sp.push_back(cumsum_strata[i]+idx_fail_tmp);
-    idx_fail_tmp -= idx_fail_tmp(0);
-    idx_fail.push_back(idx_fail_tmp);
-  }
+//   vector<arma::uvec> idx_fail, idx_B_sp;
+//   vector<vector<unsigned int>> idx_Z_strata;
+//   // each element of idx_Z_strata contains start/end row indices of Z_strata
+//   vector<unsigned int> n_fail, n_Z_strata;
+//   for (unsigned int i = 0; i < n_strata; ++i) {
+//     arma::uvec idx_fail_tmp =
+//       find(event.rows(cumsum_strata[i], cumsum_strata[i+1]-1)==1);
+//     n_fail.push_back(idx_fail_tmp.n_elem);
+//     vector<unsigned int> idx_Z_strata_tmp;
+//     idx_Z_strata_tmp.push_back(cumsum_strata[i]+idx_fail_tmp(0));
+//     idx_Z_strata_tmp.push_back(cumsum_strata[i+1]-1);
+//     idx_Z_strata.push_back(idx_Z_strata_tmp);
+//     n_Z_strata.push_back(cumsum_strata[i+1]-cumsum_strata[i]-
+//       idx_fail_tmp(0));
+//     idx_B_sp.push_back(cumsum_strata[i]+idx_fail_tmp);
+//     idx_fail_tmp -= idx_fail_tmp(0);
+//     idx_fail.push_back(idx_fail_tmp);
+//   }
 
-  // istart and iend for each thread when parallel=true
-  vector<arma::vec>  cumsum_ar;
-  vector<vector<unsigned int>> istart, iend;
-  if (parallel) {
-    for (unsigned int i = 0; i < n_strata; ++i) {
-      double scale_fac = as_scalar(idx_fail[i].tail(1));
-      cumsum_ar.push_back(
-        (double)n_Z_strata[i] / scale_fac * arma::regspace(1,n_fail[i]) -
-          arma::cumsum(arma::conv_to<arma::vec> ::from(idx_fail[i])/scale_fac));
-      vector<unsigned int> istart_tmp, iend_tmp;
-      for (unsigned int id = 0; id < threads; ++id) {
-        istart_tmp.push_back(as_scalar(find(cumsum_ar[i] >=
-          cumsum_ar[i](n_fail[i]-1)/(double)threads*id, 1)));
-        iend_tmp.push_back(as_scalar(find(cumsum_ar[i] >=
-          cumsum_ar[i](n_fail[i]-1)/(double)threads*(id+1), 1)));
-        if (id == threads-1) {
-          iend_tmp.pop_back();
-          iend_tmp.push_back(n_fail[i]);
-        }
-      }
-      istart.push_back(istart_tmp);
-      iend.push_back(iend_tmp);
-    }
-  }
+//   // istart and iend for each thread when parallel=true
+//   vector<arma::vec>  cumsum_ar;
+//   vector<vector<unsigned int>> istart, iend;
+//   if (parallel) {
+//     for (unsigned int i = 0; i < n_strata; ++i) {
+//       double scale_fac = as_scalar(idx_fail[i].tail(1));
+//       cumsum_ar.push_back(
+//         (double)n_Z_strata[i] / scale_fac * arma::regspace(1,n_fail[i]) -
+//           arma::cumsum(arma::conv_to<arma::vec> ::from(idx_fail[i])/scale_fac));
+//       vector<unsigned int> istart_tmp, iend_tmp;
+//       for (unsigned int id = 0; id < threads; ++id) {
+//         istart_tmp.push_back(as_scalar(find(cumsum_ar[i] >=
+//           cumsum_ar[i](n_fail[i]-1)/(double)threads*id, 1)));
+//         iend_tmp.push_back(as_scalar(find(cumsum_ar[i] >=
+//           cumsum_ar[i](n_fail[i]-1)/(double)threads*(id+1), 1)));
+//         if (id == threads-1) {
+//           iend_tmp.pop_back();
+//           iend_tmp.push_back(n_fail[i]);
+//         }
+//       }
+//       istart.push_back(istart_tmp);
+//       iend.push_back(iend_tmp);
+//     }
+//   }
 
-  arma::mat theta = theta_init; arma::vec beta_ti = beta_ti_init;
-  // double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
-  //   inc, rhs_btr = 0;
-  double logplkd;
-  List objfun_list, update_list;
-  NumericVector logplkd_vec, iter_NR_all;
-  objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti, n_strata,
-                              idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata,
-                              istart, iend, parallel, threads);
-  logplkd = objfun_list["logplkd"];
-  List theta_list;
+//   arma::mat theta = theta_init; arma::vec beta_ti = beta_ti_init;
+//   // double crit = 1.0, v = 1.0, logplkd_init = 0, logplkd, diff_logplkd, 
+//   //   inc, rhs_btr = 0;
+//   double logplkd;
+//   List objfun_list, update_list;
+//   NumericVector logplkd_vec, iter_NR_all;
+//   objfun_list = objfun_fixtra(Z_tv, B_spline, theta, Z_ti, beta_ti, ti, n_strata,
+//                               idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata,
+//                               istart, iend, parallel, threads);
+//   logplkd = objfun_list["logplkd"];
+//   List theta_list;
   
-  //for tic:
-  int N     = Z_tv.n_rows;    //sample size 
-  int p     = theta_init.n_rows; //dimension
-  int K     = theta_init.n_cols; //number of knots   
+//   //for tic:
+//   int N     = Z_tv.n_rows;    //sample size 
+//   int p     = theta_init.n_rows; //dimension
+//   int K     = theta_init.n_cols; //number of knots   
   
-  List SplineUdpate, J_tmp;
+//   List SplineUdpate, J_tmp;
 
-  int n_lambda         = lambda_spline.n_elem;
-  arma::cube theta_all(p, K, n_lambda);   
+//   int n_lambda         = lambda_spline.n_elem;
+//   arma::cube theta_all(p, K, n_lambda);   
 
-  arma::vec AIC  = arma::zeros<arma::vec> (n_lambda);
-  arma::vec BIC  = arma::zeros<arma::vec> (n_lambda);
-  arma::vec TIC  = arma::zeros<arma::vec> (n_lambda);
-  arma::vec TIC2 = arma::zeros<arma::vec> (n_lambda);
-  arma::vec GIC  = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec AIC  = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec BIC  = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec TIC  = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec TIC2 = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec GIC  = arma::zeros<arma::vec> (n_lambda);
 
-  arma::vec AIC_secondterm = arma::zeros<arma::vec> (n_lambda);
-  arma::vec BIC_secondterm = arma::zeros<arma::vec> (n_lambda);
-  arma::vec TIC_secondterm = arma::zeros<arma::vec> (n_lambda);
-  arma::vec TIC2_secondterm = arma::zeros<arma::vec> (n_lambda);
-  arma::vec GIC_secondterm = arma::zeros<arma::vec> (n_lambda);
-  NumericVector AIC_all, TIC_all, TIC2_all, GIC_all;
-  //mat likelihood_mat = arma::zeros<arma::mat>(iter_max, n_lambda);    for fixed step usage
+//   arma::vec AIC_secondterm = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec BIC_secondterm = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec TIC_secondterm = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec TIC2_secondterm = arma::zeros<arma::vec> (n_lambda);
+//   arma::vec GIC_secondterm = arma::zeros<arma::vec> (n_lambda);
+//   NumericVector AIC_all, TIC_all, TIC2_all, GIC_all;
+//   //mat likelihood_mat = arma::zeros<arma::mat>(iter_max, n_lambda);    for fixed step usage
 
-  arma::mat S_matrix;
-  if(SplineType == "pspline") {
-    S_matrix        = spline_construct(K, p, SplineType);  
-  }
-  else{
-    S_matrix        = spline_construct2(K, p, SplineType, SmoothMatrix);  
-  }
+//   arma::mat S_matrix;
+//   if(SplineType == "pspline") {
+//     S_matrix        = spline_construct(K, p, SplineType);  
+//   }
+//   else{
+//     S_matrix        = spline_construct2(K, p, SplineType, SmoothMatrix);  
+//   }
 
-  arma::vec lambda_effct = arma::zeros<arma::vec> (p*K);
-  arma::mat lambda_i_mat;
-  //List VarianceMatrix, VarianceMatrix2, VarianceMatrix_I, VarianceMatrix_J;
-  arma::mat VarianceMatrix;
+//   arma::vec lambda_effct = arma::zeros<arma::vec> (p*K);
+//   arma::mat lambda_i_mat;
+//   //List VarianceMatrix, VarianceMatrix2, VarianceMatrix_I, VarianceMatrix_J;
+//   arma::mat VarianceMatrix;
 
-  for (int i = 0; i < n_lambda; ++i)
-  {
-    //generate a lambda matrix if different lambda is used for different covariate:
-    if(difflambda){
+//   for (int i = 0; i < n_lambda; ++i)
+//   {
+//     //generate a lambda matrix if different lambda is used for different covariate:
+//     if(difflambda){
 
-      for (int j = 0; j < p; ++j)
-      {
-        arma::vec sublambda = arma::zeros<arma::vec> (K);
-        for (int jj = 0; jj < K; ++jj)
-        {
-          sublambda(jj) = lambda_spline(i) * sqrt(N /  effectsize(j));
-        }
-        lambda_effct.subvec(j*K, ((j+1)*K-1)) = sublambda;
-      }      
-    }
-    lambda_i_mat = repmat(lambda_effct,1,p*K);
-    arma::mat lambda_S_matrix;
+//       for (int j = 0; j < p; ++j)
+//       {
+//         arma::vec sublambda = arma::zeros<arma::vec> (K);
+//         for (int jj = 0; jj < K; ++jj)
+//         {
+//           sublambda(jj) = lambda_spline(i) * sqrt(N /  effectsize(j));
+//         }
+//         lambda_effct.subvec(j*K, ((j+1)*K-1)) = sublambda;
+//       }      
+//     }
+//     lambda_i_mat = repmat(lambda_effct,1,p*K);
+//     arma::mat lambda_S_matrix;
 
-    //use the theta estimated from the last lambda
-    arma::mat theta_ilambda;
-    if(i>0){
-      arma::mat theta_ilambda  = theta_all.slice(i-1);
-    }
-    else{
-      theta_ilambda = theta_init;
-    }
-    double lambda_i = lambda_spline(i);
-    if(difflambda == false){
-      lambda_S_matrix = lambda_i*S_matrix;
-    }
-    else{
-      lambda_S_matrix = lambda_i_mat%S_matrix;
-    }
+//     //use the theta estimated from the last lambda
+//     arma::mat theta_ilambda;
+//     if(i>0){
+//       arma::mat theta_ilambda  = theta_all.slice(i-1);
+//     }
+//     else{
+//       theta_ilambda = theta_init;
+//     }
+//     double lambda_i = lambda_spline(i);
+//     if(difflambda == false){
+//       lambda_S_matrix = lambda_i*S_matrix;
+//     }
+//     else{
+//       lambda_S_matrix = lambda_i_mat%S_matrix;
+//     }
 
-    SplineUdpate    = spline_udpate_lambdafromlarge(Z_tv, B_spline, theta_ilambda,
-                                    Z_ti, beta_ti, 
-                                    S_matrix, lambda_i, lambda_i_mat, lambda_S_matrix, difflambda,
-                                    ti, n_strata, idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata, istart, iend,
-                                    method, lambda, factor,
-                                    parallel, threads, iter_max, tol, s, t, btr, stop, TIC_prox, fixedstep, ICLastOnly);
+//     SplineUdpate    = spline_udpate_lambdafromlarge(Z_tv, B_spline, theta_ilambda,
+//                                     Z_ti, beta_ti, 
+//                                     S_matrix, lambda_i, lambda_i_mat, lambda_S_matrix, difflambda,
+//                                     ti, n_strata, idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata, istart, iend,
+//                                     method, lambda, factor,
+//                                     parallel, threads, iter_max, tol, s, t, btr, stop, TIC_prox, fixedstep, ICLastOnly);
 
-    //mat info              = SplineUdpate["info"];
-    //vec grad              = SplineUdpate["grad"];
-    double logplkd        = SplineUdpate["logplkd"];
-    AIC_all               = SplineUdpate["AIC_all"];
-    TIC_all               = SplineUdpate["TIC_all"];
-    TIC2_all               = SplineUdpate["TIC2_all"];
-    GIC_all               = SplineUdpate["GIC_all"];
-    theta_list            = SplineUdpate["theta_list"];
-    int iter_tmp          = SplineUdpate["iter_NRstop"];
-    arma::mat VarianceMatrix_tmp        = SplineUdpate["VarianceMatrix"];
+//     //mat info              = SplineUdpate["info"];
+//     //vec grad              = SplineUdpate["grad"];
+//     double logplkd        = SplineUdpate["logplkd"];
+//     AIC_all               = SplineUdpate["AIC_all"];
+//     TIC_all               = SplineUdpate["TIC_all"];
+//     TIC2_all               = SplineUdpate["TIC2_all"];
+//     GIC_all               = SplineUdpate["GIC_all"];
+//     theta_list            = SplineUdpate["theta_list"];
+//     int iter_tmp          = SplineUdpate["iter_NRstop"];
+//     arma::mat VarianceMatrix_tmp        = SplineUdpate["VarianceMatrix"];
 
-    theta_all.slice(i)    = theta_ilambda;
-    logplkd_vec.push_back(logplkd);
-    iter_NR_all.push_back(iter_tmp);
-    VarianceMatrix = VarianceMatrix_tmp;
+//     theta_all.slice(i)    = theta_ilambda;
+//     logplkd_vec.push_back(logplkd);
+//     iter_NR_all.push_back(iter_tmp);
+//     VarianceMatrix = VarianceMatrix_tmp;
 
-    //Variance matrix:
-    // arma::mat VarianceMatrix_tmp = info_lambda_inv*J_p*info_lambda_inv;
-    // arma::mat VarianceMatrix_tmp2 = info_lambda_inv*J*info_lambda_inv;     
-    // VarianceMatrix.push_back(VarianceMatrix_tmp);
-    // VarianceMatrix2.push_back(VarianceMatrix_tmp2);
-    // VarianceMatrix_I.push_back(info_lambda_inv);
-    // VarianceMatrix_J.push_back(inv(J_p));
-    Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
+//     //Variance matrix:
+//     // arma::mat VarianceMatrix_tmp = info_lambda_inv*J_p*info_lambda_inv;
+//     // arma::mat VarianceMatrix_tmp2 = info_lambda_inv*J*info_lambda_inv;     
+//     // VarianceMatrix.push_back(VarianceMatrix_tmp);
+//     // VarianceMatrix2.push_back(VarianceMatrix_tmp2);
+//     // VarianceMatrix_I.push_back(info_lambda_inv);
+//     // VarianceMatrix_J.push_back(inv(J_p));
+//     Rcout<<fixed<<"current lambda done: "<< lambda_spline(i) <<endl;
 
-  }
+//   }
 
-  return List::create(_["theta"]=theta,
-                      _["logplkd"]=logplkd, 
-                      _["theta_all"]=theta_all,
-                      _["theta_list"]=theta_list,
-                      _["AIC_all"]=AIC_all,
-                      _["TIC_all"]=TIC_all,
-                      _["TIC2_all"]=TIC2_all,
-                      _["GIC_all"]=GIC_all,
-                      _["logplkd_vec"]=logplkd_vec,
-                      _["SplineType"]=SplineType,
-                      _["iter_NR_all"]=iter_NR_all,
-                      _["VarianceMatrix"]=VarianceMatrix);
-}
+//   return List::create(_["theta"]=theta,
+//                       _["logplkd"]=logplkd, 
+//                       _["theta_all"]=theta_all,
+//                       _["theta_list"]=theta_list,
+//                       _["AIC_all"]=AIC_all,
+//                       _["TIC_all"]=TIC_all,
+//                       _["TIC2_all"]=TIC2_all,
+//                       _["GIC_all"]=GIC_all,
+//                       _["logplkd_vec"]=logplkd_vec,
+//                       _["SplineType"]=SplineType,
+//                       _["iter_NR_all"]=iter_NR_all,
+//                       _["VarianceMatrix"]=VarianceMatrix);
+// }
 
 
-// main version (ignore above)
 // [[Rcpp::export]]    
 List Lambda_estimate_ties2(int knot,
                            arma::colvec &delta,
@@ -2667,8 +2636,6 @@ List Lambda_estimate_ties2(int knot,
     delta_temp = delta.subvec(index,cumtie(i)-1);
     lambda(i)  = accu(delta_temp)/S0(i);
   }
-  
-  
   
   List result;
   result["S0"]        = S0;

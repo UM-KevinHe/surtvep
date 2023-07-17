@@ -24,6 +24,12 @@ knitr::opts_chunk$set(
 Utilities for carrying out post-fitting visualization, summarization, and inference are also provided.
 In this tutorial we introduce the use of `surtvep` through an example dataset.
 
+This tutorial aims to provide a comprehensive guide on survival estimation for the time-varying coefficient model using the `surtvep` package in R. The package addresses the challenges associated with large-scale time-to-event data and the estimation of time-varying effects in survival analysis. By implementing a computationally efficient Kronecker product-based proximal algorithm and incorporating various penalties to improve estimation, `surtvep` offers an efficient and flexible solution for handling time-varying coefficients in survival analysis.
+
+Throughout the tutorial, we will cover the key features and capabilities of the `surtvep` package, providing examples and use cases to illustrate the package's functionality. By the end of this tutorial, you will have a solid understanding of how to use `surtvep` for survival estimation with time-varying coefficients, as well as how to leverage the package's unique features to improve your analysis.
+
+
+
 ## Installation:
 
 ```{r ,include=TRUE,eval=FALSE}
@@ -31,10 +37,6 @@ In this tutorial we introduce the use of `surtvep` through an example dataset.
 require("devtools")
 require("remotes")
 remotes::install_github("UM-KevinHe/surtvep", ref = "Lingfeng_test")
-
-#To install with Vignettes:
-# install.packages("devtools")
-# devtools::install_github("UM-KevinHe/surtvep",build_vignettes =T)
 ```
 
 ## Quick Start
@@ -60,7 +62,7 @@ event <- ExampleData$event
 ```
 
 The command loads an input covariate matrix 'z', time-to-event outcome 'time' and 'event' from this saved R data archive.
-The saved data set is a simulation data set with continuous outcomes.
+The saved data set is a simulation data set with continuous covariates.
 
 We fit the Newton's method without penalization use the most basic call to 'coxtv'.
 
@@ -79,6 +81,7 @@ beta.tv <- get.tvcoef(fit.tv)
 head(beta.tv)
 ```
 
+
 The first row of `beta.tv` represents the time-varying coefficient of x1 and x2 at time 0.00017835.
 
 In order to get the time-varying coefficients on a new time sequence, we can modify the `times` argument in `get.tvcoef`.
@@ -88,6 +91,8 @@ time.new <- seq(1,2,0.1)
 beta.tv.new <- get.tvcoef(fit.tv,times = time.new)
 head(beta.tv.new)
 ```
+
+
 
 We can visualize the time-varying coefficients by executing the `plot` method:
 
@@ -100,6 +105,16 @@ It shows the time-varying effect of our predictors.
 In our `ExampleData`, the first predictor has a constant effect of 1, and the second predictor has a time-varying effect of $\text{sin}(3\pi * t/4)$, where $t$ is the time.
 The dotted line indicates the that hazard ratio is 0, which means the predictor has no effect.
 Users may also wish to plot the effect of different covariates in the same plot: this can be done by setting `allinone = TRUE` in the plot command.
+
+The confidence interval shown presented on the figure can be calculated using the `confint` function.
+
+```{r}
+ci.df <- confint(fit.tv)
+```
+
+Note that users can draw the plots by yourself with the necessary data given. We give some raw example `ggplot` codes. Please refer to [plotting](#plotting-section) for more information.
+
+
 
 Next we fit the Newton's method combined with penalization method.
 We specify a range of penalization coefficients first, then call the `coxtp` function.
@@ -118,9 +133,29 @@ With the tools introduced so far, users are able to fit the time-varying model.
 There are many more arguments in the package that give users a great deal of flexibility.
 To learn more, move on to later section.
 
-## Newton's method
 
-In this section we introduce the Newton's method for estimating time-varying effects in detail.
+## Structure
+
+This section gives the flowchart for the `surtvep` package. Generally, `coxtv` utilizes proximal Newton's method to estimate the time-varying coefficients. `coxtp` combines the Newton's approach with penalization. `IC` calculates different information criteria to select the best tuning parameter in front of the penalty term. `cv.coxtp` uses cross-validation for tuning parameter selection.. `tvef.ph`, `tvef.ph.time` and `tvef.ph.zero` provides hypothesis testing for the fitted model. `get.tvef` retrieves the time-varying coefficients for the fitted model. `confint` provides confidence intervals for these coefficients.  `baseline` offers the baseline estimations. `plot` visualizes the estimated time-varying coefficients. Other functions and details are provided in later sections.
+
+# ```{r, out.width="700px", out.height = "800px", include=TRUE, fig.align="center", fig.cap=c("your caption"), echo=FALSE}
+# knitr::include_graphics("Flowchart.pdf")
+# ```
+```{r label, out.height = "100%", fig.cap = "caption"}
+knitr::include_graphics("Flowchart.pdf") 
+```
+
+<!-- ![Flowchart](Flowchart.pdf) -->
+![Alt](Flowchart.pdf){width=80% height=700}
+
+![Alt](Flowchart.png)
+
+
+## Cox non-proportional hazards model
+While obtaining these estimates under the Cox proportional-hazards model is relatively straightforward, the assumption of constant hazard ratios is frequently violated in populations defined by an initial, acute event, such as myocardial infarction, or in studies with long-term follow-up. 
+
+The Cox non-proportional hazards model is a flexible and powerful tool for modeling the time-varying effects of covariates in survival analysis, allowing for the estimation of hazard ratios that change over time. This model can capture complex relationships between predictor variables and the time-to-event outcome, providing a more accurate representation of the underlying processes.
+
 
 Let $D_{i}$ denote the time lag from transplantation to death and $C_{i}$ be the censoring time for patient $i$, $i=1,\ldots, n$.
 Here $n_j$ is the sample size.
@@ -128,11 +163,19 @@ The observed time is $T_{i} = \min\{D_{i},C_{i}\}$, and the death indicator is g
 Let $\boldsymbol{X}_{i}=(X_{i1}, \ldots, X_{iP})^T$ be a $P$-dimensional covariate vector.
 We assume that $D_{i}$ is independent from $C_{i}$ given $\textbf{X}_{i}$.
 Consider the hazard function $$
-   \lambda(t|\boldsymbol{X}_{i}) = \lambda_{0}(t)\exp\{\boldsymbol{X}_{i}^T {\boldsymbol\beta}(t)\}, %\nonumber
+   \lambda(t|\boldsymbol{X}_{i}) = \lambda_{0}(t)\exp\{\boldsymbol{X}_{i}^\top{\boldsymbol\beta}(t)\}, %\nonumber
 $$ where $\lambda_{0}(t)$ is the baseline hazard.
-To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots, \beta_{P}(t)\}$, we span $\boldsymbol\beta(\cdot)$ by a set of cubic B-splines defined on a given number of knots: \begin{eqnarray}
-   \beta_{p}(t)=\boldsymbol\theta_{p}^T  \boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber
-\end{eqnarray} where $\boldsymbol{B}(t)=\{B_1(t), \ldots, B_K(t)\}^T$ forms a basis, $K$ is the number of basis functions, and $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th covariate.
+The time-varying coefficients $\beta(t)$ represent the effect of predictors on the outcome are varying through different time points.
+
+To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots, \beta_{P}(t)\}$, we span $\boldsymbol\beta(\cdot)$ by a set of cubic B-splines defined on a given number of knots: 
+\begin{eqnarray}
+   \beta_{p}(t)=\boldsymbol\theta_{p}^\top\boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber
+\end{eqnarray} where $\boldsymbol{B} (t)=\{B_1(t), \ldots, B_K(t)\}^T$ forms a basis, $K$ is the number of basis functions, and $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th covariate. Detailed inforamtion about the construction of the B-spline basis can seen in the [B-spline construction](Appendix.html).
+
+
+## Newton's method
+
+In this section we introduce the Newton's method for estimating time-varying effects in detail.
 
 With a length-$PK$ parameter vector $\boldsymbol\theta=vec(\boldsymbol\Theta)$, the vectorization of the coefficient matrix $\boldsymbol\Theta=(\boldsymbol\theta_{1}, \ldots, \boldsymbol\theta_{P})^T$ by row, the log-partial likelihood function is \begin{equation}
   \ell(\boldsymbol\theta)=\sum_{i=1}^{n_j} \delta_{i} \left [\boldsymbol{X}_{i}^T \boldsymbol\Theta  \boldsymbol{B}(T_{i})
@@ -150,69 +193,59 @@ $\nabla \ell(\boldsymbol{\theta})$ and $\nabla^2 \ell(\boldsymbol{\theta})$ is t
 
 ### Commonly used function arguments
 
-`coxtp` provides various arguments for users to customize the fit: we introduce some commonly used arguments here.
+`coxtv` provides various arguments for users to customize the fit: we introduce some commonly used arguments here.
 
--   `strata` is for stratification group defined in the data used for the stratified model.
-    If there exists a stratification group, please enter it as a vector.
-    By default, a non-stratified model would be implemented.
+-   `strata` is a vector of indicators for stratification. 
+    Default = `NULL`, (i.e. no stratification group in the data), an unstratified model is implemented.
 
--   `nsplines` number of basis functions in the B-splines to span the time-varying effects, the default value is 8.
-    We use the r function `splines::bs` to generate the B-splines.
-    Denoted as $k$ in our model introduction.
+-   `nsplines` number of basis functions in the splines to span the time-varying effects, whose default value is 8. 
+    We use the R function `splines::bs` to generate the B-splines. 
 
--   `ties` is specifying the method for tie handling.
-    If there are no tied death times, the methods are equivalent.
-    By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties occur.
+-   `ties` a character string specifying the method for tie handling. If there are no tied events, 
+    the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties are present.
 
--   `tol` convergence threshold for Newton's method.
-    The algorithm continues until the method selected using `stop` converges.
-    The default value is `1e-6`.
+-   `tol` tolerance used for stopping the algorithm. See details in `stop` below.
+    The default value is  `1e-6`.
 
--   `iter.max` maximum Iteration number if the stopping criteria specified by `stop` is not satisfied.
-    Default value is 20.
+-   `iter.max` maximum iteration number if the stopping criterion specified by `stop` is not satisfied. Default value is 20.
 
--   `degree` degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
+-   `degree` degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
     `degree = 2` results in the quadratic B-spline basis functions.
 
--   `method` a character string specifying whether to use Newton's method or Proximal Newton's method.
-    If `"Newton"` then exact hessian is used, while default method `"ProxN"` implementing the proximal method which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
+-   `method` a character string specifying whether to use Newton method or proximal Newton method.  If `"Newton"` then Hessian is used, 
+    while the default method `"ProxN"` implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 
--   `gammma` parameter for Proximal Newton's Method `"ProxN"`.
-    Default value is `1e8`.
+-   `gammma` parameter for proximal Newton method `"ProxN"`. Default value is `1e8`.
 
 -   `btr` a character string specifying the backtracking line-search approach.
-    `"dynamic"` is a typical way to perform backtracking line-search.
-    See details in Convex Optimization by Boyd and Vandenberghe (2009).
-    `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, which usually occurs when some predictors are categorical with low frequency for some categories.
+    `"dynamic"` is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+    `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order          information of the log-partial likelihood, which usually occurs when some predictors are categorical with low frequency for some categories.
     Users should be careful with `static` as this may lead to under-fitting.
 
--   `tau` a scalar in (0,1) used to control the step size inside the backtracking line-search.
-    The default value is 0.5.
+-   `tau` a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.
 
--   `stop` a character string specifying the stopping rule to determine convergence.
-    Use $loglik(m)$ to denote the log-partial likelihood at iteration step m.\
-
+-   `stop`  character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood      at iteration step m.  
     `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
-    `"relch"` means we stop the algorithm when the $loglik(m)$ divided by the $loglik(0)$ is less than the `tol`.
-    `"ratch"` means we stop the algorithm when $(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))$ is less than the `tol`.
-    `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` is met.
-    Default value is `ratch`.
-    If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
+    `"relch"` means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the `tol`.
+    `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
+    `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
+    Default value is `ratch`. 
+    
+-   `iter.max`, if achieved, overrides any stop rule for algorithm termination.
 
--   `parallel` if `TRUE`, then the parallel computation is enabled.
-    The number of threads in use is determined by `threads`.
+-   `parallel` if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
 
 -   `threads` an integer indicating the number of threads to be used for parallel computation.
     Default is `2`.
     If `parallel` is false, then the value of `threads` has no effect.
 
--   `fixedstep` fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
+-   `fixedstep` if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
 
 In the following sections we brefily describe these useful arguments when calling `coxtv`.
 
 Now we start with a relatively harsh simulated data.
 Here, the covariates V1 and V2 were generated as binary variables with around 90% frequency, which is a relatively harsh setting to be estimated.
-The related true log-hazard function for each variable is $\beta(t)=1$ and $\beta(t)=exp(-1.5*t)$, where t denotes time.
+The related true log-hazard function for each variable is $\beta_1(t)=1$ and $\beta_2(t)=exp(-1.5*t)$, where t denotes time.
 
 Let's check the data first:
 
@@ -231,10 +264,10 @@ Both predictors are presented with frequency around 25%.
 ### Proximal Newton's method: `method = "ProxN"`
 
 The 'method' parameter has two options.
-**`method="Newton"`** and **`method="ProxN"`**.
-The proximal Newton's method modified the second order derivative $\nabla^2 \ell(\boldsymbol{\theta})$ by adding small terms $1/\lambda$ to the the diagonal elements.
-The default value of $\lambda$ is $10^8$, which can be modified by user.
-If the data set have predictors with extremely low frequency, users may consider a smaller $\lambda$.
+*`method="Newton"`* and *`method="ProxN"`*.
+The proximal Newton's method modified the second order derivative $\nabla^2 \ell(\boldsymbol{\theta})$ by adding small terms $1/\gamma$ to the the diagonal elements.
+The default value of $\gamma$ is $10^8$, which can be modified by user.
+If the data set have predictors with extremely low frequency, users may consider a smaller $\gamma$.
 
 ```{r, message = FALSE, results='hide'}
 fit.newton <- coxtv(z = z, event = event, time=time, method = 'Newton')
@@ -252,10 +285,10 @@ plot(fit.proxN, ylim = c(-2,2), allinone = TRUE)
 
 ### Stratified Newton's Method: `strata`
 
-When different facilities are present, we can extend the model to stratified version.
-We use $j=1,\ldots,J$ to denote the $J$ different centers Let $D_{ij}$ denote the time lag to death and $C_{ij}$ be the censoring time for patient $i$ in center $j$, $i=1,\ldots, n_j$, and $j=1, \ldots, J$.
+When the data of patients are collected from different strata, we can extend the model to a stratified version.
+We use $j=1,\ldots,J$ to denote the $J$ different centers. Let $D_{ij}$ denote the time to death and $C_{ij}$ be the censoring time for patient $i$ in center $j$, $i=1,\ldots, n_j$, and $j=1, \ldots, J$.
 Here $n_j$ is the sample size in center $j$.
-The total number of patients is $N=\sum_{j=1}^Jn_j$, the observed time is $T_{ij} = \min\{D_{ij},C_{ij}\}$, and the death indicator is given by $\delta_{ij} = I(D_{ij} \leq C_{ij})$.\
+The total number of patients is $N=\sum_{j=1}^Jn_j$, the observed time is $T_{ij} = \min\{D_{ij},C_{ij}\}$, and the death indicator is given by $\delta_{ij} = I(D_{ij} \leq C_{ij})$.
 
 Let $\textbf{X}_{ij}=(X_{ij1}, \ldots, X_{ijP})^T$ be a $P$-dimensional covariate vector.
 We assume that $D_{ij}$ is independent from $C_{ij}$ given $\textbf{X}_{ij}$.
@@ -265,9 +298,9 @@ Correspondingly, the log-partial likelihood function is $$
     \left\{\sum_{i' \in R_{ij}}  \exp \{\boldsymbol{X}_{i' j}^T \boldsymbol\Theta  \boldsymbol{B}(T_{ij}) \} \right \} \right ],
 $$ where $R_{ij}=\{i': 1 \leq i' \leq n_j, ~ T_{i' j}\geq T_{ij}\}$ is the at-risk set for stratum $j$.
 
-For the case with different stratums, usage is to include `strata` variable.
+For the case with different strata, the usage is to include the strata variable.
 First, we load a set of generated data with different stratums.
-In our simulation, we vary the baseline for different stratums by adding a small term generated by uniform distribution with mean = 0 and standard deviation= 0.5.
+In our simulation, we vary the baseline for different stratums by adding a small term to the baseline function. The small term is generated by uniform distribution with mean = 0 and standard deviation = 0.5.
 
 ```{r}
 data("StrataExample")
@@ -277,7 +310,7 @@ event <- StrataExample$event
 strata <- StrataExample$strata
 ```
 
-The `strata` variable can be a `ns >= 1` level factor, numerical numbers or strings.
+The `strata` is a vector of indicators for stratification. 
 The stratified model can be easily fitted by calling
 
 ```{r, message = FALSE, results='hide', fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
@@ -287,84 +320,10 @@ plot(fit.strata, ylim = c(-2,2))
 
 ### Step size adjustment: `btr`
 
-#### Model results meanings:
+`btr` is a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009). `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, which usually occurs when some predictors are categorical with low frequency for some categories.
 
-First, Let's look at the `fit` result
+Users should be careful with `static` as this may lead to under-fitting. 
 
-```{r}
-# summary(fit.tv)
-```
-
-There are 4 results saved under the fit result.
-
--   `model_result` save the detailed model results which we will explain in a minute.
-
--   `lambda.selected` saved the best lambda chosen based on different criteria which will not be used for the non-penalized model.
-
--   `p` refers to the number of covariates used in the model
-
--   `z_names` records the covariates names.
-
-The detailed model result was saved in `model_result`, which can be called by `fit$model_result`.
-Now, let's explore the result a little bit:
-
-Here we noticed that there are 16 items in the model results list.
-Following is an explanation of each item:
-
--   `theta`: Estimation matrix of $\theta$
--   `logplkd`: log-partial likelihood
--   `theta.all`: Internal validation use
--   `theta.list`: The estimation matrix at each Newton's update
--   `AIC.all`: Akakia information criterion
--   `TIC.all`: Takeuchi information criterion
--   `GIC.all`: Generalized information criterion
--   `AIC.trace`: Internal validation use
--   `TIC.trace`: Internal validation use
--   `GIC.trace`: Internal validation use
--   `logplkd.vec`: log-partial likelihood at each iteration
--   `SplineType`: spline used for fitting the model
--   `VarianceMatrix`: Variance Matrix
--   `uniqfailtimes`: The input unique event times if `ties="Breslow"`, input time points if `ties="None"` (Add link)
--   `bases`: The basis function used for estimating time-varying effects
--   `knots`: Number of basis functions used for estimating time-varying effects
-
-#### 4.1.2.2: How to get the effect of a specific time point?
-
-We are more interested in estimating time-varying effect of the covariates.
-Following is an simple tutorial of how to do that.
-First, a little background about the time-varying effect in cox model(You could also check this part at our paper which have more detailed explanation.(insert link))
-
-If we Let $X_i=(X_{i1},X_{i2},...X_{ip})^T$ refers to the $i_{th}$ individuals in the dataset with p covariates(which could also be understand as the $i_{th}$ row in the data we extract above).
-Let $\lambda(t|X_i)$ denote the hazard of having the event at time t for the $i_{th}$ individual, $\lambda_0(t)$ denote the hazard of having the event at time 0.
-When we considering the covarites having time fixed effect, we have the following formula for $\lambda(t|X_i)$:
-
-$\lambda(t|X_i)=\lambda_0(t)exp(X_i^T\beta)$
-
-Where $\beta$ refers to the coefficients where $\beta=(\beta_1,\beta_2,...\beta_p)$, which in this example, is (V1, V2).
-Which have similar format as the GLM model.
-For time-varying effect model, we are simply replace $\beta$ with a set of $\beta(t)$.
-Thus, the time varying equations could be transferred as following:
-
-$\lambda(t|X_i)=\lambda_0(t)exp(X_i^T\beta(t))$
-
-Similar, $\beta(t)=(\beta_1(t),\beta_2(t),...\beta_p(t))$ where $\beta(.)$ refers to a set of cubic B-spline(Details for B-spline refers to here : insert link).
-Where, the single $\beta_p(t)$ could be estimated using the following formula:
-
-$\beta_p(t)=\theta_p^TB(t)=\sum_{k=1}^K\theta_{pk}B_k(t)$
-
-Here, K refers to the given number of knots.
-
-Thus, to calculate the time varying effect of coefficient p, we just need to get both estimated B spline and the $\theta$ matrix.
-The B-spline was saved in `model_result$bases` and $\theta$ matrix was saved in the last item in `model_result$theta_list` Following is the code for calculation:
-
-As a result, $\beta$ is a 2487\*2 matrix(we are using the "Breslow" ties, thus there are 2487 rows instead of 5000, detail about ties and Breslow ties could refers to here(insert link)).
-
-We could also get the 95%CI for the estimation by the `confint.surtiver`
-
-```{r}
-CI <- confint(fit.proxN)
-head(CI$tvef$X1)
-```
 
 ## Newton's Method with penalization:
 
@@ -420,17 +379,19 @@ Similarly, $P_{\lambda}$ can be written as $\boldsymbol{\theta}^T\boldsymbol{S}\
 The algebraic expression of $\boldsymbol{S}$ is complex, as discussed in \textbf{citet{wood2017p}}.
 However, this has little impact on the computation time.
 
-###Usage The usage of Newton Method with penalization `coxtp` is very similar as `coxtv` introduced above.
+### Usage 
+The usage of Newton's method with penalization `coxtp` is very similar to `coxtv` introduced above.
 The main difference comes from the penalization tuning parameter selection.
 
 We use the smooth spline here for penalization (default).
 You could also use `spline="P-spline"`.
-For tuning parameter `lambda`, you could either enter a numeric number or a vector of numbers.
-If `lambda` was entered as a vector of numbers, the tuning parameter can be selected based on different criteria(AIC, TIC or GIC) using function `IC`.
-Or users can use `cv.coxtp` to select the tuning parameter based on cross validation.
+For tuning parameter `lambda`, you could either enter a single numeric value or a vector of numbers.
+If `lambda` is entered as a vector of numbers, the tuning parameter can be selected based on different criteria (AIC, TIC or GIC) using function `IC`.
+Alternatively, users can use `cv.coxtp` to select the tuning parameter $\lambda$ based on cross validation.
+
 Following is a model fit with the `lambda` as a vector for different illustration purposes.
-We use the relatively harsh setting `ExampleDataBinary` to illustrate the useage of 'coxtp', 'IC' and 'cv.coxtp', the penalization method.
-This setting contains binary predictors with low frequency, which may have ill-conditioned second-order information of the log-partial likelihood.
+We use the relatively harsh setting `ExampleDataBinary` to illustrate the usage of `coxtp`, `IC` and `cv.coxtp`, the penalization method.
+This setting contains binary predictors with low frequency, which may have ill-conditioned second-order information of the log-partial likelihood. 
 Penalization plays an important role here as it helps to smooth the time-varying effects.
 
 ```{r}
@@ -443,14 +404,14 @@ event <- ExampleDataBinary$event
 First we fit the penalized model with `"Smooth-spline"`.
 
 ```{r, message = FALSE, results='hide'}
-lambda_spline_all=c(0.01,0.1,1,10)
+lambda_spline_all = c(0.01,0.1,1,10,100,1000)
 # fit.pspline <- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")
-fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline=lambda_spline_all, spline = "Smooth-spline")
+fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline = lambda_spline_all, spline = "Smooth-spline")
 ```
 
 Then we use the `IC` function to select the tuning parameter.
 
-```{r, message = FALSE, results='hide'}
+```{r, message = FALSE}
 IC <- IC(fit.smoothspline)
 print(IC$mAIC)
 print(IC$TIC)
@@ -459,45 +420,39 @@ print(IC$GIC)
 
 We can directly call the `plot` function to give the estimation plot.
 
-```{r,  fig.ncol = 1, fig.show="hold", out.width="40%",out.height="44%", message = FALSE, warning=FALSE}
-plot(IC$model.TIC)
+```{r, fig.ncol = 1, fig.show="hold", out.width="40%", out.height="44%", message = FALSE, warning=FALSE}
+plot(IC$model.TIC,ylim=c(-2,2))
 ```
 
-From the result above, we noticed that with different selection criteria, the best lambda selected is different.
-Here, we use the AIC criteria which set `lambda=1000`.
-The result for this model was saved in related criteria model and could be called as below:
+From the result above, we notice that with different selection criteria, the best tuning parameter $\lambda$ selected is different for different selection criteria. 
+In this example, we use the TIC criterion. The result for this model is saved in the related criterion model and can be accessed as follows:
+```{r,message = FALSE}
+model.mAIC = IC$model.mAIC
+model.TIC = IC$model.TIC
+model.GIC = IC$model.GIC
+```
 
-<!-- ```{r} -->
+Compared to the non-penalized model, we can see that the effect of ``V1" is shrunk to approximately linear in the penalized model.
 
-<!-- AIC_model  = fit_penalized$model.AIC -->
 
-<!-- summary(AIC_model) -->
+## Baseline estimation
 
-<!-- ``` -->
-
-Compare with the non-penalized Model, we could see that the effect of "V1" was shrink to roughly linear in the penalized model.
-
-The detail calculation of B-spline matrix, $\theta$ matrix and $\beta$ matrix was similar as Newton's method.
-
-### Baseline estimation
-
-The Nelson-Aalen estimator (Breslow estimator) of the culmulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, where it takes the value \begin{align*}
+The Nelson-Aalen estimator (Breslow estimator) of the cumulative function is given by $\widetilde{\Lambda}(t) = \int_0^t \widetilde{\Lambda}_0(u)$, where $\widetilde{\Lambda}(t)$ is 0 except at the observed failure times $t_i$, at which it takes the value 
+\begin{align*}
     d\Lambda_0 = {d_i}\left\{\mathop{\sum}\limits_{\ell \in R(T_i)} \exp \{\boldsymbol{X}_{i' }^T \boldsymbol{\Theta}  \boldsymbol{B}(T_{i}) \}\right\}^{-1}.
 \end{align*}
 
-The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equals to zero.
-We use the model fitted result `fit_penalized` in section 4.2.
+The baseline estimation here refers to the baseline hazard at time t when holding all the covariates equal to zero.
 
 ```{r}
 data("ExampleData")
 z     <- ExampleData$x
 time  <- ExampleData$time
 event <- ExampleData$event
-
 time2  <- round(time, digits = 1)
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE, results='hide'}
 lambda_spline_all=c(0.1,1,10,100)
 fit.smoothspline <- coxtp(event = event, z = z, time = time2, lambda=lambda_spline_all, penalty = "Smooth-spline")
 IC <- IC(fit.smoothspline)
@@ -512,114 +467,10 @@ base.est = baseline(fit.mAIC)
 head(base.est)
 ```
 
-<!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
-
-<!-- event=sim_data[,"event"] -->
-
-<!-- time=sim_data[,"time"] -->
-
-<!-- data=sim_data[,!colnames(sim_data) %in% c("event","time")] -->
-
-<!-- model1  = fit_penalized$model.AIC -->
-
-<!-- ##baseline -->
-
-<!-- plotdata=coxtp.baseline(fit=model1, delta=event,z=data,time=time) -->
-
-<!-- head(plotdata) -->
-
-<!-- ``` -->
-
-<!-- Let's check the result of baseline function first. -->
-
-<!-- The function returned a dataset containing the baseline estimation including 3 variables: -->
-
-<!-- -   `unique.time.`: The unique time listed in the original dataset used to fit the model -->
-
-<!-- -   `lambda`: refers to $\lambda_0(t)$ in the model, which is baseline hazard -->
-
-<!-- -   `Lambda`: refers to the cumulative baseline hazard in the model. -->
-
-<!-- Note that since our baseline estimation is based on Breslow Estimator, when there is no ties in the data, the baseline estimation could sometime results as 0 since there is no death at certain time-point. -->
-
-<!-- Thus, if we directly draw the plot, it would be something like this: -->
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-
-<!-- #Exclude censoring points -->
-
-<!-- baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) + -->
-
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-
-<!--   scale_y_continuous(name='baseline hazard', limits=c(0,0.1)) + -->
-
-<!--   ggtitle(" Baseline Hazard by time") + -->
-
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- baseline_plot -->
-
-<!-- ``` -->
 
 As a result, we could either increase the time interval to make ties exists or remove the points that have $\lambda=0$.
 The only differences would result in the baseline hazard, there is no influence on the cumulative baseline hazard.
 
-<!-- ```{r} -->
-
-<!-- plotdata=plotdata[plotdata$lambda!=0,] -->
-
-<!-- ``` -->
-
-<!-- Next, we are going to visualize the result using `ggplot2` and `cowplot` function. -->
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-
-<!-- #Exclude censoring points -->
-
-<!-- baseline_plot<-ggplot(plotdata,aes(x=unique.time., y=lambda)) + geom_line(size = 0.6) + -->
-
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-
-<!--   scale_y_continuous(name='baseline hazard', limits=c(0,0.1)) + -->
-
-<!--   ggtitle(" Baseline Hazard by time") + -->
-
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- cum_plot<-ggplot(plotdata,aes(x=unique.time., y=Lambda)) + geom_line(size = 0.6) + -->
-
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-
-<!--   scale_y_continuous(name='Cumulative baseline hazard') + -->
-
-<!--   ggtitle("Cumulative Baseline Hazard by time") + -->
-
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- plot_grid(baseline_plot,cum_plot,ncol = 2) -->
-
-<!-- ``` -->
-
-One use of Cumulative baseline hazard is to calculate the survival function where cumulative hazard is the negative log of the survival probabilities.
-If we assume cumulative baseline hazard function as $S(t)$ and cumulative hazard function as $H(t)$, then we have $H(t)=-log(S(t))$.
-Thus, we could plot the survival function as follows:
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center",message=FALSE} -->
-
-<!-- plotdata$survive=exp(-plotdata$Lambda) -->
-
-<!-- ggplot(plotdata,aes(x=unique.time., y=survive)) + geom_line(size = 0.6) + -->
-
-<!--   scale_x_continuous(name='Years since diagnosis', limits=c(0,3), breaks=c(0,1,2,3)) + -->
-
-<!--   scale_y_continuous(name='Survival Function') + -->
-
-<!--   ggtitle("Survival by time") + -->
-
-<!--   theme(plot.title = element_text(hjust = 0.5)) -->
-
-<!-- ``` -->
 
 ## Hypothesis Tests for the model
 
@@ -663,586 +514,224 @@ test.zero.time <- tvef.zero.time(fit.proxN)
 ```
 
 
-
-
-
-<!-- # 6. Model performance -->
-
-<!-- ## 6.1 Internal comparison -->
-
-<!-- ### 6.1.1 Accurancy: -->
-
-<!-- For the non-penalized method, the estimation is largely depended on the number of knots chosen in the B-Spline base function. -->
-<!-- The example shown above is using the default knots, which is `nspline=8`. -->
-<!-- However, the estimation could be largely different if we choose other knots. -->
-<!-- Following is the code showing the performance of the estimation when choosing different knots: -->
-
-<!-- Following is the code showing the performance of the estimation when choosing different knots: -->
-
-<!-- ```{r} -->
-
-<!-- sim_data=surtvep::sim_data -->
-
-<!-- event=sim_data[,"event"] -->
-
-<!-- time=sim_data[,"time"] -->
-
-<!-- data=sim_data[,!colnames(sim_data) %in% c("event","time")] -->
-
-<!-- knot_list=c(6,8,10,20) -->
-
-<!-- labels=paste0("Knots=",knot_list) -->
-
-<!-- x=seq(0,3,length.out=sum(event==1)) -->
-
-<!-- y=1 -->
-
-<!-- for(knot in knot_list){ -->
-
-<!--   fit<-coxtp(event=event,z=data,time=time,nspline=knot) -->
-
-<!--   plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + -->
-
-<!--     theme(text = element_text(size = 10), -->
-
-<!--           axis.text.x = element_text(size = 8), -->
-
-<!--           axis.text.y=element_text(size = 8)) + -->
-
-<!--     ggtitle("") + geom_line(aes(x=x,y=y)) -->
-
-<!--   plot -->
-
-<!--   assign(paste0("plot",knot),plot) -->
-
-<!-- } -->
-
-<!-- library(cowplot) -->
-
-<!-- title <- ggdraw() + -->
-
-<!--   draw_label( -->
-
-<!--     "Non-penalized NR", -->
-
-<!--     fontface = 'bold', -->
-
-<!--     x = 0, -->
-
-<!--     hjust = 0, -->
-
-<!--     size=15 -->
-
-<!--   ) + -->
-
-<!--   theme( -->
-
-<!--     plot.margin = margin(0, 0, 0, 7) -->
-
-<!--   ) -->
-
-<!-- ``` -->
-
-<!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
-
-<!-- p1=plot_grid(plot6,plot8,plot10,plot20,ncol=2,labels=c(labels),label_size = 13) -->
-
-<!-- p1 -->
-
-<!-- ``` -->
-
-<!-- For the result above, the red line and shadow refer to the estimated function and 95%CI while the black line refers to the true function which is time-fixed(y=1). -->
-
-<!-- From the result above, we noticed that as the knots increase, the estimation becomes more and more inaccurate. -->
-
-<!-- This is happening because as the number of knots increases, the variance in the data was mistakenly captured as its influence. -->
-
-<!-- This makes the number of knots of selection in the non-penalized model very important. -->
-
-<!-- While for penalized model, since we have penalized term, the number of knots didn't matters much, instead, the $\lambda$ is more important. -->
-
-<!-- Following plot is the performance of estimation when we use the lambda_spline selected before, which is `lambda_spline= 1000` -->
-
-<!-- ```{r} -->
-
-<!-- knot_list=c(6,8,10,20) -->
-
-<!-- labels=paste0("Knots=",knot_list) -->
-
-<!-- x=seq(0,3,length.out=sum(event==1)) -->
-
-<!-- y=1 -->
-
-<!-- for(knot in knot_list){ -->
-
-<!--   fit<-coxtp(event=event,z=data,time=time,nspline=knot,lambda_spline = 1000) -->
-
-<!--   plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + -->
-
-<!--     theme(text = element_text(size = 10), -->
-
-<!--           axis.text.x = element_text(size = 8), -->
-
-<!--           axis.text.y=element_text(size = 8)) + -->
-
-<!--     ggtitle("") + -->
-
-<!--     geom_line(aes(x=x,y=y)) -->
-
-<!--   plot -->
-
-<!--   assign(paste0("plot",knot),plot) -->
-
-<!-- } -->
-
-<!-- ``` -->
-
-<!-- ```{r,fig.height = 7, fig.width = 7, fig.align = "center"} -->
-
-<!-- library(cowplot) -->
-
-<!-- title <- ggdraw() + -->
-
-<!--   draw_label( -->
-
-<!--     paste0("Penalized NR,lambda=",1000), -->
-
-<!--     fontface = 'bold', -->
-
-<!--     x = 0, -->
-
-<!--     hjust = 0, -->
-
-<!--     size=15 -->
-
-<!--   ) + -->
-
-<!--   theme( -->
-
-<!--     plot.margin = margin(0, 0, 0, 7) -->
-
-<!--   ) -->
-
-<!-- p1=plot_grid(plot6,plot8,plot10,plot20,ncol=2,labels=c(labels),label_size = 13) -->
-
-<!-- p1 -->
-
-<!-- ``` -->
-
 From the plot above, we could observe that with different knots selected, the performance is not different so much for different knots, all the estimates are relatively close to the real function.
 However, in the penalized model, the lambda is more important which is another reason that we need to select the best lambda before actually fitting the model.
 The following plot is the performance of different lambda selected.
 For the following plot, the knot was set as default, which is `knot=8`.
 
+
+
+<!-- ## Real Data Example `SUPPORT` -->
+
+<!-- In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment). -->
+<!-- We use the processed `SUPPORT` data set included in the R package [@casebase]. -->
+
+<!-- We study the time-varying effects of metastatic cancer as the illustration example and include -->
+
+<!-- First we load the data and get the survival outcome: -->
+
+<!-- ```{r, message = FALSE} -->
+<!-- data(support) -->
+
+<!-- time <- support$d.time -->
+<!-- death <- support$death -->
+<!-- ``` -->
+
+<!-- Age, cancer status and diabetes status are included as covariates and considered as categorical variables. -->
+<!-- Age has 4 levels, cancer status has 3 levels and diabetes has 2 levels. -->
+<!-- The following codes processed the covariates for model fitting. -->
+
+<!-- ```{r, message = FALSE} -->
+<!-- #diabetes: -->
+<!-- diabetes <-  model.matrix(~factor(support$diabetes))[,-1] -->
+
+<!-- #sex: female as the reference group -->
+<!-- sex <- model.matrix(~support$sex)[,-1] -->
+
+<!-- #age: continuous variable -->
+<!-- age <-support$age -->
+<!-- age[support$age<=50] <- "<50" -->
+<!-- age[support$age>50 & support$age<=60] <- "50-59" -->
+<!-- age[support$age>60 & support$age<70] <- "60-69" -->
+<!-- age[support$age>=70] <- "70+" -->
+<!-- age <- factor(age, levels = c("60-69", "<50", "50-59", "70+")) -->
+<!-- z_age <- model.matrix(~age)[,-1] -->
+
+<!-- # cancer status: metastatic, yes, no -->
+<!-- ca <- factor(support$ca) -->
+<!-- z_ca_mets <- as.numeric(support$ca == "metastatic") -->
+<!-- z_ca_non_mets <- as.numeric(support$ca == "yes") -->
+
+<!-- z <- data.frame(z_age, z_ca_mets, z_ca_non_mets, sex, diabetes) -->
+<!-- # colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male") -->
+<!-- colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "non_metastatic", "diabetes", "male") -->
+<!-- ``` -->
+
+<!-- The Kaplan-Meier (KM) plots were generated using the following codes to visualize the survival probability over time for three categorical variables. Analysis of the KM plot for cancer status revealed a crossover point at approximately day 200, where the survival probability of the non-metastatic cancer group surpassed that of the cancer group, suggesting a violation of the non-proportional hazards assumption. -->
+
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- library(survminer) -->
+<!-- library(survival) -->
+<!-- data <- data.frame(time, death, z) -->
+<!-- fit1 <- survfit(Surv(time, death) ~ metastatic + non_metastatic, data = data) -->
+<!-- fit2 <- survfit(Surv(time, death) ~ diabetes, data = data) -->
+<!-- fit3 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data) -->
+<!-- ggsurvplot(fit1, data = data, legend.labs = c("non-cancer", "non-metastatic cancer", "metastatic cancer")) -->
+<!-- ggsurvplot(fit2, data = data, legend.labs = c("diabetes", "non-diabetes")) -->
+<!-- ggsurvplot(fit3, data = data, legend.labs = c("60-69", "70+", "50-59", "<50")) -->
+<!-- ``` -->
+
+
+<!-- Fit the Newtons' Method using `coxtv`: -->
+
 <!-- ```{r} -->
+<!-- fit.coxtv <- coxtv(event = death, z = z, time = time, nsplines = 10) -->
+<!-- ``` -->
 
-<!-- lambda_spline_all=c(0.001,0.01,0.1,1,10,100) -->
+<!-- We take a look at the estimation plots of cancer status using the `plot` function: -->
 
-<!-- labels=paste0("lambda=",lambda_spline_all) -->
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio") -->
+<!-- ``` -->
 
-<!-- i=1 -->
+<!-- Conditioned on the diabetes status and age, we can observe a violation of the proportional hazards assumption. A significant difference in the hazard of death was observed between the metastatic cancer, non-metastatic cancer, and non-cancer groups. Specifically, patients with metastatic cancer exhibited a higher hazard of death during the initial 1500 days compared with non-cancer patients. -->
 
-<!-- x=seq(0,3,length.out=sum(event==1)) -->
+<!-- However, upon examination of the estimation plot for non-metastatic cancer, a decrease at the beginning followed by an increase can be observed. The fluctuation in the plot is not deemed reliable, primarily due to the instability of the estimation. To address this issue, a penalty term was added to improve the estimation. -->
 
-<!-- y=1 -->
+<!-- ```{r, message = FALSE} -->
+<!-- fit.coxtp <- coxtp(event = death, z = z, time = time, lambda = c(1,10,100,1000)) -->
+<!-- IC.support <- IC(fit.coxtp) -->
+<!-- ``` -->
 
-<!-- for(lambda in lambda_spline_all){ -->
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio") -->
+<!-- ``` -->
 
-<!--   fit<-coxtp(event=event,z=data,time=time,lambda_spline = lambda) -->
 
-<!--   plot<-coxtp.plot(fit,coef="V1",ylab="HR(log-scale)") + -->
 
-<!--     theme(text = element_text(size = 10), -->
+<!-- Then we provide the hypothesis testing for each covariate. -->
 
-<!--           axis.text.x = element_text(size = 8), -->
+<!-- ```{r} -->
+<!-- #test the proportional hazards assumption -->
+<!-- test.ph <- tvef.ph(fit.coxtv) -->
+<!-- print(test.ph) -->
 
-<!--           axis.text.y=element_text(size = 8)) + -->
+<!-- #test the significance of each covariate -->
+<!-- test.zero <- tvef.zero(fit.coxtv) -->
+<!-- print(test.zero) -->
 
-<!--     ggtitle("")  + -->
+<!-- ``` -->
 
-<!--     geom_line(aes(x=x,y=y)) -->
+<!-- When testing for the proportional hazards assumption, age_50, non_cancer, non_metastatic, diabetes and male has p-value < 0.05. We reject the null hypothesis and claim that these covariates have violated the proportional hazards assumption. -->
 
-<!--   plot -->
+<!-- All these covariates are significant based on the Wald test. -->
 
-<!--   assign(paste0("plot",i),plot) -->
 
-<!--   i=i+1 -->
+<!-- Then we can use the following codes to get the baseline estimation and the baseline plot. -->
 
+<!-- ```{r} -->
+<!-- base <- baseline(IC.support$model.TIC) -->
+<!-- ``` -->
+
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- plot(base) -->
+<!-- ``` -->
+
+
+
+<!-- When dealing with data where ties are presented, we can also give baseline hazard and absolute hazard for each covariate. -->
+
+<!-- We utilized the Breslow's approximation to estimate the baseline hazard at each event time. We round the unique event time first. -->
+
+<!-- ```{r, message = FALSE} -->
+<!-- time.discrete <- round(support$d.time, digits = -2) -->
+
+<!-- fit.discrete <- coxtv(event = death, z = z, time = time.discrete, nsplines = 10) -->
+
+<!-- base.discrete <- baseline(fit.discrete) -->
+<!-- ``` -->
+
+
+<!-- The following codes provide the absolute hazards plot. -->
+
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- beta.abso <- data.frame(get.tvcoef(fit.discrete)) -->
+
+<!-- time_unique<- unique(time.discrete) -->
+
+<!-- haz_j      <- base.discrete$hazard -->
+
+<!-- smooth_data <- data.frame(time_unique, haz_j) -->
+
+<!-- loessMod30 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing -->
+
+<!-- haz_j_smooth30 <- predict(loessMod30) -->
+
+<!-- exp_betax<- matrix(0,length(unique(time.discrete)),dim(z)[2]) -->
+<!-- beta2                   <- beta.abso -->
+<!-- beta2$cancer         <- 0 -->
+
+<!-- exp_betax               <- exp(beta2) -->
+
+<!-- haz_0_betax             <- haz_j_smooth30 * exp_betax -->
+<!-- ``` -->
+
+
+<!-- ```{r, fig = TRUE, message = FALSE} -->
+<!-- library(ggplot2) -->
+<!-- plot_age <- ggplot(haz_0_betax, aes(x=time_unique)) + -->
+<!--   geom_line(aes(y=metastatic,  color = "metastatic-cancer"),size = 0.6) + -->
+<!--   geom_line(aes(y=non_metastatic,    color = "non-metastatic"),size = 0.6) + -->
+<!--   geom_line(aes(y=cancer,  color = "non-cancer"),size = 0.6) + -->
+<!--   scale_color_manual(name='Age at diagnosis', -->
+<!--                      breaks = c('non-cancer', 'non-metastatic', 'metastatic-cancer'), -->
+<!--                      values = c('non-cancer'='dark green', 'non-metastatic'='red', 'metastatic-cancer' = 'black')) + -->
+<!--   theme(plot.title = element_text(hjust = 0.2)) -->
+<!-- plot_age -->
+<!-- ``` -->
+
+
+
+
+<!-- ## References -->
+
+
+<!-- ## Appendix: -->
+
+<!-- ## B-spline basis to represent time-varying effects -->
+<!-- To model time-varying coefficients $\beta(t)$, we use a set of B-spline basis functions, providing a flexible and accurate way to capture the nonlinear relationships between predictor variables and the time-to-event outcome over time. B-splines are piecewise polynomial functions that can be smoothly connected at a set of points called knots. The smoothness of the spline function makes it a suitable choice for modeling time-varying effects in survival analysis, as it allows for the estimation of smooth and continuous relationships between predictor variables and the time-to-event outcome. -->
+
+<!-- These B-spline basis functions are generated using the splines R package with a fixed number of basis functions. The number of knots and the degree of the B-spline (typically, cubic B-splines are used) can be adjusted to control the smoothness and complexity of the resulting model. Increasing the number of knots results in a more flexible model that can capture more complex relationships, whereas reducing the number of knots leads to a smoother and simpler model. However, it is essential to strike a balance between flexibility and over-fitting the data when choosing the number of knots and the degree of the B-spline. We introduced the usage of a penalty term in later sections to control the smoothness with a larger number of knots. -->
+
+
+<!-- To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots, \beta_{P}(t)\}$, we span $\boldsymbol\beta(\cdot)$ by a set of cubic B-splines defined on a given number of knots: \begin{eqnarray} -->
+<!--    \beta_{p}(t)=\boldsymbol\theta_{p}^\top\boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber -->
+<!-- \end{eqnarray} where $\boldsymbol{B} (t)=\{B_1(t), \ldots, B_K(t)\}^T$ forms a basis, $K$ is the number of basis functions, and $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th covariate. -->
+
+<!-- The following plot gives a illustration of the construction of B-spline basis functions.  -->
+<!-- ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE} -->
+<!-- # Use the example data for illustration: -->
+<!-- time.point <- seq(0, 1, length.out = 100) -->
+
+<!-- # Load splines packages -->
+<!-- library(splines) -->
+
+<!-- # Set the number of knots and the degree of the B-spline basis functions -->
+<!-- nsplines <- 8 -->
+<!-- degree <- 3 -->
+
+<!-- # Set the knot location  -->
+<!-- knots = quantile(time.point,  (1:(nsplines-degree-1))/(nsplines-degree)) -->
+
+<!-- # Generate B-spline basis functions using the bs() function -->
+<!-- basis_functions <- splines::bs(time.point, knots = knots, degree = degree, intercept=T) -->
+
+<!-- # Plot the B-spline basis functions -->
+<!-- plot(time.point, basis_functions[,1], type = "l", ylim = c(0, 1), xlab = "Time", ylab = "B-spline basis functions", main = "B-spline basis functions with degree = 3") -->
+<!-- for (i in 2:ncol(basis_functions)) { -->
+<!--   lines(time.point, basis_functions[,i], col = i) -->
 <!-- } -->
 
-<!-- library(cowplot) -->
-
-<!-- title <- ggdraw() + -->
-
-<!--   draw_label( -->
-
-<!--     paste0("Penalized NR,knot=",8), -->
-
-<!--     fontface = 'bold', -->
-
-<!--     x = 0, -->
-
-<!--     hjust = 0, -->
-
-<!--     size=15 -->
-
-<!--   ) + -->
-
-<!--   theme( -->
-
-<!--     plot.margin = margin(0, 0, 0, 7) -->
-
-<!--   ) -->
-
+<!-- # Add a legend to the plot -->
+<!-- legend("topleft", legend = paste("B-spline", 1:ncol(basis_functions)), col = 1:ncol(basis_functions), lty = 1, cex = 0.7) -->
 <!-- ``` -->
-
-<!-- ```{r,fig.height = 9, fig.width = 7, fig.align = "center"} -->
-
-<!-- p1=plot_grid(plot1,plot2,plot3,plot4,plot5,plot6,ncol=2,labels=labels,label_size = 13) -->
-
-<!-- p1 -->
-
-<!-- ``` -->
-
-<!-- As a result, as the lambda increase, the estimated function is more related to the true function. -->
-
-<!-- This is happening because that the true function is time-fixed function, thus, as the lambda increase, the real function tends to shrink to the fixed function. -->
-
-<!-- ### 6.1.2 Efficacy -->
-
-<!-- Next, we are going to compare the Efficacy of different methods. -->
-
-<!-- The main function we used to eliminate computation time by parallel. -->
-
-<!-- For the function, the default setting for parallel is `parallel=FALSE`. -->
-
-<!-- For parallel computation, we also need to define `threads`, which refers to the number of cores of the computer. -->
-
-<!-- Here we set `thread=4`. -->
-
-<!-- The following code and plot is to use to compare parallel and non-parallel time for different sample size: -->
-
-<!-- ```{r} -->
-
-<!-- library(stringi) -->
-
-<!-- library(stringr) -->
-
-<!-- library(dplyr) -->
-
-<!-- samplesize_list=c(1000,2000,3000,4000,5000) -->
-
-<!-- i=1 -->
-
-<!-- for(samplesize in samplesize_list){ -->
-
-<!--   print(i) -->
-
-<!--   sim_data_sub=sim_data[1:samplesize,] -->
-
-<!--   event_sub=sim_data_sub[,"event"] -->
-
-<!--   time_sub=sim_data_sub[,"time"] -->
-
-<!--   data_sub=sim_data_sub[,!colnames(sim_data_sub) %in% c("event","time")] -->
-
-<!--   non_parallel=bench::mark(coxtp(event=event_sub,z=data_sub,time=time_sub,lambda_spline = 100))[,1:8] -->
-
-<!--   parallel=bench::mark(coxtp(event=event_sub,z=data_sub,time=time_sub,lambda_spline = 100,parallel = T,threads = 4))[,1:8] -->
-
-<!--   non_parallel[,1]=samplesize -->
-
-<!--   parallel[,1]=samplesize -->
-
-<!--   if(i!=1){ -->
-
-<!--     non_parallel_list=rbind(non_parallel_list,non_parallel) -->
-
-<!--     parallel_list=rbind(parallel_list,parallel) -->
-
-<!--   } else { -->
-
-<!--     non_parallel_list=non_parallel -->
-
-<!--     parallel_list=parallel -->
-
-<!--   } -->
-
-<!--   i=i+1 -->
-
-<!-- } -->
-
-<!-- parallel_list$parallel="Parallel" -->
-
-<!-- non_parallel_list$parallel="None-Parallel" -->
-
-<!-- time_data=rbind(parallel_list,non_parallel_list) %>% -->
-
-<!--   mutate(median_time=str_remove(median,"s"), -->
-
-<!--          median_time=str_remove(median_time,"m"), -->
-
-<!--          median_time=as.numeric(median_time), -->
-
-<!--          median_time=ifelse(str_detect(median,"ms"),median_time/1000,median_time)) %>% -->
-
-<!--   rename(samplesize=expression) -->
-
-<!-- #Plot Time used: -->
-
-<!-- ``` -->
-
-<!-- ```{r,fig.height = 5, fig.width = 7, fig.align = "center"} -->
-
-<!-- ggplot(time_data,aes(x=samplesize,y=median_time,group=parallel)) + -->
-
-<!--   geom_point(aes(color=parallel)) + -->
-
-<!--   geom_line(aes(color=parallel)) + -->
-
-<!--   labs(x="Sample Size",y="Seconds",title="Internal Computation time Comparison") -->
-
-<!-- ``` -->
-
-<!-- ## 6.2 External comparison -->
-
-<!-- ### 6.2.1 Accurancy -->
-
-<!-- In this section, we are going to compare the performance between our package and other time-varying survival packages. -->
-
-<!-- # 7. Simulation -->
-
-<!-- In this section, we will generate our model prediction to large dataset and illustrate how to do simulation based on our package -->
-
-<!-- To start with, we first divided our dataset into training and testing dataset: -->
-
-<!-- ```{r} -->
-
-<!-- sim_data=sim_data_p5 -->
-
-<!-- #Generate ID for sampling -->
-
-<!-- sim_data=cbind(sim_data,c(1:nrow(sim_data))) -->
-
-<!-- train_id=sample(c(1:nrow(sim_data)),2000,replace=F) -->
-
-<!-- train_data=sim_data[sim_data[,8] %in% train_id, ] -->
-
-<!-- test_data=sim_data[!sim_data[,8] %in% train_id, ] -->
-
-<!-- #Remove ID -->
-
-<!-- train_data=train_data[,1:7] -->
-
-<!-- test_data=test_data[,1:7] -->
-
-<!-- ``` -->
-
-<!-- Next, we are going to build the model using the training data. -->
-
-<!-- The step is similar as we have shown in previous step -->
-
-<!-- ```{r} -->
-
-<!-- event=train_data[,"event"] -->
-
-<!-- time=train_data[,"time"] -->
-
-<!-- data=train_data[,!colnames(train_data) %in% c("event","time")] -->
-
-<!-- lambda_spline_all=c(0.001,0.01,0.1,1,10,100,1000) -->
-
-<!-- fit_penalized <- coxtp(event = event, z = data, time = time,lambda_spline=lambda_spline_all) -->
-
-<!-- fit_penalized$lambda.selected -->
-
-<!-- ``` -->
-
-<!-- From the result above, we noticed that the lambda.selected is 1. -->
-
-<!-- Next, we are going to predict the model using the test_data. -->
-
-<!-- Here we are going to treat the `test_data` as a whole new population data and want to predict the event probability by time. -->
-
-<!-- From previous illustration, we know that the function `cox.predict` could generate absolute hazard for one individual during the time period. -->
-
-## Real Data Example `SUPPORT`
-
-In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment).
-We use the processed `SUPPORT` data set included in the R package [@casebase].
-
-We study the time-varying effects of metastatic cancer as the illustration example and include
-
-First we load the data and get the survival outcome:
-
-```{r, message = FALSE}
-data(support)
-
-time <- support$d.time
-death <- support$death
-```
-
-Age, cancer status and diabetes status are included as covariates and considered as categorical variables.
-Age has 4 levels, cancer status has 3 levels and diabetes has 2 levels.
-The following codes processed the covariates for model fitting.
-
-```{r, message = FALSE}
-#diabetes: 
-diabetes <-  model.matrix(~factor(support$diabetes))[,-1]
-
-#sex: female as the reference group
-sex <- model.matrix(~support$sex)[,-1]
-
-#age: continuous variable
-age <-support$age
-age[support$age<=50] <- "<50"
-age[support$age>50 & support$age<=60] <- "50-59"
-age[support$age>60 & support$age<70] <- "60-69"
-age[support$age>=70] <- "70+"
-age <- factor(age, levels = c("60-69", "<50", "50-59", "70+"))
-z_age <- model.matrix(~age)[,-1]
-
-# cancer status: metastatic, yes, no
-ca <- factor(support$ca)
-z_ca_mets <- as.numeric(support$ca == "metastatic")
-z_ca_non_mets <- as.numeric(support$ca == "yes")
-
-z <- data.frame(z_age, z_ca_mets, z_ca_non_mets, sex, diabetes)
-# colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male")
-colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "non_metastatic", "diabetes", "male")
-```
-
-The Kaplan-Meier (KM) plots were generated using the following codes to visualize the survival probability over time for three categorical variables. Analysis of the KM plot for cancer status revealed a crossover point at approximately day 200, where the survival probability of the non-metastatic cancer group surpassed that of the cancer group, suggesting a violation of the non-proportional hazards assumption.
-
-```{r, fig = TRUE, message = FALSE}
-library(survminer)
-library(survival)
-data <- data.frame(time, death, z)
-fit1 <- survfit(Surv(time, death) ~ metastatic + non_metastatic, data = data)
-fit2 <- survfit(Surv(time, death) ~ diabetes, data = data)
-fit3 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data)
-ggsurvplot(fit1, data = data, legend.labs = c("non-cancer", "non-metastatic cancer", "metastatic cancer"))
-ggsurvplot(fit2, data = data, legend.labs = c("diabetes", "non-diabetes"))
-ggsurvplot(fit3, data = data, legend.labs = c("60-69", "70+", "50-59", "<50"))
-```
-
-
-Fit the Newtons' Method using `coxtv`:
-
-```{r}
-fit.coxtv <- coxtv(event = death, z = z, time = time, nsplines = 10)
-```
-
-We take a look at the estimation plots of cancer status using the `plot` function:
-
-```{r, fig = TRUE, message = FALSE}
-plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2))
-```
-
-Conditioned on the diabetes status and age, we can observe a violation of the proportional hazards assumption. A significant difference in the hazard of death was observed between the metastatic cancer, non-metastatic cancer, and non-cancer groups. Specifically, patients with metastatic cancer exhibited a higher hazard of death during the initial 1500 days compared with non-cancer patients.
-
-However, upon examination of the estimation plot for non-metastatic cancer, a decrease at the beginning followed by an increase can be observed. The fluctuation in the plot is not deemed reliable, primarily due to the instability of the estimation. To address this issue, a penalty term was added to improve the estimation.
-
-```{r, message = FALSE}
-fit.coxtp <- coxtp(event = death, z = z, time = time, lambda = c(1,10,100,1000))
-IC.support <- IC(fit.coxtp)
-```
-
-```{r, fig = TRUE, message = FALSE}
-plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2))
-```
-
-
-
-Then we provide the hypothesis testing for each covariate.
-
-```{r}
-#test the proportional hazards assumption
-test.ph <- tvef.ph(fit.coxtv)
-print(test.ph)
-
-#test the significance of each covariate
-test.zero <- tvef.zero(fit.coxtv)
-print(test.zero)
-
-```
-
-When testing for the proportional hazards assumption, age_50, non_cancer, non_metastatic, diabetes and male has p-value < 0.05. We reject the null hypothesis and claim that these covariates have violated the proportional hazards assumption.
-
-All these covariates are significant based on the Wald test.
-
-
-Then we can use the following codes to get the baseline estimation and the baseline plot.
-
-```{r}
-base <- baseline(IC.support$model.TIC)
-```
-
-```{r, fig = TRUE, message = FALSE}
-plot(base)
-```
-
-
-
-
-
-When dealing with data where ties are presented, we can also give baseline hazard and absolute hazard for each covariate.
-
-We utilized the Breslow's approximation to estimate the baseline hazard at each event time. We round the unique event time first.
-
-```{r, message = FALSE}
-time.discrete <- round(support$d.time, digits = -2)
-
-fit.discrete <- coxtv(event = death, z = z, time = time.discrete, nsplines = 10)
-
-base.discrete <- baseline(fit.discrete)
-```
-
-
-The following codes provide the absolute hazards plot.
-
-```{r, fig = TRUE, message = FALSE}
-beta.abso <- data.frame(get.tvcoef(fit.discrete))
-
-time_unique<- unique(time.discrete)
-
-haz_j      <- base.discrete$hazard
-
-smooth_data <- data.frame(time_unique, haz_j)
-# loessMod10 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.10) # 10% smoothing span
-loessMod30 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing span
-#loessMod50 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.50) # 50% smoothing span
-
-haz_j_smooth30 <- predict(loessMod30) 
-
-exp_betax<- matrix(0,length(unique(time.discrete)),dim(z)[2])
-beta2                   <- beta.abso
-beta2$cancer         <- 0
-
-exp_betax               <- exp(beta2)
-
-haz_0_betax             <- haz_j_smooth30 * exp_betax
-```
-
-
-```{r, fig = TRUE, message = FALSE}
-library(ggplot2)
-plot_age <- ggplot(haz_0_betax, aes(x=time_unique)) + 
-  geom_line(aes(y=metastatic,  color = "metastatic-cancer"),size = 0.6) + 
-  geom_line(aes(y=non_metastatic,    color = "non-metastatic"),size = 0.6) + 
-  geom_line(aes(y=cancer,  color = "non-cancer"),size = 0.6) + 
-
-  # scale_x_continuous(name='Years since diagnosis', limits=c(0,12), breaks=c(0,4,8,12)) + 
-  # scale_y_continuous(name='Absolute hazard', limits = c(0,0.2)) +
-  scale_color_manual(name='Age at diagnosis', 
-                     breaks = c('non-cancer', 'non-metastatic', 'metastatic-cancer'),
-                     values = c('non-cancer'='dark green', 'non-metastatic'='red', 'metastatic-cancer' = 'black')) +
-  # ggtitle(" Cancer Death Mets Only") +
-  theme(plot.title = element_text(hjust = 0.2))
-plot_age
-```
-
-
-
-
-

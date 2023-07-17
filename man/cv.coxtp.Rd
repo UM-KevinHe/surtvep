@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv.coxtp.R
 \name{cv.coxtp}
 \alias{cv.coxtp}
-\title{fit a Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross validation}
+\title{fit a cross-validated Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross-validation}
 \usage{
 cv.coxtp(
   event,
@@ -29,27 +29,27 @@ cv.coxtp(
 )
 }
 \arguments{
-\item{event}{failure events response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1.}
+\item{event}{failure event response variable of length \code{nobs}, where \code{nobs} denotes the number of observations. It should be a vector containing 0 or 1.}
 
-\item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation vector.}
+\item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation.}
 
-\item{time}{observed event time, which should be a vector with non-negative numeric values.}
+\item{time}{observed event time, which should be a vector with non-negative values.}
 
-\item{strata}{stratification group defined in the data used for the stratified model.
-If there exists a stratification group, please enter it as a vector.
-By default, a non-stratified model would be implemented.}
+\item{strata}{a vector of indicators for stratification.
+Default = \code{NULL} (i.e. no stratification group in the data), an unstratified model is implemented.}
 
 \item{lambda}{a user specified sequence as the penalization coefficients in front of the spline term specified by \code{penalty}.
-This is the tuning parameter for penalization. Users can use \code{IC} to select the best tuning parameter based on the information criteria.
-Users can specify for larger values when the estimated time-varying effects are too high.
+This is the tuning parameter for penalization.  The function \code{IC} can be used to select the best tuning parameter based on the information criteria.
+Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
 Default is \code{0} which refers to Newton method without penalization.}
 
-\item{nfolds}{number of folds for cross-validation - default is 5. The smallest value allowable is \code{nfolds}=3.}
+\item{nfolds}{number of folds for cross-validation, default is 5. The smallest value allowable is \code{nfolds}=3.}
 
-\item{foldid}{an optional vector of values between 1 and nfold identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.}
+\item{foldid}{an optional vector of values between 1 and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.}
 
-\item{penalty}{a character string specifying the spline term for penalized Newton method.
-This term is added to the log-partial likelihood, and the penalized log-partial likelihood serves as the new objective function to control the smoothness of the time-varying effects.
+\item{penalty}{a character string specifying the spline term for the penalized Newton method.
+This term is added to the log-partial likelihood, and the penalized log-partial likelihood serves as the new objective function to
+control the smoothness of the time-varying coefficients.
 Default is \code{P-spline}. Three options are \code{P-spline}, \code{Smooth-spline} and \code{NULL}.
 If \code{NULL}, the method will be the same as \code{coxtv} (unpenalized time-varying effects models) and \code{lambda} (defined below)
 will be set as 0.
@@ -67,9 +67,11 @@ If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as
 We use the R function \code{splines::bs} to generate the B-splines.}
 
 \item{ties}{a character string specifying the method for tie handling. If there are no tied events,
-the methods are equivalent.  By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties are present.}
+the methods are equivalent.
+By default \code{"Breslow"} uses the Breslow approximation, which can be faster when many ties are present.
+If \code{ties = "none"}, no approximation will be used to handle ties.}
 
-\item{tol}{tolerance used for stopping the algorithm. The algorithm continues until the method selected using \code{stop} converges.
+\item{tol}{tolerance used for stopping the algorithm. See details in \code{stop} below.
 The default value is  \code{1e-6}.}
 
 \item{iter.max}{maximum iteration number if the stopping criterion specified by \code{stop} is not satisfied. Default value is  \code{20}.}
@@ -80,19 +82,22 @@ See details in Wu et al. (2022).}
 
 \item{gamma}{parameter for proximal Newton method \code{"ProxN"}. The default value is \code{1e8}.}
 
-\item{btr}{a character string specifying the backtracking line-search approach. \code{"dynamic"} is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+\item{btr}{a character string specifying the backtracking line-search approach. \code{"dynamic"} is a typical way to perform backtracking line-search.
+See details in Convex Optimization by Boyd and Vandenberghe (2004).
 \code{"static"} limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
 which usually occurs when some predictors are categorical with low frequency for some categories.
 Users should be careful with \code{static} as this may lead to under-fitting.}
 
 \item{tau}{a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is \code{0.5}.}
 
-\item{stop}{a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.
-\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}.
-\code{"relch"} means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the \code{tol}.
+\item{stop}{a character string specifying the stopping rule to determine convergence.
+\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+\code{"relch"} means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the \code{tol},
+where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 \code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
 \code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} are met.
-Default value is \code{ratch}. If the maximum iteration steps \code{iter.max} is achieved, the algorithm stops before the stopping rule is met.}
+Default value is \code{ratch}.
+If \code{iter.max} is achieved, it overrides any stop rule for algorithm termination.}
 
 \item{parallel}{if \code{TRUE}, then the parallel computation is enabled. The number of threads in use is determined by \code{threads}.}
 
@@ -117,17 +122,17 @@ Users can specify the internal knot locations by themselves.}
 An object of class \code{"cv.coxtp"} is returned, which is a list with the ingredients of the cross-validation fit.
 \item{model.cv}{a \code{"coxtp"} object with tuning parameter chosen based on cross validation.}
 \item{lambda}{the values of \code{lambda} used in the fits.}
-\item{cve}{the mean cross-validated error - a vector of length(lambda).
-For the k-th testing fold (k = 1,...,\code{nfolds}), we take the remaining folds as the training folds.
+\item{cve}{the mean cross-validated error - a vector having the same length as lambda.
+For the k-th testing fold (k = 1, ..., \code{nfolds}), we take the remaining folds as the training folds.
 Based on the model trained on the training folds, we calculate the log-partial likelihood on all the folds \eqn{loglik0} and training folds  \eqn{loglik1}.
-The CVE is equal to \eqn{-2*(loglik0 - loglik1)}. This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.}
-\item{lambda.min}{the value of \code{lambda} that gives minimum cve.}
+The \code{cve} is equal to \eqn{-2*(loglik0 - loglik1)}. This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.}
+\item{lambda.min}{the value of \code{lambda} that gives minimum \code{cve}.}
 }
 \description{
-Fit a Cox non-proportional hazards model via penalized maximum likelihood.
+Fit a Cox non-proportional hazards model via penalized maximum likelihood. The penalization tuning parameter is provided by cross-validation.
 }
 \details{
-The function runs \code{coxtp} length of \code{lambda} x  \code{nfolds} times; each is to compute the fit with each of the folds omitted.
+The function runs \code{coxtp} length of \code{lambda} by \code{nfolds} times; each is to compute the fit with each of the folds omitted.
 }
 \examples{
 data(ExampleData)
@@ -140,15 +145,24 @@ fit  <- cv.coxtp(event = event, z = z, time = time, lambda=lambda, nfolds = 5)
 
 }
 \references{
+Boyd, S., Vandenberghe, L. (2004) Convex optimization.
+\emph{Cambridge University Press}.
+\cr
+
 Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
-\emph{Journal of the American Statistical Association}, \strong{87}: 942-951.
+\emph{Journal of the American Statistical Association}, \strong{87(420)}: 942-951.
 \cr
 
 Gray, R. J. (1994) Spline-based tests in survival analysis.
-\emph{Biometrics}, \strong{50}: 640-652.
+\emph{Biometrics}, \strong{50(3)}: 640-652.
 \cr
 
-Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+\emph{Statistical Methods in Medical Research}, \strong{in press}.
+\cr
+
+Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+\emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 \cr
 
 Verweij, P. J., and Van Houwelingen, H. C. (1993) Cross‐validation in survival analysis.
@@ -161,9 +175,5 @@ Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. 
 
 Wood, S. N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
 \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
-\cr
-
-Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
-\emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 \cr
 }

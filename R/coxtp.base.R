@@ -23,7 +23,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   ICLastOnly    <- control$ICLastOnly
   
   
-  
    # formula=fmla
   
   Terms <- terms(formula, specials=c("tv", "strata", "offset"))

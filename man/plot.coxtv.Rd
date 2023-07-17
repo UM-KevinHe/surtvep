@@ -2,11 +2,10 @@
 % Please edit documentation in R/coxtv.plot.R
 \name{plot.coxtv}
 \alias{plot.coxtv}
-\title{plotting result from a fitted \code{coxtv} object}
+\title{plotting results from a fitted \code{coxtv} object}
 \usage{
 \method{plot}{coxtv}(
   fit,
-  times,
   parm,
   CI = TRUE,
   level = 0.95,
@@ -15,22 +14,49 @@
   ylab,
   xlim,
   ylim,
-  save = FALSE,
   allinone = FALSE,
   title,
   linetype,
-  fill,
   color,
-  labels,
-  expand,
-  ...
+  fill,
+  times
 )
 }
 \arguments{
-\item{fit}{model get from coxtv.}
+\item{fit}{model obtained from \code{coxtv}.}
+
+\item{parm}{covariate name fitted in the model to be plotted. If \code{NULL}, all covariates are plotted.}
+
+\item{CI}{if \code{TRUE}, confidence intervals are displayed. Default value is \code{TRUE}.}
+
+\item{level}{the level of confidence interval. Default value is \code{0.95}.}
+
+\item{exponentiate}{if \code{TRUE}, exponential scale of the fitted coefficients (hazard ratio) for each covariate is plotted.
+If \code{FALSE}, the fitted time-varying coefficients (log hazard ratio) are plotted.}
+
+\item{xlab}{the title for the x axis.}
+
+\item{ylab}{the title for the y axis.}
+
+\item{xlim}{the limits for the x axis.}
+
+\item{ylim}{the limits for the y axis.}
+
+\item{allinone}{if \code{TRUE}, the time-varying trajectories for different covariates are combined into a single plot. Default value is \code{FALSE}.}
+
+\item{title}{the title for the plot.}
+
+\item{linetype}{the line type for the plot.}
+
+\item{color}{the aesthetics parameter for the plot.}
+
+\item{fill}{the aesthetics parameter for the plot.}
+
+\item{times}{the time points for which the time-varying coefficients to be plotted.
+The default value is the unique observed event times in the dataset fitting the time-varying effects model.}
 }
 \description{
-Plotting result from a fitted \code{coxtv} object.
+This function creates a plot of the time-varying coefficients from a fitted \code{coxtv} model.
 }
 \examples{
 data(ExampleData)

@@ -1,16 +1,16 @@
-#' fit a Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross validation
+#' fit a cross-validated Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross-validation
 #' 
-#' Fit a Cox non-proportional hazards model via penalized maximum likelihood. 
+#' Fit a Cox non-proportional hazards model via penalized maximum likelihood. The penalization tuning parameter is provided by cross-validation.
 #' 
-#' @param event failure events response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
-#' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation vector. 
-#' @param time observed event time, which should be a vector with non-negative numeric values.
-#' @param strata stratification group defined in the data used for the stratified model. 
-#' If there exists a stratification group, please enter it as a vector. 
-#' By default, a non-stratified model would be implemented.
+#' @param event failure event response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
+#' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation. 
+#' @param time observed event time, which should be a vector with non-negative values.
+#' @param strata a vector of indicators for stratification. 
+#' Default = `NULL` (i.e. no stratification group in the data), an unstratified model is implemented.
 #' 
-#' @param penalty a character string specifying the spline term for penalized Newton method. 
-#' This term is added to the log-partial likelihood, and the penalized log-partial likelihood serves as the new objective function to control the smoothness of the time-varying effects.
+#' @param penalty a character string specifying the spline term for the penalized Newton method. 
+#' This term is added to the log-partial likelihood, and the penalized log-partial likelihood serves as the new objective function to 
+#' control the smoothness of the time-varying coefficients.
 #' Default is `P-spline`. Three options are `P-spline`, `Smooth-spline` and `NULL`. 
 #' If `NULL`, the method will be the same as `coxtv` (unpenalized time-varying effects models) and `lambda` (defined below)
 #' will be set as 0. 
@@ -25,12 +25,12 @@
 #' If `P-spline` or `Smooth-spline`, then `lambda` is initialized as a sequence (0.1, 1, 10). Users can modify `lambda`. See details in `lambda`.
 #' 
 #' @param lambda a user specified sequence as the penalization coefficients in front of the spline term specified by `penalty`. 
-#' This is the tuning parameter for penalization. Users can use `IC` to select the best tuning parameter based on the information criteria. 
-#' Users can specify for larger values when the estimated time-varying effects are too high.
+#' This is the tuning parameter for penalization.  The function `IC` can be used to select the best tuning parameter based on the information criteria. 
+#' Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
 #' Default is `0` which refers to Newton method without penalization. 
 #' 
-#' @param nfolds number of folds for cross-validation - default is 5. The smallest value allowable is `nfolds`=3.
-#' @param foldid an optional vector of values between 1 and nfold identifying what fold each observation is in. If supplied, `nfolds` can be missing.
+#' @param nfolds number of folds for cross-validation, default is 5. The smallest value allowable is `nfolds`=3.
+#' @param foldid an optional vector of values between 1 and `nfolds` identifying what fold each observation is in. If supplied, `nfolds` can be missing.
 #'
 #' @param nsplines number of basis functions in the splines to span the time-varying effects, whose default value is 8. 
 #' We use the R function `splines::bs` to generate the B-splines. 
@@ -48,16 +48,20 @@
 #' If `penalty` is `Smooth-spline`, `degree`'s default value is 2. 
 #' 
 #' @param ties a character string specifying the method for tie handling. If there are no tied events, 
-#' the methods are equivalent.  By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties are present.
+#' the methods are equivalent.  
+#' By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties are present.
+#' If `ties = "none"`, no approximation will be used to handle ties.
 #' 
-#' @param stop a character string specifying the stopping rule to determine convergence. Use \eqn{loglik(m)} to denote the log-partial likelihood at iteration step m.  
-#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`.
-#' `"relch"` means we stop the algorithm when the \eqn{loglik(m)} divided by the  \eqn{loglik(0)} is less than the `tol`.
+#' @param stop a character string specifying the stopping rule to determine convergence.  
+#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+#' `"relch"` means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the `tol`,
+#'  where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
 #' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
-#' Default value is `ratch`. If the maximum iteration steps `iter.max` is achieved, the algorithm stops before the stopping rule is met.
+#' Default value is `ratch`. 
+#' If `iter.max` is achieved, it overrides any stop rule for algorithm termination.
 #' 
-#' @param tol tolerance used for stopping the algorithm. The algorithm continues until the method selected using `stop` converges.
+#' @param tol tolerance used for stopping the algorithm. See details in `stop` below.
 #'  The default value is  `1e-6`.
 #' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. Default value is  `20`. 
 #' @param method a character string specifying whether to use Newton method or proximal Newton method.  If `"Newton"` then Hessian is used, 
@@ -65,7 +69,8 @@
 #' See details in Wu et al. (2022).
 #' 
 #' @param gamma parameter for proximal Newton method `"ProxN"`. The default value is `1e8`.
-#' @param btr a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. See details in Convex Optimization by Boyd and Vandenberghe (2009).
+#' @param btr a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. 
+#' See details in Convex Optimization by Boyd and Vandenberghe (2004).
 #' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
 #' which usually occurs when some predictors are categorical with low frequency for some categories. 
 #' Users should be careful with `static` as this may lead to under-fitting.
@@ -77,11 +82,11 @@
 #' @return An object of class `"cv.coxtp"` is returned, which is a list with the ingredients of the cross-validation fit.
 #' \item{model.cv}{a \code{"coxtp"} object with tuning parameter chosen based on cross validation.} 
 #' \item{lambda}{the values of `lambda` used in the fits.}
-#' \item{cve}{the mean cross-validated error - a vector of length(lambda).
-#' For the k-th testing fold (k = 1,...,`nfolds`), we take the remaining folds as the training folds. 
+#' \item{cve}{the mean cross-validated error - a vector having the same length as lambda.
+#' For the k-th testing fold (k = 1, ..., `nfolds`), we take the remaining folds as the training folds. 
 #' Based on the model trained on the training folds, we calculate the log-partial likelihood on all the folds \eqn{loglik0} and training folds  \eqn{loglik1}. 
-#' The CVE is equal to \eqn{-2*(loglik0 - loglik1)}. This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.}
-#' \item{lambda.min}{the value of `lambda` that gives minimum cve.}
+#' The `cve` is equal to \eqn{-2*(loglik0 - loglik1)}. This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.}
+#' \item{lambda.min}{the value of `lambda` that gives minimum `cve`.}
 #' 
 #' @export
 #' 
@@ -95,18 +100,27 @@
 #' fit  <- cv.coxtp(event = event, z = z, time = time, lambda=lambda, nfolds = 5)
 #' 
 #' 
-#' @details The function runs `coxtp` length of `lambda` x  `nfolds` times; each is to compute the fit with each of the folds omitted.
+#' @details The function runs `coxtp` length of `lambda` by `nfolds` times; each is to compute the fit with each of the folds omitted.
 #' 
 #' @references 
+#' Boyd, S., Vandenberghe, L. (2004) Convex optimization. 
+#' \emph{Cambridge University Press}.
+#' \cr
+#' 
 #' Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
-#' \emph{Journal of the American Statistical Association}, \strong{87}: 942-951. 
+#' \emph{Journal of the American Statistical Association}, \strong{87(420)}: 942-951. 
 #' \cr
 #' 
 #' Gray, R. J. (1994) Spline-based tests in survival analysis.
-#' \emph{Biometrics}, \strong{50}: 640-652.
+#' \emph{Biometrics}, \strong{50(3)}: 640-652.
 #' \cr
 #' 
-#' Luo, L., He, K. Wu, W., and Taylor, J. M., (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#' Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+#' \emph{Statistical Methods in Medical Research}, \strong{in press}.
+#' \cr
+#' 
+#' Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+#' \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
 #' \cr
 #' 
 #' Verweij, P. J., and Van Houwelingen, H. C. (1993) Cross‐validation in survival analysis.
@@ -121,12 +135,8 @@
 #' \emph{Statistics and Computing}, \strong{27(4)}: 985-989.
 #' \cr
 #' 
-#' Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
-#' \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
-#' \cr
 #' 
-#' 
-#' 
+#'
 cv.coxtp <- function(event , z, time, strata=NULL, 
                      lambda = c(0.1, 1, 10),
                      nfolds = 5, foldid = NULL, 
@@ -145,12 +155,12 @@ cv.coxtp <- function(event , z, time, strata=NULL,
   
   p = ncol(z)
   
-  if(length(strata)==0){
-    stratum=rep(1, length(time))
-  } else {
-    stratum=strata
-  }
-
+  event  <- event[time_order <- order(time)]
+  z      <- z[time_order,]
+  strata <- strata[time_order]
+  time   <- time[time_order]
+  
+  stratum <- if (length(strata) == 0) rep(1, length(time)) else strata
   
   #######################################################################
   ### 5-fold cross-validation

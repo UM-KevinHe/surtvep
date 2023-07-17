@@ -3,6 +3,40 @@ template:
   params:
     bootswatch: lumen
     ganalytics: UA-54921687-5
+    mathjax: true
+    
+vignettes:
+  - vignettes/surtvep.Rmd
+
+navbar:
+ structure: 
+   right: [articles, articles2]
+ components:
+   articles:
+    text: Appendix
+    menu:
+    - text: Category A
+    - text: B-spline construction
+      href: articles/Appendix.html
+    - text: Title A2
+      href: articles/a2.html
+    - text: -------
+    - text: "Category B"
+    - text: Plotting
+      href: articles/plotting.html
+   articles2:
+    text: Appendix2
+    menu:
+    - text: Category A
+    - text: B-spline construction
+      href: articles/Appendix.html
+    - text: Title A2
+      href: articles/a2.html
+    - text: -------
+    - text: "Category B"
+    - text: Plotting
+      href: articles/plotting.html
+      
 reference:
 - title: Main Fitting Functions
   desc: The main function to fit the Cox-non proportional hazards model

@@ -2,12 +2,12 @@
 % Please edit documentation in R/tvef.ph.R
 \name{tvef.zero.time}
 \alias{tvef.zero.time}
-\title{test the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a Wald test statistic}
+\title{testing the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a Wald test statistic}
 \usage{
 tvef.zero.time(fit, times, parm)
 }
 \arguments{
-\item{fit}{fitted \code{"coxtv"} or \code{"coxtp"}  model.}
+\item{fit}{fitted \code{coxtv} or \code{coxtp}  model.}
 
 \item{times}{the time points to test if the covariate is significant or not.}
 
@@ -15,12 +15,12 @@ tvef.zero.time(fit, times, parm)
 }
 \value{
 \code{tvef.zero.time} produces a list of length \code{nvars}. Each element of the list is a matrix with respect to a
-covariate. The matrix is of dimension \code{len_unique_t} by 4, where \code{len_unique_t} is the length of unique follow-up time.
+covariate. The matrix is of dimension \code{len_unique_t} by 4, where \code{len_unique_t} is the length of unique observed event time.
 Each row corresponds to the testing result at that time.  The four
-columns give the estimation, standard error, z-statistic and  P-value.
+columns give the estimations, standard error, z-statistic and  P-value.
 }
 \description{
-Test the significance of the covariates at each time point.
+Testing the significance of the covariates at each time point.
 }
 \examples{
 data(ExampleData)
