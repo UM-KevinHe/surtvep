@@ -51,8 +51,10 @@
 
 
 #' Study to Understand Prognoses Preferences Outcomes and Risks of Treatment
-#' (SUPPORT)
-#'
+#' @name support
+#' @docType data
+#' @usage data(support)
+#' 
 #' @description The SUPPORT dataset tracks five response variables: hospital
 #'   death, severe functional disability, hospital costs, and time until death
 #'   and death itself. The patients are followed for up to 5.56 years.
@@ -143,10 +145,8 @@
 #' 
 #' @examples
 #' \dontrun{
-#' data("support")
-#' 
-#' library(surtvep)
 #' data(support)
+#' 
 #' support <- support[support$ca %in% c("metastatic"),]
 #' 
 #' time <- support$d.time

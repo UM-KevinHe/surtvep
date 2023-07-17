@@ -25,12 +25,12 @@
 #' @exportS3Method plot coxtp
 #' 
 #' @examples
-# data(ExampleData)
-# z <- ExampleData$x
-# time <- ExampleData$time
-# event <- ExampleData$event
-# fit <- coxtp(event = event, z = z, time = time)
-# plot(fit$lambda1)
+#' data(ExampleData)
+#' z <- ExampleData$x
+#' time <- ExampleData$time
+#' event <- ExampleData$event
+#' fit <- coxtp(event = event, z = z, time = time)
+#' plot(fit$lambda1)
 #' 
 plot.coxtp <- function(fit, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, allinone=FALSE, 

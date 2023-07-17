@@ -58,3 +58,12 @@ The default value is the unique observed event times in the dataset fitting the 
 \description{
 This function creates a plot of the time-varying coefficients from a fitted \code{coxtp} model.
 }
+\examples{
+data(ExampleData)
+z <- ExampleData$x
+time <- ExampleData$time
+event <- ExampleData$event
+fit <- coxtp(event = event, z = z, time = time)
+plot(fit$lambda1)
+
+}

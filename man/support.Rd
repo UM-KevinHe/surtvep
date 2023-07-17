@@ -3,8 +3,7 @@
 \docType{data}
 \name{support}
 \alias{support}
-\title{Study to Understand Prognoses Preferences Outcomes and Risks of Treatment
-(SUPPORT)}
+\title{Study to Understand Prognoses Preferences Outcomes and Risks of Treatment}
 \format{
 A data frame with 9,104 observations and 34 variables after imputation
 and the removal of response variables like hospital charges, patient ratio
@@ -57,7 +56,7 @@ Available at the following website:
 \url{https://biostat.app.vumc.org/wiki/Main/SupportDesc}.
 }
 \usage{
-support
+data(support)
 }
 \description{
 The SUPPORT dataset tracks five response variables: hospital
@@ -89,10 +88,8 @@ of daily living were removed. See details in the R package (casebase) by Bhatnag
 }
 \examples{
 \dontrun{
-data("support")
-
-library(surtvep)
 data(support)
+
 support <- support[support$ca \%in\% c("metastatic"),]
 
 time <- support$d.time
