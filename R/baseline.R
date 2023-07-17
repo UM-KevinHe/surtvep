@@ -40,14 +40,20 @@ baseline <-  function(fit, ...){
   
   base2 <- attr(fit, "basehazard")
   base2 <- as.numeric(base2[[1]])
-  lambda <- rep(0, length(time))
-  lambda[event==1] <- base2
+  unique_time_event = unique(time[event==1])
+  unique_time <- unique(time)
   
-  time2 <- unique(time)
+  lambda <- rep(0, length(unique_time))
+  for (i in 1:length(unique_time_event)) {
+    time_tmp <- unique_time_event[i]
+    lambda[unique_time==time_tmp] <- base2[i]
+  }
+
   Lambda <- cumsum(lambda)
   
-  baselinedata <- data.frame(unique(time),lambda,Lambda)
-
+  
+  baselinedata <- data.frame(unique_time,lambda,Lambda)
+  
   res <- list("time" = unique(time),
               "hazard" = as.numeric(lambda),
               "cumulHaz" = Lambda)

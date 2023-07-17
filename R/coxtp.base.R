@@ -297,6 +297,8 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   attr(res, "SmoothMatrix") <- SmoothMatrix
   attr(res, "spline") <- spline
   attr(res, "count.strata") <- count.strata
+  attr(res, "basehazard") <- fit$hazard
+  
   # if (length(term.ti)>0) {
   #   fit$tief <- c(fit$tief)
   #   names(fit$tief) <- term.ti
