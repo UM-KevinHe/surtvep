@@ -8,13 +8,13 @@
 #' @export
 #' 
 #' @return A list with three components:
-#' \item{time}{the unique observed failure time.} 
+#' \item{time}{the unique observed failure times.} 
 #' \item{hazard}{the baseline hazard corresponding to each unique failure time point.}
 #' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unique failure time point.}
 #'
 #' @examples
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' 
@@ -135,7 +135,7 @@ baseline <-  function(fit, ...){
 #' @examples
 #' \dontrun{
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' 

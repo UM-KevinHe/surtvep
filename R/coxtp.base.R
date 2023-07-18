@@ -548,7 +548,7 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
 #' @rdname confint.coxtv
 #' 
 #' @param fit fitted \code{"coxtp"} model.
-#' @param times the time interval to be estamtied. The default value is the time of the fitted model.
+#' @param time the time interval to be estamtied. The default value is the time of the fitted model.
 #' @param parm the names of parameter.
 #' @param level the confidence level. Default is 0.95.
 #' 
@@ -556,15 +556,16 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
 #' @examples 
 #' \dontrun{
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtp(event = event, z = z, time = time)
-#' confint(fit$lambda1)
+#' IC  <- IC(fit)
+#' confint(IC$model.mAIC)
 #' }
 #' 
 #' @exportS3Method confint coxtp
-confint.coxtp <- function(fit, times, parm, level=0.95) {
+confint.coxtp <- function(fit, time, parm, level=0.95) {
   
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtp") stop("Object fit is not of class 'coxtp'!")

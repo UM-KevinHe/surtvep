@@ -7,6 +7,13 @@ template:
     
 vignettes:
   - vignettes/surtvep.Rmd
+  
+authors:
+  Kevin He:
+    href: "https://www.um-kevinhe-group.org/"
+  Wenbo Wu:
+    href: "https://www.wenbowu.me/"
+    
 
 navbar:
  structure: 

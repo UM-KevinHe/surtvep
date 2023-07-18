@@ -61,7 +61,7 @@ We use the R function \code{splines::bs} to generate the B-splines.}
 This is the tuning parameter for penalization. The function \code{IC} can be used to select the best tuning parameter based on the information criteria.
 Alternatively, cross-validation can be used via the \code{cv.coxtp} function.
 Users can specify larger values when the estimated time-varying effects are too high.
-Default is \code{0}, which refers to Newton method without penalization.}
+When \code{lambda} is \code{0}, Newton method without penalization is fitted.}
 
 \item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 \code{degree = 2} results in the quadratic B-spline basis functions.
@@ -96,16 +96,16 @@ See details in Wu et al. (2022).}
 See details in Convex Optimization by Boyd and Vandenberghe (2004).
 \code{"static"} limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
 which usually occurs when some predictors are categorical with low frequency for some categories.
-Users should be careful with \code{static} as this may lead to under-fitting.}
+Users should be careful with \code{static}, as this may lead to under-fitting.}
 
-\item{tau}{a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.}
+\item{tau}{a positive scalar used to control the step size inside the backtracking line-search. The default value is 0.5.}
 
 \item{stop}{a character string specifying the stopping rule to determine convergence.
-\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+\code{"incre"} means we stop the algorithm when Newton's increment is less than the \code{tol}. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
 \code{"relch"} means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the \code{tol},
 where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 \code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
-\code{"all"} means we stop the algorithm when all the stopping rules \code{"incre"}, \code{"relch"} and \code{"ratch"} are met.
+\code{"all"} means we stop the algorithm when all the stopping rules (\code{"incre"}, \code{"relch"}, \code{"ratch"}) are met.
 Default value is \code{ratch}.
 If \code{iter.max} is achieved, it overrides any stop rule for algorithm termination.}
 
@@ -130,7 +130,7 @@ Each row represents a covariate's coefficient on the \code{nsplines}-dimensional
 \item{internal.knots}{the internal knot locations (breakpoints) that define the B-splines.}
 \item{nobs}{number of observations.}
 \item{penalty}{the spline term \code{penalty} specified by user.}
-\item{theta.list}{the history of \code{ctrl.pts} of length \code{m}, including \code{ctrl.pts} for each algorithm iteration.}
+\item{theta.list}{the history of \code{ctrl.pts} of length \code{m} (the length of algorithm iterations), including \code{ctrl.pts} for each algorithm iteration.}
 \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix,
 which is the inverse of the negative Hessian matrix.}
 }
@@ -146,7 +146,7 @@ The function \code{IC} below provides different information criteria to choose t
 }
 \examples{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 

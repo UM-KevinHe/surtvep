@@ -21,7 +21,7 @@
 #' 
 #' @examples
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtp(event = event, z = z, time = time)

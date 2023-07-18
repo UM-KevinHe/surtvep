@@ -16,7 +16,7 @@
 #' @param linetype the line type for the plot.
 #' @param color the aesthetics parameter for the plot.
 #' @param fill the aesthetics parameter for the plot.
-#' @param times the time points for which the time-varying coefficients to be plotted. 
+#' @param time the time points for which the time-varying coefficients to be plotted. 
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. Default value is `FALSE`.
 #' 
@@ -26,7 +26,7 @@
 #' 
 #' @examples
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtp(event = event, z = z, time = time)
@@ -34,7 +34,7 @@
 #' 
 plot.coxtp <- function(fit, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, allinone=FALSE, 
-                       title, linetype, color, fill, times) {
+                       title, linetype, color, fill, time) {
   
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtp") stop("Object fit is not of class 'coxtp'!")

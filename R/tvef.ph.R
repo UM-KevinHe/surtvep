@@ -11,7 +11,7 @@
 #' 
 #' @examples 
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
@@ -69,7 +69,7 @@ tvef.ph <- function(fit, parm) {
 #' 
 #' @examples 
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
@@ -126,7 +126,7 @@ tvef.zero <- function(fit, parm) {
 #' 
 #' @param fit fitted `coxtv` or `coxtp`  model.
 #' @param parm the names of parameters to be tested.
-#' @param times the time points to test if the covariate is significant or not.
+#' @param time the time points to test if the covariate is significant or not.
 #' 
 #' @return `tvef.zero.time` produces a list of length `nvars`. Each element of the list is a matrix with respect to a
 #' covariate. The matrix is of dimension `len_unique_t` by 4, where `len_unique_t` is the length of unique observed event time.
@@ -135,7 +135,7 @@ tvef.zero <- function(fit, parm) {
 #' 
 #' @examples 
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' fit   <- coxtv(event = event, z = z, time = time)
@@ -144,7 +144,7 @@ tvef.zero <- function(fit, parm) {
 #' @seealso \code{\link{tvef.ph}} \code{\link{tvef.zero}}
 #' 
 #' @export
-tvef.zero.time <- function(fit, times, parm) {
+tvef.zero.time <- function(fit, time, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
   if (missing(times)) {

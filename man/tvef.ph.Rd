@@ -20,7 +20,7 @@ Testing the proportional hazards assumption using a Wald test statistic.
 }
 \examples{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time <- ExampleData$time
 event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)

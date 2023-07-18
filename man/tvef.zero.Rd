@@ -21,7 +21,7 @@ The null hypothesis \eqn{H_0: \beta(t) = 0} for any \eqn{t}, where  \eqn{t} deno
 }
 \examples{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time <- ExampleData$time
 event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)

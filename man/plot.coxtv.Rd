@@ -19,7 +19,7 @@
   linetype,
   color,
   fill,
-  times
+  time
 )
 }
 \arguments{
@@ -52,7 +52,7 @@ If \code{FALSE}, the fitted time-varying coefficients (log hazard ratio) are plo
 
 \item{fill}{the aesthetics parameter for the plot.}
 
-\item{times}{the time points for which the time-varying coefficients to be plotted.
+\item{time}{the time points for which the time-varying coefficients to be plotted.
 The default value is the unique observed event times in the dataset fitting the time-varying effects model.}
 }
 \description{
@@ -60,7 +60,7 @@ This function creates a plot of the time-varying coefficients from a fitted \cod
 }
 \examples{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time <- ExampleData$time
 event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)

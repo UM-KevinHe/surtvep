@@ -25,7 +25,7 @@ Plotting the baseline hazard from a fitted \code{baseline} object.
 \examples{
 \dontrun{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 

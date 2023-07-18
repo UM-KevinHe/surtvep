@@ -29,7 +29,7 @@
 #' This is the tuning parameter for penalization. The function `IC` can be used to select the best tuning parameter based on the information criteria. 
 #' Alternatively, cross-validation can be used via the `cv.coxtp` function.
 #' Users can specify larger values when the estimated time-varying effects are too high.
-#' Default is `0`, which refers to Newton method without penalization. 
+#' When `lambda` is `0`, Newton method without penalization is fitted. 
 #' 
 #' @param nsplines number of basis functions in the splines to span the time-varying effects, whose default value is 8. 
 #' We use the R function `splines::bs` to generate the B-splines. 
@@ -53,11 +53,11 @@
 #' If `ties = "none"`, no approximation will be used to handle ties.
 #' 
 #' @param stop a character string specifying the stopping rule to determine convergence.  
-#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
 #' `"relch"` means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the `tol`,
 #'  where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
+#' `"all"` means we stop the algorithm when all the stopping rules (`"incre"`, `"relch"`, `"ratch"`) are met. 
 #' Default value is `ratch`. 
 #' If `iter.max` is achieved, it overrides any stop rule for algorithm termination.
 #' 
@@ -73,8 +73,8 @@
 #' See details in Convex Optimization by Boyd and Vandenberghe (2004).
 #' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
 #' which usually occurs when some predictors are categorical with low frequency for some categories. 
-#' Users should be careful with `static` as this may lead to under-fitting.
-#' @param tau a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.
+#' Users should be careful with `static`, as this may lead to under-fitting.
+#' @param tau a positive scalar used to control the step size inside the backtracking line-search. The default value is 0.5.
 #' @param parallel if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
 #' @param threads an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
 #' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
@@ -93,7 +93,7 @@
 #' \item{internal.knots}{the internal knot locations (breakpoints) that define the B-splines.}
 #' \item{nobs}{number of observations.}
 #' \item{penalty}{the spline term `penalty` specified by user.}
-#' \item{theta.list}{the history of `ctrl.pts` of length `m`, including `ctrl.pts` for each algorithm iteration.}
+#' \item{theta.list}{the history of `ctrl.pts` of length `m` (the length of algorithm iterations), including `ctrl.pts` for each algorithm iteration.}
 #' \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, 
 #' which is the inverse of the negative Hessian matrix.}
 #'
@@ -112,7 +112,7 @@
 #'
 #' @examples 
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' 

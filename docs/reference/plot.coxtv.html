@@ -126,8 +126,7 @@
 <span>  <span class="va">linetype</span>,</span>
 <span>  <span class="va">color</span>,</span>
 <span>  <span class="va">fill</span>,</span>
-<span>  <span class="va">times</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">times</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -183,11 +182,16 @@ If <code>FALSE</code>, the fitted time-varying coefficients (log hazard ratio) a
 
 
 <dt>color</dt>
-<dd><p>the color for the plot.</p></dd>
+<dd><p>the aesthetics parameter for the plot.</p></dd>
 
 
-<dt>...</dt>
-<dd><p>other graphical parameters to pass to plot.</p></dd>
+<dt>fill</dt>
+<dd><p>the aesthetics parameter for the plot.</p></dd>
+
+
+<dt>times</dt>
+<dd><p>the time points for which the time-varying coefficients to be plotted.
+The default value is the unique observed event times in the dataset fitting the time-varying effects model.</p></dd>
 
 </dl></div>
 
@@ -215,7 +219,7 @@ If <code>FALSE</code>, the fitted time-varying coefficients (log hazard ratio) a
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
+  <p></p><p>Developed by Lingfeng Luo, <a href="https://www.wenbowu.me/" class="external-link">Wenbo Wu</a>, <a href="https://www.um-kevinhe-group.org/" class="external-link">Kevin He</a>.</p>
 </div>
 
 <div class="pkgdown">

@@ -4,7 +4,7 @@
 #' Users can specify the time points to calculate the time-varying coefficients.
 #'
 #' @param fit model from `coxtv` or `coxtp`.
-#' @param times time points to calculate the time-varying coefficients. If `NULL`, the observed event time for fitting the model will be used.
+#' @param time time points to calculate the time-varying coefficients. If `NULL`, the observed event time for fitting the model will be used.
 #' 
 #' @return A matrix of the time-varying coefficients. The dimension is the length of `times` by `nvars`, where `nvars` is the number
 #' of covariates in the fitted mode.
@@ -13,14 +13,14 @@
 #' @export
 #' 
 #' @examples 
-#' z     <- ExampleData$x
+#' z     <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' fit   <- coxtv(event = event, z = z, time = time, degree = 2)
 #' coef  <- get.tvcoef(fit)
 #' 
 #' 
-get.tvcoef <- function(fit, times) {
+get.tvcoef <- function(fit, time) {
   if (missing(fit)) stop ("Argument fit is required!")
   if (!class(fit)%in%c("coxtv","coxtp")) stop("Object fit is not of the classes 'coxtv' or 'coxtp'!")
   if (missing(times)) times <- fit$times

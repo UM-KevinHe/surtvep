@@ -7,7 +7,7 @@
 \format{
 A list containing the following elements:
 \describe{
-\item{x}{simulated binary covariate V1 and V2. True time-independent function is \eqn{\beta(t)=1}
+\item{z}{simulated binary covariate V1 and V2. True time-independent function is \eqn{\beta(t)=1}
 and true time-varying function is \eqn{\beta(t)=sin(3\pi t/4).}}
 \item{event}{simulated failure event response; binary variable with 0 or 1.}
 \item{time}{simulated observed event time; continuous variable with non-negative values. }

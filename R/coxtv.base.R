@@ -26,11 +26,11 @@
 #' If `ties = "none"`, no approximation will be used to handle ties.
 #' 
 #' @param stop a character string specifying the stopping rule to determine convergence.  
-#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
 #' `"relch"` means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the `tol`,
 #'  where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
+#' `"all"` means we stop the algorithm when all the stopping rules (`"incre"`, `"relch"`, `"ratch"`) are met. 
 #' Default value is `ratch`. 
 #' If `iter.max` is achieved, it overrides any stop rule for algorithm termination.
 #' 
@@ -45,8 +45,8 @@
 #' See details in Convex Optimization by Boyd and Vandenberghe (2004).
 #' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
 #' which usually occurs when some predictors are categorical with low frequency for some categories. 
-#' Users should be careful with `static` as this may lead to under-fitting.
-#' @param tau a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.
+#' Users should be careful with `static`, as this may lead to under-fitting.
+#' @param tau a positive scalar used to control the step size inside the backtracking line-search. The default value is 0.5.
 #' @param parallel if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
 #' @param threads an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
 #' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
@@ -66,7 +66,7 @@
 #' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` by `nsplines * nvars`.}
 #' \item{internal.knots}{the internal knot locations (breakpoints) that define the B-splines.}
 #' \item{nobs}{number of observations.}
-#' \item{theta.list}{the history of `ctrl.pts` of length `m`, including `ctrl.pts` for each algorithm iteration.}
+#' \item{theta.list}{the history of `ctrl.pts` of length `m` (the length of algorithm iterations), including `ctrl.pts` for each algorithm iteration.}
 #' \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, 
 #' which is the inverse of the negative Hessian matrix.}
 #' 
@@ -76,7 +76,7 @@
 #'
 #' @examples 
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
@@ -353,7 +353,7 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 #' Get confidence intervals of time-varying coefficients from a fitted `coxtv` or `coxtp` object. 
 #' 
 #' @param fit fitted \code{"coxtv"} model.
-#' @param times the time points for which the confidence intervals to be estimated. 
+#' @param time the time points for which the confidence intervals to be estimated. 
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param parm the names of parameters.
 #' @param level the confidence level. Default is 0.95.
@@ -362,7 +362,7 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 #' @examples 
 #' \dontrun{
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
@@ -370,7 +370,7 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 #' }
 #' 
 #' @exportS3Method confint coxtv
-confint.coxtv <- function(fit, times, parm, level=0.95, ...) {
+confint.coxtv <- function(fit, time, parm, level=0.95, ...) {
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtv") stop("Object fit is not of class 'coxtv'!")
   if (missing(times)) {

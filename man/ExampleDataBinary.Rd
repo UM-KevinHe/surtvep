@@ -7,8 +7,8 @@
 \format{
 A list containing the following elements:
 \describe{
-\item{V1}{simulated binary covariate V1. True time-varying function is \eqn{\beta(t)=1}. }
-\item{V2}{simulated binary covariate V2. True time-varying function is \eqn{\beta(t)=exp(-1.5t)}. }
+\item{z}{simulated binary covariate V1 and V2. The true time-independent function is \eqn{\beta(t)=1} and
+the true time-varying function is \eqn{\beta(t)=exp(-1.5t)}. }
 \item{event}{simulated failure event response; binary variable with 0 or 1.}
 \item{time}{simulated observed event time; continuous variable with non-negative values. }
 }

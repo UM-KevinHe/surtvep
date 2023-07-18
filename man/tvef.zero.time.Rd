@@ -4,12 +4,12 @@
 \alias{tvef.zero.time}
 \title{testing the significance of the covariates from a \code{coxtv} or \code{coxtp} object using a Wald test statistic}
 \usage{
-tvef.zero.time(fit, times, parm)
+tvef.zero.time(fit, time, parm)
 }
 \arguments{
 \item{fit}{fitted \code{coxtv} or \code{coxtp}  model.}
 
-\item{times}{the time points to test if the covariate is significant or not.}
+\item{time}{the time points to test if the covariate is significant or not.}
 
 \item{parm}{the names of parameters to be tested.}
 }
@@ -24,7 +24,7 @@ Testing the significance of the covariates at each time point.
 }
 \examples{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 fit   <- coxtv(event = event, z = z, time = time)
