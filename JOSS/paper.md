@@ -20,7 +20,7 @@ authors:
     affiliation: 1
 bibliography: paper.bib
 csl: apa.csl
-aas-doi: "10.3847/xxxxx <- update this with the DOI from AAS once you know it."
+aas-doi: ""
 aas-journal: " "
 affiliations:
   - name: Department of Biostatistics, School of Public Health, University of Michigan
@@ -28,18 +28,6 @@ affiliations:
   - name: Departments of Population Health and Medicine, New York University Grossman School of Medicine
     index: 2
 ---
-
-**Authors:**
-
-Lingfeng Luo^1^, Wenbo Wu^2^, Jeremy Taylor^1^, Jian Kang^1^, Michael Kleinsasser^1^, Kevin He^1^*
-
-**Affiliations:**
-
-^1^ Department of Biostatistics, School of Public Health, University of Michigan
-
-^2^ Departments of Population Health and Medicine, New York University Grossman School of Medicine
-
-*Corresponding Author
 
 # Summary
 
