@@ -179,7 +179,7 @@ We use the R function <code><a href="https://rdrr.io/r/splines/bs.html" class="e
 This is the tuning parameter for penalization. The function <code>IC</code> can be used to select the best tuning parameter based on the information criteria.
 Alternatively, cross-validation can be used via the <code>cv.coxtp</code> function.
 Users can specify larger values when the estimated time-varying effects are too high.
-Default is <code>0</code>, which refers to Newton method without penalization.</p></dd>
+When <code>lambda</code> is <code>0</code>, Newton method without penalization is fitted.</p></dd>
 
 
 <dt>degree</dt>
@@ -228,20 +228,20 @@ See details in Wu et al. (2022).</p></dd>
 See details in Convex Optimization by Boyd and Vandenberghe (2004).
 <code>"static"</code> limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
 which usually occurs when some predictors are categorical with low frequency for some categories.
-Users should be careful with <code>static</code> as this may lead to under-fitting.</p></dd>
+Users should be careful with <code>static</code>, as this may lead to under-fitting.</p></dd>
 
 
 <dt>tau</dt>
-<dd><p>a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.</p></dd>
+<dd><p>a positive scalar used to control the step size inside the backtracking line-search. The default value is 0.5.</p></dd>
 
 
 <dt>stop</dt>
 <dd><p>a character string specifying the stopping rule to determine convergence.
-<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
 <code>"relch"</code> means we stop the algorithm when the \((loglik(m)-loglik(m-1))/(loglik(m))\) is less than the <code>tol</code>,
 where \(loglik(m)\) denotes the log-partial likelihood at iteration step m.
 <code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
-<code>"all"</code> means we stop the algorithm when all the stopping rules <code>"incre"</code>, <code>"relch"</code> and <code>"ratch"</code> are met.
+<code>"all"</code> means we stop the algorithm when all the stopping rules (<code>"incre"</code>, <code>"relch"</code>, <code>"ratch"</code>) are met.
 Default value is <code>ratch</code>.
 If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm termination.</p></dd>
 
@@ -293,7 +293,7 @@ Each row represents a covariate's coefficient on the <code>nsplines</code>-dimen
 <dd><p>the spline term <code>penalty</code> specified by user.</p></dd>
 
 <dt>theta.list</dt>
-<dd><p>the history of <code>ctrl.pts</code> of length <code>m</code>, including <code>ctrl.pts</code> for each algorithm iteration.</p></dd>
+<dd><p>the history of <code>ctrl.pts</code> of length <code>m</code> (the length of algorithm iterations), including <code>ctrl.pts</code> for each algorithm iteration.</p></dd>
 
 <dt>VarianceMatrix</dt>
 <dd><p>the variance matrix of the estimated coefficients of the basis matrix,
@@ -340,7 +340,7 @@ The function <code>IC</code> below provides different information criteria to ch
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span></span></span>

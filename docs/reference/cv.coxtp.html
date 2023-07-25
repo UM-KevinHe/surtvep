@@ -101,7 +101,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>fit a cross-validated Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross-validation</h1>
-    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/cv.coxtp.R" class="external-link"><code>R/cv.coxtp.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/cv.coxtp.r" class="external-link"><code>R/cv.coxtp.r</code></a></small>
     <div class="hidden name"><code>cv.coxtp.Rd</code></div>
     </div>
 
@@ -158,7 +158,7 @@ Default = <code>NULL</code> (i.e. no stratification group in the data), an unstr
 <dd><p>a user specified sequence as the penalization coefficients in front of the spline term specified by <code>penalty</code>.
 This is the tuning parameter for penalization.  The function <code>IC</code> can be used to select the best tuning parameter based on the information criteria.
 Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
-Default is <code>0</code> which refers to Newton method without penalization.</p></dd>
+When <code>lambda</code> is <code>0</code>, Newton method without penalization is fitted.</p></dd>
 
 
 <dt>nfolds</dt>
@@ -220,20 +220,20 @@ See details in Wu et al. (2022).</p></dd>
 See details in Convex Optimization by Boyd and Vandenberghe (2004).
 <code>"static"</code> limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
 which usually occurs when some predictors are categorical with low frequency for some categories.
-Users should be careful with <code>static</code> as this may lead to under-fitting.</p></dd>
+Users should be careful with <code>static</code>, as this may lead to under-fitting.</p></dd>
 
 
 <dt>tau</dt>
-<dd><p>a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is <code>0.5</code>.</p></dd>
+<dd><p>a positive scalar used to control the step size inside the backtracking line-search. The default value is <code>0.5</code>.</p></dd>
 
 
 <dt>stop</dt>
 <dd><p>a character string specifying the stopping rule to determine convergence.
-<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
 <code>"relch"</code> means we stop the algorithm when the \((loglik(m)-loglik(m-1))/(loglik(m))\) is less than the <code>tol</code>,
 where \(loglik(m)\) denotes the log-partial likelihood at iteration step m.
 <code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
-<code>"all"</code> means we stop the algorithm when all the stopping rules <code>"incre"</code>, <code>"relch"</code> and <code>"ratch"</code> are met.
+<code>"all"</code> means we stop the algorithm when all the stopping rules (<code>"incre"</code>, <code>"relch"</code>, <code>"ratch"</code>) are met.
 Default value is <code>ratch</code>.
 If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm termination.</p></dd>
 
@@ -271,7 +271,7 @@ Users can specify the internal knot locations by themselves.</p></dd>
 
 <p>An object of class <code>"cv.coxtp"</code> is returned, which is a list with the ingredients of the cross-validation fit.</p>
 <dl><dt>model.cv</dt>
-<dd><p>a <code>"coxtp"</code> object with tuning parameter chosen based on cross validation.</p></dd>
+<dd><p>a <code>"coxtp"</code> object with tuning parameter chosen based on cross-validation.</p></dd>
 
 <dt>lambda</dt>
 <dd><p>the values of <code>lambda</code> used in the fits.</p></dd>
@@ -321,61 +321,61 @@ The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). This approach avoid
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">lambda</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span>  <span class="op">&lt;-</span> <span class="fu">cv.coxtp</span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda<span class="op">=</span><span class="va">lambda</span>, nfolds <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1809538; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1745237; Stopping crit = 2.0453673e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1744610; Stopping crit = 1.9954135e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1744608; Stopping crit = 6.4463933e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1744608; Stopping crit = 1.5131689e-11;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1851464; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1792006; Stopping crit = 1.9198660e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1791248; Stopping crit = 2.4447254e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1791247; Stopping crit = 3.8404499e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1791247; Stopping crit = 1.1153351e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1841304; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1764074; Stopping crit = 2.4961210e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1763613; Stopping crit = 1.4906135e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1763612; Stopping crit = 2.9409087e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1763612; Stopping crit = 5.1291076e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1877406; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1802327; Stopping crit = 2.4569886e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1801586; Stopping crit = 2.4227937e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1801584; Stopping crit = 5.6842460e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1801584; Stopping crit = 4.2396967e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1732220; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1664793; Stopping crit = 2.1217226e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1664069; Stopping crit = 2.2780889e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1664067; Stopping crit = 6.6581078e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1664067; Stopping crit = 1.0436261e-11;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1774657; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1711895; Stopping crit = 2.0046579e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1711075; Stopping crit = 2.6178951e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1711074; Stopping crit = 4.1632939e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1711074; Stopping crit = 1.2252042e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1762267; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1700245; Stopping crit = 1.9755350e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1699730; Stopping crit = 1.6380029e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1699729; Stopping crit = 4.6471102e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1699729; Stopping crit = 6.9257228e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1800577; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1739790; Stopping crit = 1.9609062e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1739024; Stopping crit = 2.4681869e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1739023; Stopping crit = 3.7367212e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1739023; Stopping crit = 9.7532899e-13;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1998476; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1936437; Stopping crit = 2.0922694e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1935977; Stopping crit = 1.5525455e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1935975; Stopping crit = 3.5510741e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1935975; Stopping crit = 4.0266890e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2030710; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1969905; Stopping crit = 2.0740892e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1969211; Stopping crit = 2.3671303e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1969209; Stopping crit = 3.6789458e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1969209; Stopping crit = 1.0555637e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1754115; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1690806; Stopping crit = 1.9908785e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1690233; Stopping crit = 1.8033391e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1690231; Stopping crit = 4.8213986e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1690231; Stopping crit = 7.4478058e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1800486; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1740050; Stopping crit = 1.9304515e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1739262; Stopping crit = 2.5160663e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1739261; Stopping crit = 4.1833918e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1739261; Stopping crit = 1.3869515e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1750135; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1686881; Stopping crit = 1.9817495e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1686508; Stopping crit = 1.1689891e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1686507; Stopping crit = 2.1094937e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1686507; Stopping crit = 2.3162975e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1784140; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1720722; Stopping crit = 2.0082054e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1720010; Stopping crit = 2.2533710e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1720009; Stopping crit = 3.5593125e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1720009; Stopping crit = 1.0614730e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1908244; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1844096; Stopping crit = 2.1468727e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1843448; Stopping crit = 2.1683542e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1843446; Stopping crit = 6.3791625e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1843446; Stopping crit = 1.0297502e-11;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1942713; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1883472; Stopping crit = 2.0091320e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1882731; Stopping crit = 2.5122980e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1882730; Stopping crit = 3.7092437e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1882730; Stopping crit = 9.1849099e-13;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1775252; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1711696; Stopping crit = 2.0485964e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1711182; Stopping crit = 1.6562340e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1711180; Stopping crit = 3.9027005e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1711180; Stopping crit = 4.1919533e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1810124; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1748569; Stopping crit = 2.0079671e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1747788; Stopping crit = 2.5478662e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1747786; Stopping crit = 3.9236515e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1747786; Stopping crit = 1.0224820e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1939175; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1862186; Stopping crit = 2.5047818e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1861375; Stopping crit = 2.6356591e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1861372; Stopping crit = 9.4109063e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1861372; Stopping crit = 2.3188850e-11;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1975834; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1903310; Stopping crit = 2.3915013e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1902448; Stopping crit = 2.8410000e-04;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1902446; Stopping crit = 6.6343228e-07;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1902446; Stopping crit = 4.5910608e-12;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2986480; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2920862; Stopping crit = 2.1176619e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2920355; Stopping crit = 1.6361107e-04;</span>

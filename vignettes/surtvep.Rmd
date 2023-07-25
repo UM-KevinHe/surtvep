@@ -56,7 +56,7 @@ We load a set of data created beforehand for illustration:
 
 ```{r}
 data("ExampleData")
-z     <- ExampleData$x
+z     <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 ```
@@ -67,7 +67,7 @@ The saved data set is a simulation data set with continuous covariates.
 We fit the Newton's method without penalization use the most basic call to 'coxtv'.
 
 ```{r}
-fit.tv <- coxtv(z = z, event = event, time=time)
+fit.tv <- coxtv(z = z, event = event, time = time)
 ```
 
 'fit.tv' is an object of class 'coxtv' that contains all the relevant information of the fitted model for further use.
@@ -446,7 +446,7 @@ The baseline estimation here refers to the baseline hazard at time t when holdin
 
 ```{r}
 data("ExampleData")
-z     <- ExampleData$x
+z     <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 time2  <- round(time, digits = 1)

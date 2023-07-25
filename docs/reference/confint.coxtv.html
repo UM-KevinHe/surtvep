@@ -111,10 +111,10 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for coxtp</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">times</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for coxtv</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">times</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -123,7 +123,7 @@
 <dd><p>fitted <code>"coxtv"</code> model.</p></dd>
 
 
-<dt>times</dt>
+<dt>time</dt>
 <dd><p>the time points for which the confidence intervals to be estimated.
 The default value is the unique observed event times in the dataset fitting the time-varying effects model.</p></dd>
 
@@ -141,16 +141,17 @@ The default value is the unique observed event times in the dataset fitting the 
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">lambda1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">IC</span>  <span class="op">&lt;-</span> <span class="fu"><a href="IC.html">IC</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">model.mAIC</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
