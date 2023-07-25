@@ -24,7 +24,7 @@ get.tvcoef <- function(fit, time) {
   if (missing(fit)) stop ("Argument fit is required!")
   if (!class(fit)%in%c("coxtv","coxtp")) stop("Object fit is not of the classes 'coxtv' or 'coxtp'!")
   if (missing(time)) time <- fit$times
-  if (!is.numeric(time) | min(times)<0) stop("Invalid times!")
+  if (!is.numeric(time) | min(time)<0) stop("Invalid times!")
   time <- time[order(time)]; nsplines <- attr(fit, "nsplines")
   spline <- attr(fit, "spline"); degree <- attr(fit, "degree.spline")
   knots <- fit$internal.knots; term.tv <- rownames(fit$ctrl.pts)

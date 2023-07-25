@@ -147,10 +147,10 @@ tvef.zero <- function(fit, parm) {
 tvef.zero.time <- function(fit, time, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
-  if (missing(times)) {
-    times <- fit$times
+  if (missing(time)) {
+    time <- fit$times
   } else {
-    if (!is.numeric(times) | min(times)<0) stop("Invalid times!")
+    if (!is.numeric(time) | min(time)<0) stop("Invalid time!")
   }
   term.ti <- names(fit$tief); term.tv <- rownames(fit$ctrl.pts)
   spline <- attr(fit, "spline"); nsplines <- attr(fit, "nsplines")
@@ -170,7 +170,7 @@ tvef.zero.time <- function(fit, time, parm) {
     invinfo <- solve(fit$info+diag(sqrt(.Machine$double.eps),dim(fit$info)[1]))
   }
   # if (spline=="B-spline") {
-    bases <- splines::bs(times, degree=degree, intercept=T, knots=knots, 
+    bases <- splines::bs(time, degree=degree, intercept=T, knots=knots, 
                          Boundary.knots=range(fit$times))
     ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm,], ncol=nsplines)
     ls <- lapply(parm, function(tv) {
@@ -183,7 +183,7 @@ tvef.zero.time <- function(fit, time, parm) {
       p.value <- 2*pmin(p.upper, 1-p.upper)
       mat <- cbind(est, se, stat, p.value)
       colnames(mat) <- c("est", "se", "z", "p")
-      rownames(mat) <- times
+      rownames(mat) <- time
       return(mat)})
     names(ls) <- parm
   # } else if (spline=="P-spline") {
