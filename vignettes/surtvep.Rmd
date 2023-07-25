@@ -88,7 +88,7 @@ In order to get the time-varying coefficients on a new time sequence, we can mod
 
 ```{r}
 time.new <- seq(1,2,0.1)
-beta.tv.new <- get.tvcoef(fit.tv,times = time.new)
+beta.tv.new <- get.tvcoef(fit.tv, time = time.new)
 head(beta.tv.new)
 ```
 
