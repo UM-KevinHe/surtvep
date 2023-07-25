@@ -23,9 +23,9 @@
 get.tvcoef <- function(fit, time) {
   if (missing(fit)) stop ("Argument fit is required!")
   if (!class(fit)%in%c("coxtv","coxtp")) stop("Object fit is not of the classes 'coxtv' or 'coxtp'!")
-  if (missing(times)) times <- fit$times
-  if (!is.numeric(times) | min(times)<0) stop("Invalid times!")
-  times <- times[order(times)]; nsplines <- attr(fit, "nsplines")
+  if (missing(time)) times <- fit$times
+  if (!is.numeric(time) | min(times)<0) stop("Invalid times!")
+  time <- time[order(time)]; nsplines <- attr(fit, "nsplines")
   spline <- attr(fit, "spline"); degree <- attr(fit, "degree.spline")
   knots <- fit$internal.knots; term.tv <- rownames(fit$ctrl.pts)
   # if (missing(parm)) {
@@ -36,7 +36,7 @@ get.tvcoef <- function(fit, time) {
   # stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
   # } else stop("Invalid parm!")
   # if (spline=="B-spline") {
-  bases <- splines::bs(times, degree=degree, intercept=T, knots=knots, 
+  bases <- splines::bs(time, degree=degree, intercept=T, knots=knots, 
                        Boundary.knots=range(fit$times))
   # int.bases <- splines2::ibs(times, degree=degree, intercept=T, knots=knots, 
   #                            Boundary.knots=range(fit$times))
@@ -45,7 +45,7 @@ get.tvcoef <- function(fit, time) {
   # mat.cumtvef <- int.bases%*%t(ctrl.pts)
   colnames(mat.tvef) <- parm 
   # colnames(mat.cumtvef) <- parm
-  rownames(mat.tvef) <- times
+  rownames(mat.tvef) <- time
   # rownames(mat.cumtvef) <- times
   # ls <- list(tvef=mat.tvef)
   return(mat.tvef)
