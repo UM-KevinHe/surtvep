@@ -569,15 +569,15 @@ confint.coxtp <- function(fit, time, parm, level=0.95) {
   
   if (missing(fit)) stop ("Argument fit is required!")
   if (class(fit)!="coxtp") stop("Object fit is not of class 'coxtp'!")
-  # if (missing(times)) {
-  times <- fit$times
-  # } else {
-  #   if (!is.numeric(times) | min(times)<0) stop("Invalid times!")
-  # }
+  if (missing(time)) {
+    time <- fit$times
+  } else {
+    if (!is.numeric(time) | min(time)<0) stop("Invalid time!")
+  }
   if (!is.numeric(level) | level[1]>1 | level[1]<0) stop("Invalid level!")
   level <- level[1]
-  times <- times[order(times)]
-  times <- unique(times)
+  time <- time[order(time)]
+  time <- unique(time)
   spline <- attr(fit, "spline"); degree <- attr(fit, "degree.spline")
   knots <- attr(fit, "internal.knots"); nsplines <- attr(fit, "nsplines")
   method <- attr(fit, "control")$method
@@ -613,7 +613,7 @@ confint.coxtp <- function(fit, time, parm, level=0.95) {
   # }
   # if (length(parm.tv)!=0) {
   # if (spline=="B-spline") {
-  bases <- splines::bs(times, degree=degree, intercept=T, knots=knots, 
+  bases <- splines::bs(time, degree=degree, intercept=T, knots=knots, 
                        Boundary.knots=range(fit$times))
   ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm.tv,], ncol=nsplines)
   ls$tvef <- lapply(parm.tv, function(tv) {
@@ -625,7 +625,7 @@ confint.coxtp <- function(fit, time, parm, level=0.95) {
                     est.tv+quant.upper*se.tv)
     colnames(mat.tv) <- 
       c("est", paste0(round(100*c(1-(1+level)/2,(1+level)/2),1),"%"))
-    rownames(mat.tv) <- times
+    rownames(mat.tv) <- time
     return(mat.tv)
   })
   names(ls$tvef) <- parm.tv
