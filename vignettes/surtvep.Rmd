@@ -254,7 +254,7 @@ data("ExampleDataBinary")
 table(ExampleDataBinary$x[,1])
 table(ExampleDataBinary$x[,2])
 
-z     <- ExampleDataBinary$x
+z     <- ExampleDataBinary$z
 time  <- ExampleDataBinary$time
 event <- ExampleDataBinary$event
 ```
@@ -270,8 +270,8 @@ The default value of $\gamma$ is $10^8$, which can be modified by user.
 If the data set have predictors with extremely low frequency, users may consider a smaller $\gamma$.
 
 ```{r, message = FALSE, results='hide'}
-fit.newton <- coxtv(z = z, event = event, time=time, method = 'Newton')
-fit.proxN <- coxtv(z = z, event = event, time=time, method = 'ProxN')
+fit.newton <- coxtv(z = z, event = event, time = time, method = 'Newton')
+fit.proxN <- coxtv(z = z, event = event, time = time, method = 'ProxN')
 ```
 
 Then we plot the fitted methods with all the curves on the same plot.
@@ -304,7 +304,7 @@ In our simulation, we vary the baseline for different stratums by adding a small
 
 ```{r}
 data("StrataExample")
-z     <- StrataExample$x
+z     <- StrataExample$z
 time  <- StrataExample$time
 event <- StrataExample$event
 strata <- StrataExample$strata
@@ -396,7 +396,7 @@ Penalization plays an important role here as it helps to smooth the time-varying
 
 ```{r}
 data(ExampleDataBinary)
-z     <- ExampleDataBinary$x
+z     <- ExampleDataBinary$z
 time  <- ExampleDataBinary$time
 event <- ExampleDataBinary$event
 ```

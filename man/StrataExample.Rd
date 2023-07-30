@@ -7,10 +7,10 @@
 \format{
 A list containing the following elements:
 \describe{
-\item{z}{simulated binary covariate V1 and V2. True time-independent function is \eqn{\beta(t)=1}
-and true time-varying function is \eqn{\beta(t)=sin(3\pi t/4).}}
+\item{z}{simulated binary covariates V1 and V2, with a time-independent coefficient \eqn{\beta_1(t)=1}
+and a time-varying coefficient \eqn{\beta_2(t)=sin(3\pi t/4).}}
 \item{event}{simulated failure event response; binary variable with 0 or 1.}
-\item{time}{simulated observed event time; continuous variable with non-negative values. }
+\item{time}{simulated observed event times; continuous variable with non-negative values. }
 \item{strata}{simulated strata variable; patients in different stratums have different baseline hazards.}
 }
 }
@@ -18,6 +18,6 @@ and true time-varying function is \eqn{\beta(t)=sin(3\pi t/4).}}
 data(StrataExample)
 }
 \description{
-A simulated data set containing 2 binary variables from 10 distinct clusters.
+A simulated data set containing 2 binary variables from 10 distinct stratums.
 }
 \keyword{datasets}

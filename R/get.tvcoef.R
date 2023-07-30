@@ -4,9 +4,9 @@
 #' Users can specify the time points to calculate the time-varying coefficients.
 #'
 #' @param fit model from `coxtv` or `coxtp`.
-#' @param time time points to calculate the time-varying coefficients. If `NULL`, the observed event time for fitting the model will be used.
+#' @param time time points to calculate the time-varying coefficients. If `NULL`, the observed event times for fitting the model will be used.
 #' 
-#' @return A matrix of the time-varying coefficients. The dimension is the length of `times` by `nvars`, where `nvars` is the number
+#' @return A matrix of the time-varying coefficients. The dimension is the length of `time` by `nvars`, where `nvars` is the number
 #' of covariates in the fitted mode.
 #' Each row represents the time-varying coefficients at the corresponding time.
 #' 

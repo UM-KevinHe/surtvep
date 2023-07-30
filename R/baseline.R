@@ -61,55 +61,6 @@ baseline <-  function(fit, ...){
   class(res) <- "baseline"
   
   return(res)
-  
-  # if (missing(fit)) stop ("Argument fit is required!")
-  # if (class(fit)!="coxtp" & class(fit)!="coxtv") stop("Object fit is not of class 'coxtv' or 'coxtp'!")
-  # 
-  # data       <- attr(fit, "data")
-  # event  <- data$event
-  # strata <- data$strata
-  # time   <- data$time
-  # z      <- subset(data, select = -c(event, strata, time))
-  # 
-  # event  <- event[time_order <- order(time)]
-  # z      <- z[time_order,]
-  # strata <- strata[time_order]
-  # time   <- time[time_order]
-  # stratum <- if (length(strata) == 0) rep(1, length(time)) else strata
-  # 
-  # # if(length(strata)==0){
-  # #Calculated unique time and ties for the baseline calculation:
-  # unique_time   <- unique(time)
-  # 
-  # tieseq <- NULL
-  # index  <- NULL
-  # for (i in 1:length(unique(time))) {
-  #   tieseq[i] <- length(which(time==unique(time)[i]))
-  #   index[[i]]  <- (which(time==unique(time)[i]))
-  # }
-  # 
-  # #call Rcpp
-  # theta_IC <- fit$ctrl.pts
-  # B.spline=splines::bs(unique_time,knots=fit$internal.knots,intercept=TRUE,degree=3)
-  # k=ncol(fit$bases)
-  # result1 <- Lambda_estimate_ties2(knot = k, delta = event,
-  #                                  z = as.matrix(z), b_spline = as.matrix(B.spline),
-  #                                  theta = theta_IC, tieseq = tieseq)
-  # lambda   <- result1$lambda
-  # time2 <- unique(time)
-  # Lambda <- cumsum(lambda)
-  # 
-  # baselinedata <- data.frame(unique(time),lambda,Lambda)
-  # # colnames(baselinedata) <- c("time", "hazard", "Lambda")
-  # 
-  # res <- list("time" = unique(time),
-  #             "hazard" = as.numeric(lambda),
-  #             "cumulHaz" = Lambda)
-  # 
-  # class(res) <- "baseline"
-  # 
-  # return(res)
-  
 }
 
 
@@ -121,7 +72,7 @@ baseline <-  function(fit, ...){
 #' 
 #' Plotting the baseline hazard from a fitted `baseline` object.
 #'
-#' @param fit fitted object from `baseline` function.
+#' @param x fitted object from `baseline` function.
 #' @param xlab the title for the x axis.
 #' @param ylab the title for the y axis.
 #' @param xlim the limits of the x axis.
@@ -143,13 +94,14 @@ baseline <-  function(fit, ...){
 #' base.est <- baseline(fit)
 #' plot(base.est)
 #' }
-plot.baseline <- function(fit, xlab, ylab, xlim, ylim, title){
+plot.baseline <- function(x, xlab, ylab, xlim, ylim, title){
   
   
   if (missing(xlab)) xlab <- "time"
   if (missing(ylab)) ylab <- "cumulative hazard"
   
-  if (missing(fit)) stop ("Argument fit is required!")
+  if (missing(x)) stop ("Argument x is required!")
+  fit <- x
   if (class(fit)!="baseline") stop("Object fit is not of class 'baseline'!")
   
   missingxlim <- missing(xlim); missingylim <- missing(ylim); 

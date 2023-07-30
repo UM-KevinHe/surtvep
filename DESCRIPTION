@@ -23,15 +23,9 @@ LinkingTo:
     RcppArmadillo
 Imports:
     Rcpp,
-    RcppArmadillo,
-    mvtnorm,
     splines,
-    survival,
     ggplot2,
-    ggrepel,
-    splines2,
     ggpubr,
-    mathjaxr
 Depends:
     R (>= 3.5)
 Suggests:

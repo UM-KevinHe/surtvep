@@ -2,10 +2,10 @@
 #' 
 #' This function creates a plot of the time-varying coefficients from a fitted `coxtv` model. 
 #'
-#' @param fit model obtained from `coxtv`.
-#' @param parm covariate name fitted in the model to be plotted. If `NULL`, all covariates are plotted.
-#' @param CI if `TRUE`, confidence intervals are displayed. Default value is `TRUE`.
-#' @param level the level of confidence interval. Default value is `0.95`.
+#' @param x model obtained from `coxtv`.
+#' @param parm covariate names fitted in the model to be plotted. If `NULL`, all covariates are plotted.
+#' @param CI if `TRUE`, confidence intervals are displayed. The default value is `TRUE`.
+#' @param level the level of confidence intervals. The default value is `0.95`.
 #' @param exponentiate if `TRUE`, exponential scale of the fitted coefficients (hazard ratio) for each covariate is plotted. 
 #' If `FALSE`, the fitted time-varying coefficients (log hazard ratio) are plotted.
 #' @param xlim the limits for the x axis.
@@ -18,9 +18,9 @@
 #' @param fill the aesthetics parameter for the plot.
 #' @param time the time points for which the time-varying coefficients to be plotted. 
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
-#' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. Default value is `FALSE`.
+#' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. The default value is `FALSE`.
 #' 
-#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle 
+#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank element_line margin labs ggtitle geom_hline scale_x_continuous scale_y_continuous scale_linetype_manual scale_fill_manual 
 #' @importFrom ggpubr annotate_figure
 #' 
 #' @exportS3Method plot coxtv
@@ -33,11 +33,12 @@
 #' fit <- coxtv(event = event, z = z, time = time)
 #' plot(fit)
 #' 
-plot.coxtv <- function(fit, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
+plot.coxtv <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, allinone=FALSE, 
                        title, linetype, color, fill, time) {
   
-  if (missing(fit)) stop ("Argument fit is required!")
+  if (missing(x)) stop ("Argument x is required!")
+  fit <- x
   if (class(fit)!="coxtv") stop("Object fit is not of class 'coxtv'!")
   # if (!is.logical(save)) stop("Invalid save!")
   # if (!is.logical(exponentiate)) stop("Invalid exponentiate!")
@@ -56,7 +57,6 @@ plot.coxtv <- function(fit, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
   # if (missing(labels)) labels <- names(ls.tvef)
   labels <- names(ls.tvef)
   # if (!require(ggplot2)) install.packages('ggplot2')
-  library(ggplot2)
   options(stringsAsFactors=F)
   
   if (!allinone) {

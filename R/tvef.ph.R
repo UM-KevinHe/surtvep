@@ -131,7 +131,7 @@ tvef.zero <- function(fit, parm) {
 #' @return `tvef.zero.time` produces a list of length `nvars`. Each element of the list is a matrix with respect to a
 #' covariate. The matrix is of dimension `len_unique_t` by 4, where `len_unique_t` is the length of unique observed event time.
 #' Each row corresponds to the testing result at that time.  The four 
-#' columns give the estimations, standard error, z-statistic and  P-value.
+#' columns give the estimations, standard error, test-statistic and  P-value.
 #' 
 #' @examples 
 #' data(ExampleData)

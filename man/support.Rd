@@ -12,7 +12,7 @@ Ordinal variables, namely functional disability and income, were also removed.
 Finally, Surrogate activities of daily living were removed due to sparsity.
 There were 6 other model scores in the data-set and they were removed; only aps and sps were kept.
 \describe{
-\item{Age}{ stores a double representing age. }
+\item{age}{ stores a double representing age. }
 \item{death}{
 death at any time up to NDI (National Death Index) date: 12/31/1994. }
 \item{sex}{ 0=female, 1=male. }
@@ -61,7 +61,7 @@ data(support)
 \description{
 The SUPPORT dataset tracks five response variables: hospital
 death, severe functional disability, hospital costs, and time until death
-and death itself. The patients are followed for up to 5.56 years.
+and death itself. The patients are followed for up to 5.56 years. See Bhatnagar et al. (2020) for details.
 }
 \details{
 Some of the original data was missing. Before imputation, there were

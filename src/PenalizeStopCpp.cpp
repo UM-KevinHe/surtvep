@@ -1478,9 +1478,9 @@ List spline_udpate_bresties(const arma::mat &Z_tv, const arma::vec &time,
     }
 
     if (iter < iter_max){
-      cout << "Algorithm converged after " << iter << " iterations!" << endl;
+      Rcout << "Algorithm converged after " << iter << " iterations!" << endl;
     } else{
-      cout << "Algorithm stopped after reaching maximum iterations!" << endl;
+      Rcout << "Algorithm stopped after reaching maximum iterations!" << endl;
     }    
 
     objfun_list = obj_fixtra_bresties(Z_tv, B_spline, theta, Z_ti, beta_ti, ti,

@@ -4,10 +4,10 @@
 \alias{plot.baseline}
 \title{plotting the baseline hazard}
 \usage{
-\method{plot}{baseline}(fit, xlab, ylab, xlim, ylim, title)
+\method{plot}{baseline}(x, xlab, ylab, xlim, ylim, title)
 }
 \arguments{
-\item{fit}{fitted object from \code{baseline} function.}
+\item{x}{fitted object from \code{baseline} function.}
 
 \item{xlab}{the title for the x axis.}
 

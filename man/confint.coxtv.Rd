@@ -17,7 +17,7 @@ The default value is the unique observed event times in the dataset fitting the 
 
 \item{parm}{the names of parameters.}
 
-\item{level}{the confidence level. Default is 0.95.}
+\item{level}{the confidence level. The default value is 0.95.}
 }
 \description{
 Get confidence intervals of time-varying coefficients from a fitted \code{coxtv} or \code{coxtp} object.

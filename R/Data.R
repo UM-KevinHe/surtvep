@@ -7,10 +7,10 @@
 #'
 #' @format A list containing the following elements:
 #' \describe{
-#'   \item{z}{simulated continuous covariate V1 and V2. The true time-independent function is \eqn{\beta(t)=1} and 
-#'   the true time-varying function is \eqn{\beta(t)=sin(3\pi t/4).}}
+#'   \item{z}{simulated continuous covariates V1 and V2, with a time-independent coefficient \eqn{\beta_1(t)=1}
+#'and a time-varying coefficient \eqn{\beta_2(t)=sin(3\pi t/4).}}
 #'   \item{event}{simulated failure event response; binary variable with 0 or 1.}
-#'   \item{time}{simulated observed event time; continuous variable with non-negative values.}
+#'   \item{time}{simulated observed event times; continuous variable with non-negative values.}
 #' }
 "ExampleData"
 
@@ -24,27 +24,27 @@
 #'
 #' @format A list containing the following elements:
 #' \describe{
-#'   \item{z}{simulated binary covariate V1 and V2. The true time-independent function is \eqn{\beta(t)=1} and 
-#'   the true time-varying function is \eqn{\beta(t)=exp(-1.5t)}. }
+#'   \item{z}{simulated binary covariates V1 and V2, with a time-independent coefficient \eqn{\beta_1(t)=1}
+#'and a time-varying coefficient \eqn{\beta_2(t)=exp(-1.5t).}}
 #'   \item{event}{simulated failure event response; binary variable with 0 or 1.}
-#'   \item{time}{simulated observed event time; continuous variable with non-negative values. }
+#'   \item{time}{simulated observed event times; continuous variable with non-negative values. }
 #' }
 "ExampleDataBinary"
 
 
 #' example data for stratified model illustration
 #' 
-#' A simulated data set containing 2 binary variables from 10 distinct clusters. 
+#' A simulated data set containing 2 binary variables from 10 distinct stratums. 
 #' @name StrataExample
 #' @docType data
 #' @usage data(StrataExample)
 #'
 #' @format A list containing the following elements:
 #' \describe{
-#'   \item{z}{simulated binary covariate V1 and V2. True time-independent function is \eqn{\beta(t)=1} 
-#'   and true time-varying function is \eqn{\beta(t)=sin(3\pi t/4).}}
+#'   \item{z}{simulated binary covariates V1 and V2, with a time-independent coefficient \eqn{\beta_1(t)=1}
+#'and a time-varying coefficient \eqn{\beta_2(t)=sin(3\pi t/4).}}
 #'   \item{event}{simulated failure event response; binary variable with 0 or 1.}
-#'   \item{time}{simulated observed event time; continuous variable with non-negative values. }
+#'   \item{time}{simulated observed event times; continuous variable with non-negative values. }
 #'   \item{strata}{simulated strata variable; patients in different stratums have different baseline hazards.}
 #' }
 "StrataExample"
@@ -57,7 +57,7 @@
 #' 
 #' @description The SUPPORT dataset tracks five response variables: hospital
 #'   death, severe functional disability, hospital costs, and time until death
-#'   and death itself. The patients are followed for up to 5.56 years.
+#'   and death itself. The patients are followed for up to 5.56 years. See Bhatnagar et al. (2020) for details.
 #'
 #' @details Some of the original data was missing. Before imputation, there were
 #'   a total of 9,104 individuals and 47 variables. Following Bhatnagar et al. (2020), a few variables 
@@ -88,7 +88,7 @@
 #'   Finally, Surrogate activities of daily living were removed due to sparsity. 
 #'   There were 6 other model scores in the data-set and they were removed; only aps and sps were kept.
 #'   \describe{ 
-#'   \item{Age}{ stores a double representing age. } 
+#'   \item{age}{ stores a double representing age. } 
 #'   \item{death}{
 #'   death at any time up to NDI (National Death Index) date: 12/31/1994. } 
 #'   \item{sex}{ 0=female, 1=male. } 

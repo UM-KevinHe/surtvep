@@ -15,7 +15,7 @@ cv.coxtp(
   penalty = "Smooth-spline",
   nsplines = 8,
   ties = "Breslow",
-  tol = 1e-09,
+  tol = 1e-06,
   iter.max = 20L,
   method = "ProxN",
   gamma = 1e+08,
@@ -33,7 +33,7 @@ cv.coxtp(
 
 \item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation.}
 
-\item{time}{observed event time, which should be a vector with non-negative values.}
+\item{time}{observed event times, which should be a vector with non-negative values.}
 
 \item{strata}{a vector of indicators for stratification.
 Default = \code{NULL} (i.e. no stratification group in the data), an unstratified model is implemented.}
@@ -43,7 +43,7 @@ This is the tuning parameter for penalization.  The function \code{IC} can be us
 Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
 When \code{lambda} is \code{0}, Newton method without penalization is fitted.}
 
-\item{nfolds}{number of folds for cross-validation, default is 5. The smallest value allowable is \code{nfolds}=3.}
+\item{nfolds}{number of folds for cross-validation, the default value is 5. The smallest value allowable is \code{nfolds}=3.}
 
 \item{foldid}{an optional vector of values between 1 and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.}
 
@@ -59,11 +59,11 @@ When \code{lambda} goes to infinity, the time-varying effects are reduced to be 
 
 \code{Smooth-spline} refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See \code{degree} for different choices.
 When \code{degree=3}, we use the cubic B-spline penalizing the second-order derivative, which reduces the time-varying effect to a linear term when \code{lambda} goes to infinity.
-When \code{degree=2}, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when \code{lambda} goes to infinity. See Wood (2016) for details.
+When \code{degree=2}, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when \code{lambda} goes to infinity. See Wood (2017) for details.
 
 If \code{P-spline} or \code{Smooth-spline}, then \code{lambda} is initialized as a sequence (0.1, 1, 10). Users can modify \code{lambda}. See details in \code{lambda}.}
 
-\item{nsplines}{number of basis functions in the splines to span the time-varying effects, whose default value is 8.
+\item{nsplines}{number of basis functions in the splines to span the time-varying effects. The default value is 8.
 We use the R function \code{splines::bs} to generate the B-splines.}
 
 \item{ties}{a character string specifying the method for tie handling. If there are no tied events,
@@ -74,7 +74,7 @@ If \code{ties = "none"}, no approximation will be used to handle ties.}
 \item{tol}{tolerance used for stopping the algorithm. See details in \code{stop} below.
 The default value is  \code{1e-6}.}
 
-\item{iter.max}{maximum iteration number if the stopping criterion specified by \code{stop} is not satisfied. Default value is  \code{20}.}
+\item{iter.max}{maximum iteration number if the stopping criterion specified by \code{stop} is not satisfied. The default value is  \code{20}.}
 
 \item{method}{a character string specifying whether to use Newton method or proximal Newton method.  If \code{"Newton"} then Hessian is used,
 while the default method \code{"ProxN"} implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
@@ -96,12 +96,12 @@ Users should be careful with \code{static}, as this may lead to under-fitting.}
 where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 \code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
 \code{"all"} means we stop the algorithm when all the stopping rules (\code{"incre"}, \code{"relch"}, \code{"ratch"}) are met.
-Default value is \code{ratch}.
+The default value is \code{ratch}.
 If \code{iter.max} is achieved, it overrides any stop rule for algorithm termination.}
 
 \item{parallel}{if \code{TRUE}, then the parallel computation is enabled. The number of threads in use is determined by \code{threads}.}
 
-\item{threads}{an integer indicating the number of threads to be used for parallel computation. Default is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
+\item{threads}{an integer indicating the number of threads to be used for parallel computation. The default value is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
 
 \item{degree}{degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines.
 \code{degree = 2} results in the quadratic B-spline basis functions.
@@ -125,7 +125,7 @@ An object of class \code{"cv.coxtp"} is returned, which is a list with the ingre
 \item{cve}{the mean cross-validated error - a vector having the same length as lambda.
 For the k-th testing fold (k = 1, ..., \code{nfolds}), we take the remaining folds as the training folds.
 Based on the model trained on the training folds, we calculate the log-partial likelihood on all the folds \eqn{loglik0} and training folds  \eqn{loglik1}.
-The \code{cve} is equal to \eqn{-2*(loglik0 - loglik1)}. This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.}
+The \code{cve} is equal to \eqn{-2*(loglik0 - loglik1)}. See details in Verweij (1993). This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.}
 \item{lambda.min}{the value of \code{lambda} that gives minimum \code{cve}.}
 }
 \description{
@@ -135,17 +135,18 @@ Fit a Cox non-proportional hazards model via penalized maximum likelihood. The p
 The function runs \code{coxtp} length of \code{lambda} by \code{nfolds} times; each is to compute the fit with each of the folds omitted.
 }
 \examples{
+\dontrun{
 data(ExampleData)
 z <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 lambda  = c(0.1, 1)
 fit  <- cv.coxtp(event = event, z = z, time = time, lambda=lambda, nfolds = 5)
-
+}
 
 }
 \references{
-Boyd, S., Vandenberghe, L. (2004) Convex optimization.
+Boyd, S., and Vandenberghe, L. (2004) Convex optimization.
 \emph{Cambridge University Press}.
 \cr
 

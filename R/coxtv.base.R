@@ -4,11 +4,11 @@
 #' 
 #' @param event failure event response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
 #' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation. 
-#' @param time observed event time, which should be a vector with non-negative values.
+#' @param time observed event times, which should be a vector with non-negative values.
 #' @param strata a vector of indicators for stratification. 
 #' Default = `NULL` (i.e. no stratification group in the data), an unstratified model is implemented.
 #' 
-#' @param nsplines number of basis functions in the splines to span the time-varying effects, whose default value is 8. 
+#' @param nsplines number of basis functions in the splines to span the time-varying effects. The default value is 8. 
 #' We use the R function `splines::bs` to generate the B-splines. 
 #' 
 #' @param knots the internal knot locations (breakpoints) that define the B-splines.
@@ -31,16 +31,16 @@
 #'  where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
 #' `"all"` means we stop the algorithm when all the stopping rules (`"incre"`, `"relch"`, `"ratch"`) are met. 
-#' Default value is `ratch`. 
+#' The default value is `ratch`. 
 #' If `iter.max` is achieved, it overrides any stop rule for algorithm termination.
 #' 
 #' @param tol tolerance used for stopping the algorithm. See details in `stop` below.
 #'  The default value is  `1e-6`.
-#' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. Default value is  20.
+#' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. The default value is  20.
 #' @param method a character string specifying whether to use Newton method or proximal Newton method.  If `"Newton"` then Hessian is used, 
 #' while the default method `"ProxN"` implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
-#' @param gamma parameter for proximal Newton method `"ProxN"`. Default value is `1e8`.
+#' @param gamma parameter for proximal Newton method `"ProxN"`. The default value is `1e8`.
 #' @param btr a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. 
 #' See details in Convex Optimization by Boyd and Vandenberghe (2004).
 #' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
@@ -48,7 +48,7 @@
 #' Users should be careful with `static`, as this may lead to under-fitting.
 #' @param tau a positive scalar used to control the step size inside the backtracking line-search. The default value is 0.5.
 #' @param parallel if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
-#' @param threads an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
+#' @param threads an integer indicating the number of threads to be used for parallel computation. The default value is `2`. If `parallel` is false, then the value of `threads` has no effect.
 #' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
 #'
 #'
@@ -356,7 +356,7 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
 #' @param time the time points for which the confidence intervals to be estimated. 
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param parm the names of parameters.
-#' @param level the confidence level. Default is 0.95.
+#' @param level the confidence level. The default value is 0.95.
 #' 
 #' 
 #' @examples 

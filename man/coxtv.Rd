@@ -30,12 +30,12 @@ coxtv(
 
 \item{z}{input covariate matrix, with \code{nobs} rows and \code{nvars} columns; each row is an observation.}
 
-\item{time}{observed event time, which should be a vector with non-negative values.}
+\item{time}{observed event times, which should be a vector with non-negative values.}
 
 \item{strata}{a vector of indicators for stratification.
 Default = \code{NULL} (i.e. no stratification group in the data), an unstratified model is implemented.}
 
-\item{nsplines}{number of basis functions in the splines to span the time-varying effects, whose default value is 8.
+\item{nsplines}{number of basis functions in the splines to span the time-varying effects. The default value is 8.
 We use the R function \code{splines::bs} to generate the B-splines.}
 
 \item{ties}{a character string specifying the method for tie handling. If there are no tied events,
@@ -58,19 +58,19 @@ Users can specify the internal knot locations by themselves.}
 where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 \code{"ratch"} means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the \code{tol}.
 \code{"all"} means we stop the algorithm when all the stopping rules (\code{"incre"}, \code{"relch"}, \code{"ratch"}) are met.
-Default value is \code{ratch}.
+The default value is \code{ratch}.
 If \code{iter.max} is achieved, it overrides any stop rule for algorithm termination.}
 
 \item{tol}{tolerance used for stopping the algorithm. See details in \code{stop} below.
 The default value is  \code{1e-6}.}
 
-\item{iter.max}{maximum iteration number if the stopping criterion specified by \code{stop} is not satisfied. Default value is  20.}
+\item{iter.max}{maximum iteration number if the stopping criterion specified by \code{stop} is not satisfied. The default value is  20.}
 
 \item{method}{a character string specifying whether to use Newton method or proximal Newton method.  If \code{"Newton"} then Hessian is used,
 while the default method \code{"ProxN"} implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 See details in Wu et al. (2022).}
 
-\item{gamma}{parameter for proximal Newton method \code{"ProxN"}. Default value is \code{1e8}.}
+\item{gamma}{parameter for proximal Newton method \code{"ProxN"}. The default value is \code{1e8}.}
 
 \item{btr}{a character string specifying the backtracking line-search approach. \code{"dynamic"} is a typical way to perform backtracking line-search.
 See details in Convex Optimization by Boyd and Vandenberghe (2004).
@@ -82,7 +82,7 @@ Users should be careful with \code{static}, as this may lead to under-fitting.}
 
 \item{parallel}{if \code{TRUE}, then the parallel computation is enabled. The number of threads in use is determined by \code{threads}.}
 
-\item{threads}{an integer indicating the number of threads to be used for parallel computation. Default is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
+\item{threads}{an integer indicating the number of threads to be used for parallel computation. The default value is \code{2}. If \code{parallel} is false, then the value of \code{threads} has no effect.}
 
 \item{fixedstep}{if \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
 }

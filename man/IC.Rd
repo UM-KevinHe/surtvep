@@ -12,7 +12,7 @@ IC(fit, IC.prox)
 \item{IC.prox}{when calculating information criteria, there might be numerical issues (e.g. the Hessian matrix is close to be singular).
 In such cases, warnings will be given.
 If \code{IC.prox = TRUE}, we modify the diagonal of the Hessian matrix following the same approach as the proximal method detailed in Wu et al. (2022), which can lead to more stable estimates.
-Default is \code{FALSE}.}
+The default value is \code{FALSE}.}
 }
 \value{
 \item{model.mAIC}{an object with S3 class \code{"coxtp"} using mAIC to select the tuning parameter.}
@@ -29,7 +29,7 @@ This function is to calculate information criteria from a \code{coxtp} object to
 In order to select the proper smoothing parameter, we utilize the idea of information criteria.
 We provide four different information criteria to select the optimal smoothing parameter \eqn{\lambda}.
 Generally, mAIC, TIC and GIC select similar parameters and the difference of resulting estimates are barely noticeable.
-See details in the references. (2023).
+See details in the Luo et al. (2023).
 }
 \examples{
 data(ExampleData)
@@ -42,16 +42,16 @@ IC  <- IC(fit)
 
 }
 \references{
-Akaike H. (1998) Information theory and an extension of the maximum likelihood principle.
-\emph{In Selected Papers of Hirotugu Akaike}, pp. 199–213.
+Akaike, H. (1998) Information theory and an extension of the maximum likelihood principle.
+\emph{In Selected Papers of Hirotugu Akaike}. 199–213.
 \cr
 
 Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 \emph{Statistical Methods in Medical Research}, \strong{in press}.
 \cr
 
-Takeuchi K. (1976) Distribution of information statistics and criteria for adequacy of models.
-\emph{Math Sci}, \strong{153}: 12–18.
+Takeuchi, K. (1976) Distribution of information statistics and criteria for adequacy of models.
+\emph{Mathematical Sciences}, \strong{153}: 12–18.
 \cr
 
 Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
