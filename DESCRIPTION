@@ -26,6 +26,9 @@ Imports:
     splines,
     ggplot2,
     ggpubr,
+    stats,
+    tibble,
+    rlang
 Depends:
     R (>= 3.5)
 Suggests:

@@ -5,6 +5,8 @@
 #' @param fit fitted `coxtv` or `coxtp`  model.
 #' @param parm the names of parameters to be tested.
 #' 
+#' @importFrom stats pchisq
+#' 
 #' @return `tvef.ph` produces a matrix. Each row corresponds to a covariate from the fitted object. The three 
 #' columns give the test statistic, degrees of freedom and P-value.
 #' 
@@ -21,7 +23,7 @@
 #' @export
 tvef.ph <- function(fit, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
+  if (!inherits(fit,"coxtp") & !inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv' or 'coxtp!")
   nsplines <- attr(fit, "nsplines"); spline <- attr(fit, "spline")
   term.ti <- names(fit$tief); term.tv <- rownames(fit$ctrl.pts)
   method <- attr(fit,"control")$method
@@ -67,6 +69,8 @@ tvef.ph <- function(fit, parm) {
 #' @return `tvef.zero` produces a matrix. Each row corresponds to a covariate from the fitted object. The three 
 #' columns give the test statistic, degrees of freedom and P-value.
 #' 
+#' @importFrom stats pchisq
+#' 
 #' @examples 
 #' data(ExampleData)
 #' z <- ExampleData$z
@@ -79,7 +83,7 @@ tvef.ph <- function(fit, parm) {
 #' @export
 tvef.zero <- function(fit, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
+  if (!inherits(fit,"coxtp") & !inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv' or 'coxtp!")
   nsplines <- attr(fit, "nsplines"); spline <- attr(fit, "spline")
   term.ti <- names(fit$tief); term.tv <- rownames(fit$ctrl.pts)
   method <- attr(fit,"control")$method
@@ -133,6 +137,8 @@ tvef.zero <- function(fit, parm) {
 #' Each row corresponds to the testing result at that time.  The four 
 #' columns give the estimations, standard error, test-statistic and  P-value.
 #' 
+#' @importFrom stats pnorm
+#' 
 #' @examples 
 #' data(ExampleData)
 #' z <- ExampleData$z
@@ -146,7 +152,7 @@ tvef.zero <- function(fit, parm) {
 #' @export
 tvef.zero.time <- function(fit, time, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
+  if (!inherits(fit,"coxtp") & !inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv' or 'coxtp!")
   if (missing(time)) {
     time <- fit$times
   } else {

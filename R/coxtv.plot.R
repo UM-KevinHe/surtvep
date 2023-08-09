@@ -21,7 +21,8 @@
 #' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. The default value is `FALSE`.
 #' 
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank element_line margin labs ggtitle geom_hline scale_x_continuous scale_y_continuous scale_linetype_manual scale_fill_manual 
-#' @importFrom ggpubr annotate_figure
+#' @importFrom ggpubr annotate_figure ggarrange text_grob
+#' @importFrom rlang .data
 #' 
 #' @exportS3Method plot coxtv
 #' 
@@ -39,7 +40,7 @@ plot.coxtv <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
   
   if (missing(x)) stop ("Argument x is required!")
   fit <- x
-  if (class(fit)!="coxtv") stop("Object fit is not of class 'coxtv'!")
+  if (!inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv'!")
   # if (!is.logical(save)) stop("Invalid save!")
   # if (!is.logical(exponentiate)) stop("Invalid exponentiate!")
   term.event <- attr(fit, "response")
@@ -52,7 +53,7 @@ plot.coxtv <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
   defaultltys <- c("solid", "dashed", "dotted", "dotdash", "longdash")
   # if (missing(expand)) expand <- c(1,1)/100
   expand <- c(1,1)/100
-  ls.tvef <- confint(fit, time, parm, level)$tvef
+  ls.tvef <- confint.coxtv(fit, time, parm, level)$tvef
   if (length(ls.tvef)==0) stop("No time-varying effect chosen!")
   # if (missing(labels)) labels <- names(ls.tvef)
   labels <- names(ls.tvef)
@@ -70,13 +71,13 @@ plot.coxtv <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
       }
       row.names(df.tv) <- NULL
       if (exponentiate) df.tv[,-4] <- exp(df.tv[,-4])
-      plt <- ggplot(data=df.tv, aes(x=time)) +
+      plt <- ggplot(data=df.tv, aes(x=.data$time)) +
         geom_hline(yintercept=ifelse(exponentiate,1,0),
                    color="black", size=0.3, linetype="dashed") +
-        geom_line(aes(y=est, linetype="estimate"), size=0.9)
+        geom_line(aes(y=.data$est, linetype="estimate"), size=0.9)
       if (CI) {
         plt <- plt +
-          geom_ribbon(aes(ymin=lower, ymax=upper,
+          geom_ribbon(aes(ymin=.data$lower, ymax=.data$upper,
                           fill=paste0(round(100*level),"% CI")), alpha=0.4)
       }
       if (missingxlim) {
@@ -127,13 +128,13 @@ plot.coxtv <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
       df.tv[,"parm"] <- tv
       row.names(df.tv) <- NULL
       return(df.tv)}))
-    plt <- ggplot(data=df, aes(x=time, group=parm)) +
+    plt <- ggplot(data=df, aes(x=.data$time, group=parm)) +
       geom_hline(yintercept=ifelse(exponentiate,1,0),
                  color="black", size=0.3, linetype="dashed") +
-      geom_line(aes(y=est, linetype=parm, color=parm), size=0.9)
+      geom_line(aes(y=.data$est, linetype=parm, color=parm), size=0.9)
     if (CI) {
       plt <- plt +
-        geom_ribbon(aes(ymin=lower, ymax=upper, fill=parm), alpha=0.1)
+        geom_ribbon(aes(ymin=.data$lower, ymax=.data$upper, fill=parm), alpha=0.1)
     }
     if (missingxlim) {
       plt <- plt + scale_x_continuous(name=xlab, expand=expand)

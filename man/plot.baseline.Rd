@@ -23,7 +23,6 @@
 Plotting the baseline hazard from a fitted \code{baseline} object.
 }
 \examples{
-\dontrun{
 data(ExampleData)
 z <- ExampleData$z
 time  <- ExampleData$time
@@ -32,5 +31,4 @@ event <- ExampleData$event
 fit   <- coxtv(event = event, z = z, time = time)
 base.est <- baseline(fit)
 plot(base.est)
-}
 }

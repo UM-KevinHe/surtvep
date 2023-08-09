@@ -20,7 +20,9 @@
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. The default value is `FALSE`.
 #' 
-#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank element_line margin labs ggtitle geom_hline scale_x_continuous scale_y_continuous scale_linetype_manual scale_fill_manual 
+#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank element_line margin labs ggtitle geom_hline scale_x_continuous scale_y_continuous scale_linetype_manual scale_color_manual guides guide_legend scale_fill_manual 
+#' @importFrom rlang .data
+#' @importFrom ggpubr annotate_figure ggarrange text_grob
 #' 
 #' @exportS3Method plot coxtp
 #' 
@@ -38,7 +40,7 @@ plot.coxtp <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
   
   if (missing(x)) stop ("Argument x is required!")
   fit <- x
-  if (class(fit)!="coxtp") stop("Object fit is not of class 'coxtp'!")
+  if (!inherits(fit,"coxtp")) stop("Object fit is not of class 'coxtp'!")
   # if (!is.logical(save)) stop("Invalid save!")
   # if (!is.logical(exponentiate)) stop("Invalid exponentiate!")
   term.event <- attr(fit, "response")
@@ -50,7 +52,7 @@ plot.coxtp <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
   defaultcols <- c("#F8766D","#A3A500","#00BF7D","#00B0F6","#E76BF3")
   defaultltys <- c("solid", "dashed", "dotted", "dotdash", "longdash")
   expand <- c(1,1)/100
-  ls.tvef <- confint(fit, time, parm, level)$tvef
+  ls.tvef <- confint.coxtp(fit, time, parm, level)$tvef
   if (length(ls.tvef)==0) stop("No time-varying effect chosen!")
   # if (missing(labels)) labels <- names(ls.tvef)
   labels <- names(ls.tvef)
@@ -68,13 +70,13 @@ plot.coxtp <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
       }
       row.names(df.tv) <- NULL
       if (exponentiate) df.tv[,-4] <- exp(df.tv[,-4])
-      plt <- ggplot(data=df.tv, aes(x=time)) +
+      plt <- ggplot(data=df.tv, aes(x=.data$time)) +
         geom_hline(yintercept=ifelse(exponentiate,1,0),
                    color="black", size=0.3, linetype="dashed") +
-        geom_line(aes(y=est, linetype="estimate"), size=0.9)
+        geom_line(aes(y=.data$est, linetype="estimate"), size=0.9)
       if (CI) {
         plt <- plt +
-          geom_ribbon(aes(ymin=lower, ymax=upper,
+          geom_ribbon(aes(ymin=.data$lower, ymax=.data$upper,
                           fill=paste0(round(100*level),"% CI")), alpha=0.4)
       }
       if (missingxlim) {
@@ -125,13 +127,13 @@ plot.coxtp <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
       df.tv[,"parm"] <- tv
       row.names(df.tv) <- NULL
       return(df.tv)}))
-    plt <- ggplot(data=df, aes(x=time, group=parm)) +
+    plt <- ggplot(data=df, aes(x=.data$time, group=parm)) +
       geom_hline(yintercept=ifelse(exponentiate,1,0),
                  color="black", size=0.3, linetype="dashed") +
-      geom_line(aes(y=est, linetype=parm, color=parm), size=0.9)
+      geom_line(aes(y=.data$est, linetype=.data$parm, color=.data$parm), size=0.9)
     if (CI) {
       plt <- plt +
-        geom_ribbon(aes(ymin=lower, ymax=upper, fill=parm), alpha=0.1)
+        geom_ribbon(aes(ymin=.data$lower, ymax=.data$upper, fill=.data$parm), alpha=0.1)
     }
     if (missingxlim) {
       plt <- plt + scale_x_continuous(name=xlab, expand=expand)

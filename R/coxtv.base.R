@@ -1,166 +1,29 @@
-#' fit a Cox non-proportional hazards model
-#' 
-#' Fit a Cox non-proportional hazards model via maximum likelihood. 
-#' 
-#' @param event failure event response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
-#' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation. 
-#' @param time observed event times, which should be a vector with non-negative values.
-#' @param strata a vector of indicators for stratification. 
-#' Default = `NULL` (i.e. no stratification group in the data), an unstratified model is implemented.
-#' 
-#' @param nsplines number of basis functions in the splines to span the time-varying effects. The default value is 8. 
-#' We use the R function `splines::bs` to generate the B-splines. 
-#' 
-#' @param knots the internal knot locations (breakpoints) that define the B-splines.
-#' The number of the internal knots should be `nsplines`-`degree`-1.
-#' If `NULL`, the locations of knots are chosen as quantiles of distinct failure time points.
-#' This choice leads to more stable results in most cases.
-#' Users can specify the internal knot locations by themselves.
-#' 
-#' @param degree degree of the piecewise polynomial for generating the B-spline basis functions---default is 3 for cubic splines. 
-#' `degree = 2` results in the quadratic B-spline basis functions.
-#' 
-#' @param ties a character string specifying the method for tie handling. If there are no tied events, 
-#' the methods are equivalent.  
-#' By default `"Breslow"` uses the Breslow approximation, which can be faster when many ties are present.
-#' If `ties = "none"`, no approximation will be used to handle ties.
-#' 
-#' @param stop a character string specifying the stopping rule to determine convergence.  
-#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
-#' `"relch"` means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the `tol`,
-#'  where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
-#' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules (`"incre"`, `"relch"`, `"ratch"`) are met. 
-#' The default value is `ratch`. 
-#' If `iter.max` is achieved, it overrides any stop rule for algorithm termination.
-#' 
-#' @param tol tolerance used for stopping the algorithm. See details in `stop` below.
-#'  The default value is  `1e-6`.
-#' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. The default value is  20.
-#' @param method a character string specifying whether to use Newton method or proximal Newton method.  If `"Newton"` then Hessian is used, 
-#' while the default method `"ProxN"` implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
-#' See details in Wu et al. (2022).
-#' @param gamma parameter for proximal Newton method `"ProxN"`. The default value is `1e8`.
-#' @param btr a character string specifying the backtracking line-search approach. `"dynamic"` is a typical way to perform backtracking line-search. 
-#' See details in Convex Optimization by Boyd and Vandenberghe (2004).
-#' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
-#' which usually occurs when some predictors are categorical with low frequency for some categories. 
-#' Users should be careful with `static`, as this may lead to under-fitting.
-#' @param tau a positive scalar used to control the step size inside the backtracking line-search. The default value is 0.5.
-#' @param parallel if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
-#' @param threads an integer indicating the number of threads to be used for parallel computation. The default value is `2`. If `parallel` is false, then the value of `threads` has no effect.
-#' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
-#'
-#'
-#'
-#' @return An object with S3 class `coxtv`.
-#' \item{call}{the call that produced this object.}
-#' \item{beta}{the estimated time-varying coefficient for each predictor at each unique time. 
-#' It is a matrix of dimension `len_unique_t` by `nvars`, 
-#' where `len_unique_t` is the length of unique observed event `time`s.}
-#' 
-#' \item{bases}{the basis matrix used in model fitting. If `ties="none"`, the dimension of the basis matrix is `nvars` by `nsplines`; 
-#' if `ties="Breslow"`, the dimension is `len_unique_t` by `nsplines`. The matrix is constructed using the `bs::splines` function.}
-#' \item{ctrl.pts}{estimated coefficient of the basis matrix of dimension `nvars` by `nsplines`. 
-#' Each row represents a covariate's coefficient on the `nsplines`-dimensional basis functions.}
-#' \item{Hessian}{the Hessian matrix of the log-partial likelihood, of which the dimension is `nsplines * nvars` by `nsplines * nvars`.}
-#' \item{internal.knots}{the internal knot locations (breakpoints) that define the B-splines.}
-#' \item{nobs}{number of observations.}
-#' \item{theta.list}{the history of `ctrl.pts` of length `m` (the length of algorithm iterations), including `ctrl.pts` for each algorithm iteration.}
-#' \item{VarianceMatrix}{the variance matrix of the estimated coefficients of the basis matrix, 
-#' which is the inverse of the negative Hessian matrix.}
-#' 
-#' @export 
-#' 
-#' @seealso \code{\link{coef}}, \code{\link{plot}}, and the \code{\link{coxtp}} function.
-#'
-#' @examples 
-#' data(ExampleData)
-#' z <- ExampleData$z
-#' time <- ExampleData$time
-#' event <- ExampleData$event
-#' fit <- coxtv(event = event, z = z, time = time)
-#' 
-#' @useDynLib surtvep, .registration=TRUE
-#' @importFrom Rcpp evalCpp
-#' 
-#' 
-#' 
-#' @details 
-#' The model is fit by Newton method (proximal Newton method).
-#' 
-#' @references 
-#' Boyd, S., Vandenberghe, L. (2004) Convex optimization. 
-#' \emph{Cambridge University Press}.
-#' \cr
-#' 
-#' Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
-#' \emph{Journal of the American Statistical Association}, \strong{87(420)}: 942-951. 
-#' \cr
-#' 
-#' Gray, R. J. (1994) Spline-based tests in survival analysis.
-#' \emph{Biometrics}, \strong{50(3)}: 640-652.
-#' \cr
-#' 
-#' Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
-#' \cr
-#' 
-#' Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
-#' \emph{Computer Methods and Programs in Biomedicine}, \strong{81(2)}: 154-161.
-#' \cr
-#' 
-#' Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
-#' \emph{Lifetime Data Analysis}, \strong{28(2)}: 194-218.
-#' \cr
-#' 
-#'
-#' 
-coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knots = NULL, 
-                  degree = 3, stop = 'ratch', tol = 1e-6, iter.max = 20, method = "ProxN", 
-                  gamma = 1e8, btr = "dynamic",
-                  tau = 0.5,
-                  parallel=FALSE, threads=2L,...) {
-  
-  
+#' @importFrom stats qnorm formula quantile
+
+coxtv.base <- function(formula, data, spline, ties="Breslow", 
+                  control, ...) {
   if (!ties%in%c("Breslow", "none")) stop("Invalid ties!")
-  # pass ... args to coxtv.control
+  # pass ... args to coxtp.control
   extraArgs <- list(...)
   if (length(extraArgs)) {
     controlargs <- names(formals(coxtv.control))
-    if(!is.null(names(extraArgs))) {
-      indx <- pmatch(names(extraArgs), controlargs, nomatch=0L)
-      if (any(indx==0L))
-        stop(gettextf("Argument(s) %s not matched!",
-                      names(extraArgs)[indx==0L]), domain=NA)
-    }
+    indx <- pmatch(names(extraArgs), controlargs, nomatch=0L)
+    if (any(indx==0L))
+      stop(gettextf("Argument(s) %s not matched!", 
+                    names(extraArgs)[indx==0L]), domain=NA)
   }
-  # if (missing(control)) control <- coxtv.control(...)
-  control <- coxtv.control(...)
-  spline="P-spline" # lambda = 0 so it doesn't matter
-  
+  if (missing(control)) control <- coxtv.control(...)
+
+  knots         <- control$knots
   degree        <- control$degree
+  nsplines      <- control$nsplines
   TIC_prox      <- control$TIC_prox
   penalize      <- control$penalize
   lambda_spline <- control$lambda_spline
   ord           <- control$ord
   fixedstep     <- control$fixedstep
-  
-  # order the data by time
-  event  <- event[time_order <- order(time)]
-  z      <- z[time_order,]
-  strata <- strata[time_order]
-  time   <- time[time_order]
-
-  stratum <- if (length(strata) == 0) rep(1, length(time)) else strata
-  
-  data <- data.frame(event=event, time=time, z, strata=stratum, stringsAsFactors=F)
-  #Z.char <- paste0("X", 1:p)
-  Z.char <- colnames(data)[c(3:(ncol(data)-1))]
-  formula <- formula(paste0("Surv(time, event)~",
-                         paste(c(paste0("tv(", Z.char, ")"), "strata(strata)"), collapse="+")))
 
   Terms <- terms(formula, specials=c("tv", "strata", "offset"))
-
   if(attr(Terms, 'response')==0) stop("Formula must have a Surv response!")
   factors <- attr(Terms, 'factors')
   terms <- row.names(factors)
@@ -172,7 +35,6 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
   # #Add time:
   # time  <-data[,idx.str]
   
-
   if (is.null(idx.tv)) stop("No variable specified with time-variant effect!")
   term.ti <- terms[setdiff(1:length(terms), c(idx.r, idx.o, idx.str, idx.tv))]
   term.time <- gsub(".*\\(([^,]*),\\s+([^,]*)\\)", "\\1", terms[idx.r])
@@ -197,20 +59,21 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
       !is.numeric(data[,term.time]) |
       min(data[,term.time])<0) stop("Invalid Surv object!")
   # check spline-related arguments
-
+  
   if (is.na(suppressWarnings(as.integer(nsplines[1]))) |
       as.integer(nsplines[1])<=degree+1) 
     stop(sprintf("Invalid nsplines (should be at least %.0f)!", 
                  degree+2))
-
+  
   nsplines <- nsplines[1]
   
-
+  
   if (spline=="P-spline") {
-    knots <- 
-      quantile(data[data[,term.event]==1,term.time], 
-               (1:(nsplines-degree-1))/(nsplines-degree))
-    
+    if(is.null(knots)){
+      knots <- 
+        quantile(data[data[,term.event]==1,term.time], 
+                 (1:(nsplines-degree-1))/(nsplines-degree))
+    }
     if (ties=="Breslow"){
       uniqfailtimes.str <- unname(unlist(lapply(
         split(data[data[,term.event]==1,term.time],
@@ -260,7 +123,7 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
                                          btr=control$btr, stop=control$stop, TIC_prox = control$TIC_prox,
                                          fixedstep = control$fixedstep,
                                          difflambda = control$difflambda,
-                                         ICLastOnly = control$ICLastOnly)
+                                         ICLastOnly = FALSE)
       
       fit$uniqfailtimes <- times
       fit$bases <- bases
@@ -269,7 +132,7 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
     
   }
   
-
+  
   res <- NULL
   res$theta.list  <- fit$theta_list
   res$VarianceMatrix <- fit$VarianceMatrix
@@ -282,14 +145,10 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
   
   row.names(res$ctrl.pts) <- term.tv
   
-  # res$tvef <- splines::bs(times, degree=degree, intercept=T, knots=knots,
-  #                         Boundary.knots=range(fit$times))%*%t(fit$ctrl.pts)
-  # rownames(fit$tvef) <- times
   
   class(res) <- "coxtv"
   attr(res, "spline")     <- spline
-  attr(res, "strata")     <- strata
-  attr(res, "event")      <- event
+  attr(res, "count.strata")     <- count.strata
   attr(res, "basehazard") <- fit$hazard
   
   if (length(term.ti)>0) {
@@ -297,7 +156,6 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
     names(res$tief) <- term.ti
   }
   attr(res, "data") <- data
-  attr(res, "time")     <- time
 
   attr(res, "nsplines") <- nsplines
   attr(res, "degree.spline") <- degree
@@ -308,9 +166,10 @@ coxtv <- function(event, z, time, strata= NULL, nsplines=8, ties="Breslow", knot
 
 
 coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
-                             factor=10, btr="dynamic", sigma=1e-2, tau=0.6,
-                             stop="incre", parallel=FALSE, threads=1L, degree=3L, TIC_prox = FALSE, 
-                             lambda_spline = 0, ord = 4, fixedstep = FALSE, difflambda = FALSE, effectsize = 0) {
+                          knots=NULL, nsplines=8L,
+                          factor=10, btr="dynamic", sigma=1e-2, tau=0.6,
+                          stop="incre", parallel=FALSE, threads=1L, degree=3L, TIC_prox = FALSE, 
+                          lambda_spline = 0, ord = 4, fixedstep = FALSE, difflambda = FALSE, effectsize = 0) {
   lambda = gamma
   
   if (tol <= 0) stop("Invalid convergence tolerance!")
@@ -320,7 +179,10 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
     if (method=="ProxN" & (lambda <= 0 | factor < 1))
       stop("Argument lambda <=0 or factor < 1 when method = 'ProxN'!")
   } else stop("Invalid estimation method!")
-  
+  if (!is.null(knots)){
+    if(length(knots)!=nsplines-degree-1)
+      stop("The number of the internal knots should be `nsplines`-`degree`-1!")
+  }
   if (btr %in% c("none", "static", "dynamic")) {
     if (sigma <= 0 | tau <= 0) 
       stop("Search control parameter sigma <= 0 or sigma <= 0!")
@@ -341,288 +203,11 @@ coxtv.control <- function(tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
   if (!is.numeric(degree) | degree < 2L) stop("Invalid degree for spline!")
   list(tol=tol, iter.max=as.integer(iter.max), method=method, lambda=lambda,
        factor=factor, btr=btr, s=sigma, t=tau, stop=stop,
+       knots=knots,
        parallel=parallel, threads=as.integer(threads), degree=as.integer(degree),
        TIC_prox = TIC_prox, lambda_spline= lambda_spline, ord = ord, fixedstep = fixedstep, difflambda = difflambda,
-       effectsize = effectsize)
+       effectsize = effectsize, nsplines = nsplines)
 }
 
 
 
-#' get confidence intervals of time-varying coefficients from a fitted object
-#' 
-#' Get confidence intervals of time-varying coefficients from a fitted `coxtv` or `coxtp` object. 
-#' 
-#' @param fit fitted \code{"coxtv"} model.
-#' @param time the time points for which the confidence intervals to be estimated. 
-#' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
-#' @param parm the names of parameters.
-#' @param level the confidence level. The default value is 0.95.
-#' 
-#' 
-#' @examples 
-#' \dontrun{
-#' data(ExampleData)
-#' z <- ExampleData$z
-#' time <- ExampleData$time
-#' event <- ExampleData$event
-#' fit <- coxtv(event = event, z = z, time = time)
-#' confint(fit)
-#' }
-#' 
-#' @exportS3Method confint coxtv
-confint.coxtv <- function(fit, time, parm, level=0.95, ...) {
-  if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtv") stop("Object fit is not of class 'coxtv'!")
-  if (missing(time)) {
-    time <- fit$times
-  } else {
-    if (!is.numeric(time) | min(time)<0) stop("Invalid time!")
-  }
-  if (!is.numeric(level) | level[1]>1 | level[1]<0) stop("Invalid level!")
-  level <- level[1]
-  time <- time[order(time)]
-  time <- unique(time)
-  spline <- attr(fit, "spline"); degree <- attr(fit, "degree.spline")
-  knots <- fit$internal.knots; nsplines <- attr(fit, "nsplines")
-  method <- attr(fit, "control")$method
-  term.tv <- rownames(fit$ctrl.pts)
-  if (missing(parm)) {
-    parm <- term.tv
-  } else if (length(parm)>0) {
-    indx <- pmatch(parm, term.tv, nomatch=0L)
-    if (any(indx==0L))
-      stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
-  } else stop("Invalid parm!")
-  rownames.info <- rep(term.tv, each=nsplines)
-  if (method=="Newton") {
-    invinfo <- solve(fit$VarianceMatrix)
-  } else if (method=="ProxN") {
-    invinfo <- solve(fit$VarianceMatrix+diag(sqrt(.Machine$double.eps),dim(fit$VarianceMatrix)[1]))
-  }
-  # parm.ti <- intersect(parm, c(term.ti))
-  parm.tv <- intersect(parm, c(term.tv))
-  quant.upper <- qnorm((1+level)/2)
-  ls <- list()
-  # if (length(parm.ti)!=0) {
-  #   est.ti <- fit$tief[term.ti%in%parm.ti]
-  #   se.ti <- c(sqrt(diag(as.matrix(invinfo[rownames.info%in%parm.ti,
-  #                                          rownames.info%in%parm.ti]))))
-  #   mat.ti <- cbind(est.ti, est.ti-quant.upper*se.ti, est.ti+quant.upper*se.ti)
-  #   colnames(mat.ti) <- 
-  #     c("est", paste0(round(100*c(1-(1+level)/2,(1+level)/2),1),"%"))
-  #   rownames(mat.ti) <- parm.ti
-  #   ls$tief <- mat.ti
-  # }
-  # if (length(parm.tv)!=0) {
-  # if (spline=="B-spline") {
-  bases <- splines::bs(time, degree=degree, intercept=T, knots=knots, 
-                       Boundary.knots=range(fit$times))
-  ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm.tv,], ncol=nsplines)
-  ls$tvef <- lapply(parm.tv, function(tv) {
-    est.tv <- bases%*%ctrl.pts[parm.tv%in%tv,]
-    se.tv <- sqrt(apply(bases, 1, function(r) {
-      idx <- rownames.info%in%tv
-      return(t(r)%*%invinfo[idx, idx]%*%r)}))
-    mat.tv <- cbind(est.tv, est.tv-quant.upper*se.tv, 
-                    est.tv+quant.upper*se.tv)
-    colnames(mat.tv) <- 
-      c("est", paste0(round(100*c(1-(1+level)/2,(1+level)/2),1),"%"))
-    rownames(mat.tv) <- time
-    return(mat.tv)
-  })
-  names(ls$tvef) <- parm.tv
-
-  return(ls)
-}
-
-
-
-
-# VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="Breslow", 
-#                            theta_opt_lambda, opt_lambda,
-#                            control,...){
-#   
-#   if (!ties%in%c("Breslow", "none")) stop("Invalid ties!")
-#   # pass ... args to coxtv.control
-#   extraArgs <- list(...)
-#   if (length(extraArgs)) {
-#     controlargs <- names(formals(coxtv.control))
-#     indx <- pmatch(names(extraArgs), controlargs, nomatch=0L)
-#     if (any(indx==0L))
-#       stop(gettextf("Argument(s) %s not matched!", 
-#                     names(extraArgs)[indx==0L]), domain=NA)
-#   }
-#   if (missing(control)) control <- coxtv.control(...)
-#   degree <- control$degree
-#   
-#   TIC_prox      <- control$TIC_prox
-#   penalize      <- control$penalize
-#   lambda_spline <- control$lambda_spline
-#   ord           <- control$ord
-#   fixedstep     <- control$fixedstep
-# 
-#   Terms <- terms(formula, specials=c("tv", "strata", "offset"))
-#   if(attr(Terms, 'response')==0) stop("Formula must have a Surv response!")
-#   factors <- attr(Terms, 'factors')
-#   terms <- row.names(factors)
-#   idx.r <- attr(Terms, 'response')
-#   idx.o <- attr(Terms, 'specials')$offset
-#   idx.str <- attr(Terms, 'specials')$strata
-#   idx.tv <- attr(Terms, 'specials')$tv
-#   if (is.null(idx.tv)) stop("No variable specified with time-variant effect!")
-#   term.ti <- terms[setdiff(1:length(terms), c(idx.r, idx.o, idx.str, idx.tv))]
-#   term.time <- gsub(".*\\(([^,]*),\\s+([^,]*)\\)", "\\1", terms[idx.r])
-#   term.event <- gsub(".*\\(([^,]*),\\s+([^,]*)\\)", "\\2", terms[idx.r])
-#   if (!is.null(idx.o)) term.o <- gsub(".*\\((.*)\\)", "\\1", terms[idx.o])
-#   term.str <- ifelse(!is.null(idx.str),
-#                      gsub(".*\\((.*)\\)", "\\1", terms[idx.str][1]), "strata")
-#   term.tv <- gsub(".*\\((.*)\\)", "\\1", terms[idx.tv])
-#   if (is.null(idx.str)) data[,term.str] <- "unstratified"
-#   data <- data[order(data[,term.str], data[,term.time], -data[,term.event]),]
-#   row.names(data) <- NULL
-#   times <- data[,term.time]; times <- unique(times); times <- times[order(times)]
-#   strata.noevent <- 
-#     unique(data[,term.str])[sapply(split(data[,term.event],data[,term.str]), 
-#                                    sum)==0]
-#   data <- data[!data[,term.str]%in%strata.noevent,] # drop strata with no event
-#   count.strata <- sapply(split(data[,term.str], data[,term.str]), length)
-#   if (any(!data[,term.event]%in%c(0,1)) |
-#       !is.numeric(data[,term.time]) |
-#       min(data[,term.time])<0) stop("Invalid Surv object!")
-#   # check spline-related arguments
-#   if (!spline%in%c("P-spline", "Smooth-spline") | 
-#       is.na(suppressWarnings(as.integer(nsplines[1]))) |
-#       as.integer(nsplines[1])<=degree+1) 
-#     stop(sprintf("Invalid spline or nsplines (should be at least %.0f)!", 
-#                  degree+2))
-#   nsplines <- nsplines[1]
-#   # model fitting
-#   if (spline=="P-spline") {
-#     knots <- 
-#       quantile(data[data[,term.event]==1,term.time], 
-#                (1:(nsplines-degree-1))/(nsplines-degree))
-#     
-#     if (ties=="Breslow"){
-#       uniqfailtimes.str <- unname(unlist(lapply(
-#         split(data[data[,term.event]==1,term.time],
-#               data[data[,term.event]==1,term.str]), unique)))
-#       bases <- splines::bs(uniqfailtimes.str, degree=degree, intercept=T, 
-#                            knots=knots, Boundary.knots=range(times))
-#     } else if (ties=="none") {
-#       bases <- 
-#         splines::bs(data[,term.time], degree=degree, intercept=T, 
-#                     knots=knots, Boundary.knots=range(times))
-#     }
-#   } else if (spline=="Smooth-spline"){
-#     if (ties=="Breslow"){
-#       knots <- 
-#         quantile(data[data[,term.event]==1,term.time], 
-#                  (1:(nsplines-degree-1))/(nsplines-degree))
-#       uniqfailtimes.str <- unname(unlist(lapply(
-#         split(data[data[,term.event]==1,term.time],
-#               data[data[,term.event]==1,term.str]), unique)))
-#       bases <- splines::bs(uniqfailtimes.str, degree=degree, intercept=T, 
-#                            knots=knots, Boundary.knots=range(times))
-#       p_diffm   <- 1
-#       time      <-data[,term.time]
-#       x_seq     <- as.vector(c(min(time), knots, max(time)))
-#       h_j       <- diff(x_seq)
-#       #step 1:
-#       x_prime   <- x_seq
-#       if(ord == 4){
-#         knot_set2 <- c(min(time)-1,min(time)-1,min(time)-1, x_prime, max(time)+1, max(time)+1,max(time)+1)
-#         G_matrix  <- splines::splineDesign(knots = knot_set2 , x=x_prime ,ord = 4, derivs = 2)
-#       } else if(ord == 3){
-#         knot_set2 <- c(min(time)-1,min(time)-1, x_prime, max(time)+1, max(time)+1)
-#         G_matrix  <- splines::splineDesign(knots = knot_set2 , x=x_prime ,ord = 3, derivs = 1)
-#       } else {
-#         stop("ord must be 3 or 4")
-#       }
-#       P_matrix  <- matrix(0,p_diffm+1,p_diffm+1)
-#       H_matrix  <- matrix(0,p_diffm+1,p_diffm+1)
-#       for (i in 1:(p_diffm+1)) {
-#         for (j in 1:(p_diffm+1)) {
-#           P_matrix[i,j] <- (-1 + 2*(i-1)/p_diffm)^j
-#           H_matrix[i,j] <- (1 + (-1)^(i+j-2))/(i+j-1)
-#         }
-#       }
-#       W_tilde   <- t(solve(P_matrix))%*%H_matrix%*%solve(P_matrix)
-#       W_matrix  <- matrix(0,dim(G_matrix)[1],dim(G_matrix)[1])
-#       W_q       <- matrix(0,dim(G_matrix)[1],dim(G_matrix)[1])
-#       for(q in 1:length(h_j)){
-#         for (i in 1:(p_diffm+1)) {
-#           for (j in 1:(p_diffm+1)) {
-#             W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] = 
-#               W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] + h_j[q]*W_tilde[i,j]/2
-#             #W_matrix  <- W_matrix + W_q
-#           }
-#         }
-#       }
-#       SmoothMatrix  <- t(G_matrix)%*%W_matrix%*%G_matrix
-# 
-#     } else if (ties == "none"){
-#       knots <- 
-#         quantile(data[data[,term.event]==1,term.time], 
-#                  (1:(nsplines-degree-1))/(nsplines-degree))
-#       bases <- 
-#         splines::bs(data[,term.time], degree=degree, intercept=T, 
-#                     knots=knots, Boundary.knots=range(times))
-#       p_diffm   <- 1
-#       
-#       time      <-data[,term.time]
-#       x_seq     <- as.vector(c(min(time), knots, max(time)))
-#       h_j       <- diff(x_seq)
-#       #step 1:
-#       x_prime   <- x_seq
-#       if(ord == 4){
-#         knot_set2 <- c(min(time)-1,min(time)-1,min(time)-1, x_prime, max(time)+1, max(time)+1,max(time)+1)
-#         G_matrix  <- splines::splineDesign(knots = knot_set2 , x=x_prime ,ord = 4, derivs = 2)
-#       } else if(ord == 3){
-#         knot_set2 <- c(min(time)-1,min(time)-1, x_prime, max(time)+1, max(time)+1)
-#         G_matrix  <- splines::splineDesign(knots = knot_set2 , x=x_prime ,ord = 3, derivs = 1)
-#       } else {
-#         stop("ord must be 3 or 4")
-#       }
-#       P_matrix  <- matrix(0,p_diffm+1,p_diffm+1)
-#       H_matrix  <- matrix(0,p_diffm+1,p_diffm+1)
-#       for (i in 1:(p_diffm+1)) {
-#         for (j in 1:(p_diffm+1)) {
-#           P_matrix[i,j] <- (-1 + 2*(i-1)/p_diffm)^j
-#           H_matrix[i,j] <- (1 + (-1)^(i+j-2))/(i+j-1)
-#         }
-#       }
-#       W_tilde   <- t(solve(P_matrix))%*%H_matrix%*%solve(P_matrix)
-#       W_matrix  <- matrix(0,dim(G_matrix)[1],dim(G_matrix)[1])
-#       W_q       <- matrix(0,dim(G_matrix)[1],dim(G_matrix)[1])
-#       for(q in 1:length(h_j)){
-#         for (i in 1:(p_diffm+1)) {
-#           for (j in 1:(p_diffm+1)) {
-#             W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] = 
-#               W_matrix[i+p_diffm*q-p_diffm,j+p_diffm*q-p_diffm] + h_j[q]*W_tilde[i,j]/2
-#             #W_matrix  <- W_matrix + W_q
-#           }
-#         }
-#       }
-#       SmoothMatrix  <- t(G_matrix)%*%W_matrix%*%G_matrix
-#       
-#       fit <-  VarianceMatrixCalculate(event = data[,term.event], Z_tv = as.matrix(data[,term.tv]), B_spline = as.matrix(bases), 
-#                                       theta = theta_opt_lambda, 
-#                                       lambda_i = opt_lambda,
-#                                       SmoothMatrix  = SmoothMatrix,
-#                                       SplineType    = "smooth-spline",
-#                                       method=control$method, 
-#                                       lambda=control$lambda,
-#                                       factor=control$factor,
-#                                       parallel=control$parallel, threads=control$threads)
-#       
-#       fit$bases <- bases
-#       return(fit)
-#     }
-#   
-#   
-#   
-#   }
-#   
-#   
-#   
-# }

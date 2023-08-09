@@ -22,10 +22,10 @@
 #' base.est <- baseline(fit)
 #' 
 #' 
-baseline <-  function(fit, ...){
+baseline <-  function(fit){
 
   if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtp" & class(fit)!="coxtv") stop("Object fit is not of class 'coxtv' or 'coxtp'!")
+  if (!inherits(fit,"coxtp") & !inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv' or 'coxtp'!")
   
   data       <- attr(fit, "data")
   event  <- data$event
@@ -79,12 +79,12 @@ baseline <-  function(fit, ...){
 #' @param ylim the limits of the y axis.
 #' @param title the title for the plot.
 
-#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
-#'
+#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle theme_classic
+#' @importFrom tibble tibble
+#' @importFrom rlang .data
 #' @exportS3Method plot baseline
 #'
 #' @examples
-#' \dontrun{
 #' data(ExampleData)
 #' z <- ExampleData$z
 #' time  <- ExampleData$time
@@ -93,7 +93,6 @@ baseline <-  function(fit, ...){
 #' fit   <- coxtv(event = event, z = z, time = time)
 #' base.est <- baseline(fit)
 #' plot(base.est)
-#' }
 plot.baseline <- function(x, xlab, ylab, xlim, ylim, title){
   
   
@@ -102,16 +101,18 @@ plot.baseline <- function(x, xlab, ylab, xlim, ylim, title){
   
   if (missing(x)) stop ("Argument x is required!")
   fit <- x
-  if (class(fit)!="baseline") stop("Object fit is not of class 'baseline'!")
+  if (!inherits(fit,"baseline")) stop("Object fit is not of class 'baseline'!")
   
   missingxlim <- missing(xlim); missingylim <- missing(ylim); 
   missingtitle <- missing(title);
   
-  plot_data <- data.frame(fit$time, fit$cumulHaz)
-  colnames(plot_data) <- c("time", "cumulHaz")
+  plot_data <- tibble(
+    time = fit$time,
+    cumulHaz = fit$cumulHaz
+  )
   
-  plt <- ggplot(data = plot_data, aes(x = time, y = cumulHaz)) +
-    geom_line( size = 0.9)+
+  plt <- ggplot(data = plot_data, aes(x = .data$time, y = .data$cumulHaz)) +
+    geom_line(size = 0.9)+
     labs(x="time", y = "cumulative hazard")+
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5))

@@ -1,4 +1,4 @@
-coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="Breslow", 
+coxtp.base <- function(formula, data, spline="Smooth-spline", ties="Breslow", 
                      control, ...) {
   if (!ties%in%c("Breslow", "none")) stop("Invalid ties!")
   # pass ... args to coxtp.control
@@ -11,8 +11,10 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
                     names(extraArgs)[indx==0L]), domain=NA)
   }
   if (missing(control)) control <- coxtp.control(...)
-  degree <- control$degree
   
+  knots         <- control$knots
+  nsplines      <- control$nsplines
+  degree        <- control$degree
   TIC           <- control$TIC
   TIC_prox      <- control$TIC_prox
   penalize      <- control$penalize
@@ -21,7 +23,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   fixedstep     <- control$fixedstep
   addsecond     <- control$addsecond
   ICLastOnly    <- control$ICLastOnly
-  
   
    # formula=fmla
   
@@ -67,10 +68,11 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
   nsplines <- nsplines[1]
   # model fitting
   if (spline=="P-spline") {
-    knots <- 
-      quantile(data[data[,term.event]==1,term.time], 
-               (1:(nsplines-degree-1))/(nsplines-degree))
-    
+    if(is.null(knots)){
+      knots <- 
+        quantile(data[data[,term.event]==1,term.time], 
+                 (1:(nsplines-degree-1))/(nsplines-degree))
+    }
     if (ties=="Breslow"){
       uniqfailtimes.str <- unname(unlist(lapply(
         split(data[data[,term.event]==1,term.time],
@@ -132,10 +134,12 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
       # return(fit)
     }
   } else if (spline=="Smooth-spline"){
-    if (ties=="Breslow"){
+    if(is.null(knots)){
       knots <- 
         quantile(data[data[,term.event]==1,term.time], 
                  (1:(nsplines-degree-1))/(nsplines-degree))
+    }
+    if (ties=="Breslow"){
       uniqfailtimes.str <- unname(unlist(lapply(
         split(data[data[,term.event]==1,term.time],
               data[data[,term.event]==1,term.str]), unique)))
@@ -177,6 +181,19 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
         }
       }
       SmoothMatrix  <- t(G_matrix)%*%W_matrix%*%G_matrix
+      print("start fitting:")
+      print(control$factor)
+      print(control$parallel)
+      print(control$threads)
+      print(control$iter.max)
+      print(control$tol)
+      print(control$s)
+      print(control$tau)
+      print(control$btr)
+      print(control$stop)
+      print(control$fixedstep)
+      print(control$gamma)
+      print(control$difflambda)
       fit <- 
         surtiver_fixtra_fit_penalizestop_bresties(data[,term.event], data[,term.time], 
                                                   count.strata, 
@@ -204,9 +221,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
       # return(fit)
       
     } else if (ties == "none"){
-      knots <- 
-        quantile(data[data[,term.event]==1,term.time], 
-                 (1:(nsplines-degree-1))/(nsplines-degree))
       bases <- 
         splines::bs(data[,term.time], degree=degree, intercept=T, 
                     knots=knots, Boundary.knots=range(times))
@@ -317,10 +331,11 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", nsplines=8, ties="
 }
 
 coxtp.control <- function(tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
-                             factor=10, btr="dynamic", sigma=1e-2, tau=0.6,
-                             stop="incre", parallel=FALSE, threads=1L, degree=3L, TIC = FALSE, TIC_prox = FALSE, 
-                             lambda_spline = 0, ord = 4, fixedstep = FALSE, effectsize = 0, difflambda = FALSE,
-                             addsecond = FALSE,  ICLastOnly = FALSE) {
+                          knots=NULL, nsplines=8L,
+                          factor=10, btr="dynamic", sigma=1e-2, tau=0.6,
+                          stop="incre", parallel=FALSE, threads=1L, degree=3L, TIC = FALSE, TIC_prox = FALSE, 
+                          lambda_spline = 0, ord = 4, fixedstep = FALSE, effectsize = 0, difflambda = FALSE,
+                          addsecond = FALSE,  ICLastOnly = FALSE) {
   if (tol <= 0) stop("Invalid convergence tolerance!")
   if (iter.max <= 0 | !is.numeric(iter.max))
     stop("Invalid maximum number of iterations!")
@@ -328,7 +343,10 @@ coxtp.control <- function(tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
     if (method=="ProxN" & (lambda <= 0 | factor < 1))
       stop("Argument lambda <=0 or factor < 1 when method = 'ProxN'!")
   } else stop("Invalid estimation method!")
-  
+  if (!is.null(knots)){
+    if(length(knots)!=nsplines-degree-1)
+      stop("The number of the internal knots should be `nsplines`-`degree`-1!")
+  }
   if (btr %in% c("none", "static", "dynamic")) {
     if (sigma <= 0 | tau <= 0) 
       stop("Search control parameter sigma <= 0 or sigma <= 0!")
@@ -348,15 +366,16 @@ coxtp.control <- function(tol=1e-9, iter.max=20L, method="Newton", lambda=1e8,
   if (!stop %in% c("incre", "ratch", "relch")) stop("Invalid stopping rule!")
   if (!is.numeric(degree) | degree < 2L) stop("Invalid degree for spline!")
   list(tol=tol, iter.max=as.integer(iter.max), method=method, lambda=lambda,
+       knots = knots,
        factor=factor, btr=btr, s=sigma, t=tau, stop=stop,
        parallel=parallel, threads=as.integer(threads), degree=as.integer(degree),
        TIC=TIC, TIC_prox = TIC_prox, lambda_spline= lambda_spline, ord = ord, fixedstep = fixedstep, 
        effectsize = effectsize, difflambda = difflambda, addsecond = addsecond, 
-       ICLastOnly=ICLastOnly)
+       ICLastOnly=ICLastOnly, nsplines = nsplines)
 }
 
 
-VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="Breslow", 
+VarianceMatrix <- function(formula, data, spline="P-spline", ties="Breslow", 
                            theta_opt_lambda, opt_lambda,
                            control,...){
   
@@ -371,8 +390,9 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
                     names(extraArgs)[indx==0L]), domain=NA)
   }
   if (missing(control)) control <- coxtp.control(...)
-  degree <- control$degree
-  
+ 
+  degree        <- control$degree
+  nsplines      <- control$nsplines
   TIC           <- control$TIC
   TIC_prox      <- control$TIC_prox
   penalize      <- control$penalize
@@ -545,94 +565,3 @@ VarianceMatrix <- function(formula, data, spline="P-spline", nsplines=8, ties="B
 }
 
 
-#' @rdname confint.coxtv
-#' 
-#' @param fit fitted \code{"coxtp"} model.
-#' @param time the time interval to be estamtied. The default value is the time of the fitted model.
-#' @param parm the names of parameter.
-#' @param level the confidence level. The default value is 0.95.
-#' 
-#' 
-#' @examples 
-#' \dontrun{
-#' data(ExampleData)
-#' z <- ExampleData$z
-#' time <- ExampleData$time
-#' event <- ExampleData$event
-#' fit <- coxtp(event = event, z = z, time = time)
-#' IC  <- IC(fit)
-#' confint(IC$model.mAIC)
-#' }
-#' 
-#' @exportS3Method confint coxtp
-confint.coxtp <- function(fit, time, parm, level=0.95) {
-  
-  if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtp") stop("Object fit is not of class 'coxtp'!")
-  if (missing(time)) {
-    time <- fit$times
-  } else {
-    if (!is.numeric(time) | min(time)<0) stop("Invalid time!")
-  }
-  if (!is.numeric(level) | level[1]>1 | level[1]<0) stop("Invalid level!")
-  level <- level[1]
-  time <- time[order(time)]
-  time <- unique(time)
-  spline <- attr(fit, "spline"); degree <- attr(fit, "degree.spline")
-  knots <- attr(fit, "internal.knots"); nsplines <- attr(fit, "nsplines")
-  method <- attr(fit, "control")$method
-  term.tv <- rownames(fit$ctrl.pts)
-  if (missing(parm)) {
-    parm <- term.tv
-  } else if (length(parm)>0) {
-    indx <- pmatch(parm, term.tv, nomatch=0L)
-    if (any(indx==0L))
-      stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
-  } else stop("Invalid parm!")
-  rownames.info <- rep(term.tv, each=nsplines)
-  if (method=="Newton") {
-    invinfo <- solve(fit$info)
-    # invinfo <- fit$VarianceMatrix
-  } else if (method=="ProxN") {
-    invinfo <- solve(fit$info+diag(sqrt(.Machine$double.eps),dim(fit$VarianceMatrix)[1]))
-    # invinfo <- fit$VarianceMatrix
-  }
-  # parm.ti <- intersect(parm, c(term.ti))
-  parm.tv <- intersect(parm, c(term.tv))
-  quant.upper <- qnorm((1+level)/2)
-  ls <- list()
-  # if (length(parm.ti)!=0) {
-  #   est.ti <- fit$tief[term.ti%in%parm.ti]
-  #   se.ti <- c(sqrt(diag(as.matrix(invinfo[rownames.info%in%parm.ti,
-  #                                          rownames.info%in%parm.ti]))))
-  #   mat.ti <- cbind(est.ti, est.ti-quant.upper*se.ti, est.ti+quant.upper*se.ti)
-  #   colnames(mat.ti) <- 
-  #     c("est", paste0(round(100*c(1-(1+level)/2,(1+level)/2),1),"%"))
-  #   rownames(mat.ti) <- parm.ti
-  #   ls$tief <- mat.ti
-  # }
-  # if (length(parm.tv)!=0) {
-  # if (spline=="B-spline") {
-  bases <- splines::bs(time, degree=degree, intercept=T, knots=knots, 
-                       Boundary.knots=range(fit$times))
-  ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm.tv,], ncol=nsplines)
-  ls$tvef <- lapply(parm.tv, function(tv) {
-    est.tv <- bases%*%ctrl.pts[parm.tv%in%tv,]
-    se.tv <- sqrt(apply(bases, 1, function(r) {
-      idx <- rownames.info%in%tv
-      return(t(r)%*%invinfo[idx, idx]%*%r)}))
-    mat.tv <- cbind(est.tv, est.tv-quant.upper*se.tv, 
-                    est.tv+quant.upper*se.tv)
-    colnames(mat.tv) <- 
-      c("est", paste0(round(100*c(1-(1+level)/2,(1+level)/2),1),"%"))
-    rownames(mat.tv) <- time
-    return(mat.tv)
-  })
-  names(ls$tvef) <- parm.tv
-  # } 
-  # else if (spline=="P-spline") {
-  
-  # }
-  # }
-  return(ls)
-}

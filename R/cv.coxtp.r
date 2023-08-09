@@ -140,7 +140,9 @@
 #'
 cv.coxtp <- function(event , z, time, strata=NULL, 
                      lambda = c(0.1, 1, 10),
-                     nfolds = 5, foldid = NULL, 
+                     nfolds = 5, 
+                     foldid = NULL, 
+                     knots = NULL,
                      penalty="Smooth-spline", nsplines=8, ties="Breslow",
                      tol=1e-6, iter.max=20L, method="ProxN", gamma=1e8,
                      btr="dynamic", tau=0.5,
@@ -213,7 +215,8 @@ cv.coxtp <- function(event , z, time, strata=NULL,
     model <- list()
     for(lambda_index in 1:length(lambda)){
       
-      model1 <- coxtp.base(fmla, data_NR, nsplines=nsplines, spline = spline, ties= ties, stop=stop,
+      model1 <- coxtp.base(fmla, data_NR, knots = knots, nsplines=nsplines, 
+                           spline = spline, ties= ties, stop=stop,
                            TIC_prox = TIC_prox, ord = ord, degree = degree,
                            method = method, btr = btr, iter.max = 15, threads = 3, parallel = TRUE,
                            lambda_spline = lambda[lambda_index], 
@@ -241,7 +244,7 @@ cv.coxtp <- function(event , z, time, strata=NULL,
   Z.char <- paste0("X", 1:p)
   fmla <- formula(paste0("Surv(time, event)~",
                          paste(c(paste0("tv(", Z.char, ")"), "strata(strata)"), collapse="+")))
-  model.cv = coxtp.base(fmla, data_NR, nsplines=nsplines, spline = spline, ties= ties, stop=stop,
+  model.cv = coxtp.base(fmla, data_NR, knots = knots, nsplines=nsplines, spline = spline, ties= ties, stop=stop,
                         TIC_prox = TIC_prox, ord = ord, degree = degree,
                         method = method, btr = btr, iter.max = 15, threads = 3, parallel = TRUE,
                         lambda_spline = lambda.min, 

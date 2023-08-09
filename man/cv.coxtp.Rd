@@ -12,6 +12,7 @@ cv.coxtp(
   lambda = c(0.1, 1, 10),
   nfolds = 5,
   foldid = NULL,
+  knots = NULL,
   penalty = "Smooth-spline",
   nsplines = 8,
   ties = "Breslow",
@@ -46,6 +47,12 @@ When \code{lambda} is \code{0}, Newton method without penalization is fitted.}
 \item{nfolds}{number of folds for cross-validation, the default value is 5. The smallest value allowable is \code{nfolds}=3.}
 
 \item{foldid}{an optional vector of values between 1 and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.}
+
+\item{knots}{the internal knot locations (breakpoints) that define the B-splines.
+The number of the internal knots should be \code{nsplines}-\code{degree}-1.
+If \code{NULL}, the locations of knots are chosen as quantiles of distinct failure time points.
+This choice leads to more stable results in most cases.
+Users can specify the internal knot locations by themselves.}
 
 \item{penalty}{a character string specifying the spline term for the penalized Newton method.
 This term is added to the log-partial likelihood, and the penalized log-partial likelihood serves as the new objective function to
@@ -111,12 +118,6 @@ If \code{penalty} is \code{P-spline} or \code{NULL}, \code{degree}'s default val
 If \code{penalty} is \code{Smooth-spline}, \code{degree}'s default value is 2.}
 
 \item{fixedstep}{if \code{TRUE}, the algorithm will be forced to run \code{iter.max} steps regardless of the stopping criterion specified.}
-
-\item{knots}{the internal knot locations (breakpoints) that define the B-splines.
-The number of the internal knots should be \code{nsplines}-\code{degree}-1.
-If \code{NULL}, the locations of knots are chosen as quantiles of distinct failure time points.
-This choice leads to more stable results in most cases.
-Users can specify the internal knot locations by themselves.}
 }
 \value{
 An object of class \code{"cv.coxtp"} is returned, which is a list with the ingredients of the cross-validation fit.

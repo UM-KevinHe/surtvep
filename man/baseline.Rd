@@ -4,7 +4,7 @@
 \alias{baseline}
 \title{calculating baseline hazard and baseline cumulative hazard using the result from a \code{coxtv} or \code{coxtp} object}
 \usage{
-baseline(fit, ...)
+baseline(fit)
 }
 \arguments{
 \item{fit}{model from \code{coxtv} or \code{coxtp}.}

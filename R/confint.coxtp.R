@@ -1,0 +1,90 @@
+#' @rdname confint.coxtv
+#' 
+#' @param fit fitted \code{"coxtp"} model.
+#' @param time the time interval to be estamtied. The default value is the time of the fitted model.
+#' @param parm the names of parameter.
+#' @param level the confidence level. The default value is 0.95.
+#' 
+#' @examples 
+#' \dontrun{
+#' data(ExampleData)
+#' z <- ExampleData$z
+#' time <- ExampleData$time
+#' event <- ExampleData$event
+#' fit <- coxtp(event = event, z = z, time = time)
+#' IC  <- IC(fit)
+#' confint(IC$model.mAIC)
+#' }
+#' 
+#' @exportS3Method confint coxtp
+confint.coxtp <- function(fit, time, parm, level=0.95) {
+  
+  if (missing(fit)) stop ("Argument fit is required!")
+  if (!inherits(fit,"coxtp")) stop("Object fit is not of class 'coxtp'!")
+  if (missing(time)) {
+    time <- fit$times
+  } else {
+    if (!is.numeric(time) | min(time)<0) stop("Invalid time!")
+  }
+  if (!is.numeric(level) | level[1]>1 | level[1]<0) stop("Invalid level!")
+  level <- level[1]
+  time <- time[order(time)]
+  time <- unique(time)
+  spline <- attr(fit, "spline"); degree <- attr(fit, "degree.spline")
+  knots <- attr(fit, "internal.knots"); nsplines <- attr(fit, "nsplines")
+  method <- attr(fit, "control")$method
+  term.tv <- rownames(fit$ctrl.pts)
+  if (missing(parm)) {
+    parm <- term.tv
+  } else if (length(parm)>0) {
+    indx <- pmatch(parm, term.tv, nomatch=0L)
+    if (any(indx==0L))
+      stop(gettextf("%s not matched!", parm[indx==0L]), domain=NA)
+  } else stop("Invalid parm!")
+  rownames.info <- rep(term.tv, each=nsplines)
+  if (method=="Newton") {
+    invinfo <- solve(fit$info)
+    # invinfo <- fit$VarianceMatrix
+  } else if (method=="ProxN") {
+    invinfo <- solve(fit$info+diag(sqrt(.Machine$double.eps),dim(fit$VarianceMatrix)[1]))
+    # invinfo <- fit$VarianceMatrix
+  }
+  # parm.ti <- intersect(parm, c(term.ti))
+  parm.tv <- intersect(parm, c(term.tv))
+  quant.upper <- qnorm((1+level)/2)
+  ls <- list()
+  # if (length(parm.ti)!=0) {
+  #   est.ti <- fit$tief[term.ti%in%parm.ti]
+  #   se.ti <- c(sqrt(diag(as.matrix(invinfo[rownames.info%in%parm.ti,
+  #                                          rownames.info%in%parm.ti]))))
+  #   mat.ti <- cbind(est.ti, est.ti-quant.upper*se.ti, est.ti+quant.upper*se.ti)
+  #   colnames(mat.ti) <- 
+  #     c("est", paste0(round(100*c(1-(1+level)/2,(1+level)/2),1),"%"))
+  #   rownames(mat.ti) <- parm.ti
+  #   ls$tief <- mat.ti
+  # }
+  # if (length(parm.tv)!=0) {
+  # if (spline=="B-spline") {
+  bases <- splines::bs(time, degree=degree, intercept=T, knots=knots, 
+                       Boundary.knots=range(fit$times))
+  ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm.tv,], ncol=nsplines)
+  ls$tvef <- lapply(parm.tv, function(tv) {
+    est.tv <- bases%*%ctrl.pts[parm.tv%in%tv,]
+    se.tv <- sqrt(apply(bases, 1, function(r) {
+      idx <- rownames.info%in%tv
+      return(t(r)%*%invinfo[idx, idx]%*%r)}))
+    mat.tv <- cbind(est.tv, est.tv-quant.upper*se.tv, 
+                    est.tv+quant.upper*se.tv)
+    colnames(mat.tv) <- 
+      c("est", paste0(round(100*c(1-(1+level)/2,(1+level)/2),1),"%"))
+    rownames(mat.tv) <- time
+    return(mat.tv)
+  })
+  names(ls$tvef) <- parm.tv
+  # } 
+  # else if (spline=="P-spline") {
+  
+  # }
+  # }
+  return(ls)
+}
