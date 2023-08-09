@@ -158,7 +158,7 @@ coxtp <- function(event , z , time ,strata=NULL, penalty="Smooth-spline", nsplin
                   tol=1e-6, iter.max=20L, method="ProxN", gamma=1e8,
                   btr="dynamic", tau=0.5,
                   stop="ratch", parallel=FALSE, threads=2L, 
-                  fixedstep = FALSE,...){
+                  fixedstep = FALSE){
   
   lambda.spline = lambda
   spline = penalty

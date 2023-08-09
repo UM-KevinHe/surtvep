@@ -24,8 +24,7 @@ coxtp(
   stop = "ratch",
   parallel = FALSE,
   threads = 2L,
-  fixedstep = FALSE,
-  ...
+  fixedstep = FALSE
 )
 }
 \arguments{
