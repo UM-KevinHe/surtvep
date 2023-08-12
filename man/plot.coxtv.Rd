@@ -19,7 +19,8 @@
   linetype,
   color,
   fill,
-  time
+  time,
+  ...
 )
 }
 \arguments{
@@ -54,6 +55,8 @@ If \code{FALSE}, the fitted time-varying coefficients (log hazard ratio) are plo
 
 \item{time}{the time points for which the time-varying coefficients to be plotted.
 The default value is the unique observed event times in the dataset fitting the time-varying effects model.}
+
+\item{\dots}{Other graphical parameters to plot}
 }
 \description{
 This function creates a plot of the time-varying coefficients from a fitted \code{coxtv} model.
