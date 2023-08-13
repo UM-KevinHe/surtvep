@@ -8,6 +8,7 @@ template:
 vignettes:
   - vignettes/surtvep.Rmd
 
+
 authors:
   Kevin He:
     href: "https://www.um-kevinhe-group.org/"
@@ -15,23 +16,9 @@ authors:
     href: "https://www.wenbowu.me/"
     
 navbar:
- structure: 
-   right: [articles, articles2]
  components:
    articles:
     text: Appendix
-    menu:
-    - text: Category A
-    - text: B-spline construction
-      href: articles/Appendix.html
-    - text: Title A2
-      href: articles/a2.html
-    - text: -------
-    - text: "Category B"
-    - text: Plotting
-      href: articles/plotting.html
-   articles2:
-    text: Appendix2
     menu:
     - text: Category A
     - text: B-spline construction

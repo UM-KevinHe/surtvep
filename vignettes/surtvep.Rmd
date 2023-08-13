@@ -137,8 +137,8 @@ To learn more, move on to later section.
 ## Structure
 
 This section gives the flowchart for the `surtvep` package. Generally, `coxtv` utilizes proximal Newton's method to estimate the time-varying coefficients. `coxtp` combines the Newton's approach with penalization. `IC` calculates different information criteria to select the best tuning parameter in front of the penalty term. `cv.coxtp` uses cross-validation for tuning parameter selection.. `tvef.ph`, `tvef.ph.time` and `tvef.ph.zero` provides hypothesis testing for the fitted model. `get.tvef` retrieves the time-varying coefficients for the fitted model. `confint` provides confidence intervals for these coefficients.  `baseline` offers the baseline estimations. `plot` visualizes the estimated time-varying coefficients. Other functions and details are provided in later sections.
-
-![Alt](Flowchart.png)
+Ï
+![Flowchart](figures/Flowchart.png)
 
 
 ## Cox non-proportional hazards model
