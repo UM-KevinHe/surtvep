@@ -5,13 +5,15 @@
 #' @param fit fitted `coxtv` or `coxtp`  model.
 #' @param parm the names of parameters to be tested.
 #' 
+#' @importFrom stats pchisq
+#' 
 #' @return `tvef.ph` produces a matrix. Each row corresponds to a covariate from the fitted object. The three 
 #' columns give the test statistic, degrees of freedom and P-value.
 #' 
 #' 
 #' @examples 
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
@@ -21,7 +23,7 @@
 #' @export
 tvef.ph <- function(fit, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
+  if (!inherits(fit,"coxtp") & !inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv' or 'coxtp!")
   nsplines <- attr(fit, "nsplines"); spline <- attr(fit, "spline")
   term.ti <- names(fit$tief); term.tv <- rownames(fit$ctrl.pts)
   method <- attr(fit,"control")$method
@@ -67,9 +69,11 @@ tvef.ph <- function(fit, parm) {
 #' @return `tvef.zero` produces a matrix. Each row corresponds to a covariate from the fitted object. The three 
 #' columns give the test statistic, degrees of freedom and P-value.
 #' 
+#' @importFrom stats pchisq
+#' 
 #' @examples 
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
@@ -79,7 +83,7 @@ tvef.ph <- function(fit, parm) {
 #' @export
 tvef.zero <- function(fit, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
+  if (!inherits(fit,"coxtp") & !inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv' or 'coxtp!")
   nsplines <- attr(fit, "nsplines"); spline <- attr(fit, "spline")
   term.ti <- names(fit$tief); term.tv <- rownames(fit$ctrl.pts)
   method <- attr(fit,"control")$method
@@ -126,16 +130,18 @@ tvef.zero <- function(fit, parm) {
 #' 
 #' @param fit fitted `coxtv` or `coxtp`  model.
 #' @param parm the names of parameters to be tested.
-#' @param times the time points to test if the covariate is significant or not.
+#' @param time the time points to test if the covariate is significant or not.
 #' 
 #' @return `tvef.zero.time` produces a list of length `nvars`. Each element of the list is a matrix with respect to a
 #' covariate. The matrix is of dimension `len_unique_t` by 4, where `len_unique_t` is the length of unique observed event time.
 #' Each row corresponds to the testing result at that time.  The four 
-#' columns give the estimations, standard error, z-statistic and  P-value.
+#' columns give the estimations, standard error, test-statistic and  P-value.
+#' 
+#' @importFrom stats pnorm
 #' 
 #' @examples 
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' fit   <- coxtv(event = event, z = z, time = time)
@@ -144,13 +150,13 @@ tvef.zero <- function(fit, parm) {
 #' @seealso \code{\link{tvef.ph}} \code{\link{tvef.zero}}
 #' 
 #' @export
-tvef.zero.time <- function(fit, times, parm) {
+tvef.zero.time <- function(fit, time, parm) {
   if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtv" & class(fit)!="coxtp") stop("Object fit is not of class 'coxtv' or 'coxtp!")
-  if (missing(times)) {
-    times <- fit$times
+  if (!inherits(fit,"coxtp") & !inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv' or 'coxtp!")
+  if (missing(time)) {
+    time <- fit$times
   } else {
-    if (!is.numeric(times) | min(times)<0) stop("Invalid times!")
+    if (!is.numeric(time) | min(time)<0) stop("Invalid time!")
   }
   term.ti <- names(fit$tief); term.tv <- rownames(fit$ctrl.pts)
   spline <- attr(fit, "spline"); nsplines <- attr(fit, "nsplines")
@@ -170,7 +176,7 @@ tvef.zero.time <- function(fit, times, parm) {
     invinfo <- solve(fit$info+diag(sqrt(.Machine$double.eps),dim(fit$info)[1]))
   }
   # if (spline=="B-spline") {
-    bases <- splines::bs(times, degree=degree, intercept=T, knots=knots, 
+    bases <- splines::bs(time, degree=degree, intercept=T, knots=knots, 
                          Boundary.knots=range(fit$times))
     ctrl.pts <- matrix(fit$ctrl.pts[term.tv%in%parm,], ncol=nsplines)
     ls <- lapply(parm, function(tv) {
@@ -183,7 +189,7 @@ tvef.zero.time <- function(fit, times, parm) {
       p.value <- 2*pmin(p.upper, 1-p.upper)
       mat <- cbind(est, se, stat, p.value)
       colnames(mat) <- c("est", "se", "z", "p")
-      rownames(mat) <- times
+      rownames(mat) <- time
       return(mat)})
     names(ls) <- parm
   # } else if (spline=="P-spline") {

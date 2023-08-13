@@ -56,7 +56,7 @@ We load a set of data created beforehand for illustration:
 
 ```{r}
 data("ExampleData")
-z     <- ExampleData$x
+z     <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 ```
@@ -67,7 +67,7 @@ The saved data set is a simulation data set with continuous covariates.
 We fit the Newton's method without penalization use the most basic call to 'coxtv'.
 
 ```{r}
-fit.tv <- coxtv(z = z, event = event, time=time)
+fit.tv <- coxtv(z = z, event = event, time = time)
 ```
 
 'fit.tv' is an object of class 'coxtv' that contains all the relevant information of the fitted model for further use.
@@ -88,7 +88,7 @@ In order to get the time-varying coefficients on a new time sequence, we can mod
 
 ```{r}
 time.new <- seq(1,2,0.1)
-beta.tv.new <- get.tvcoef(fit.tv,times = time.new)
+beta.tv.new <- get.tvcoef(fit.tv, time = time.new)
 head(beta.tv.new)
 ```
 
@@ -137,18 +137,8 @@ To learn more, move on to later section.
 ## Structure
 
 This section gives the flowchart for the `surtvep` package. Generally, `coxtv` utilizes proximal Newton's method to estimate the time-varying coefficients. `coxtp` combines the Newton's approach with penalization. `IC` calculates different information criteria to select the best tuning parameter in front of the penalty term. `cv.coxtp` uses cross-validation for tuning parameter selection.. `tvef.ph`, `tvef.ph.time` and `tvef.ph.zero` provides hypothesis testing for the fitted model. `get.tvef` retrieves the time-varying coefficients for the fitted model. `confint` provides confidence intervals for these coefficients.  `baseline` offers the baseline estimations. `plot` visualizes the estimated time-varying coefficients. Other functions and details are provided in later sections.
-
-# ```{r, out.width="700px", out.height = "800px", include=TRUE, fig.align="center", fig.cap=c("your caption"), echo=FALSE}
-# knitr::include_graphics("Flowchart.pdf")
-# ```
-```{r label, out.height = "100%", fig.cap = "caption"}
-knitr::include_graphics("Flowchart.pdf") 
-```
-
-<!-- ![Flowchart](Flowchart.pdf) -->
-![Alt](Flowchart.pdf){width=80% height=700}
-
-![Alt](Flowchart.png)
+Ï
+![Flowchart](figures/Flowchart.png)
 
 
 ## Cox non-proportional hazards model
@@ -254,7 +244,7 @@ data("ExampleDataBinary")
 table(ExampleDataBinary$x[,1])
 table(ExampleDataBinary$x[,2])
 
-z     <- ExampleDataBinary$x
+z     <- ExampleDataBinary$z
 time  <- ExampleDataBinary$time
 event <- ExampleDataBinary$event
 ```
@@ -270,8 +260,8 @@ The default value of $\gamma$ is $10^8$, which can be modified by user.
 If the data set have predictors with extremely low frequency, users may consider a smaller $\gamma$.
 
 ```{r, message = FALSE, results='hide'}
-fit.newton <- coxtv(z = z, event = event, time=time, method = 'Newton')
-fit.proxN <- coxtv(z = z, event = event, time=time, method = 'ProxN')
+fit.newton <- coxtv(z = z, event = event, time = time, method = 'Newton')
+fit.proxN <- coxtv(z = z, event = event, time = time, method = 'ProxN')
 ```
 
 Then we plot the fitted methods with all the curves on the same plot.
@@ -304,7 +294,7 @@ In our simulation, we vary the baseline for different stratums by adding a small
 
 ```{r}
 data("StrataExample")
-z     <- StrataExample$x
+z     <- StrataExample$z
 time  <- StrataExample$time
 event <- StrataExample$event
 strata <- StrataExample$strata
@@ -396,7 +386,7 @@ Penalization plays an important role here as it helps to smooth the time-varying
 
 ```{r}
 data(ExampleDataBinary)
-z     <- ExampleDataBinary$x
+z     <- ExampleDataBinary$z
 time  <- ExampleDataBinary$time
 event <- ExampleDataBinary$event
 ```
@@ -406,7 +396,7 @@ First we fit the penalized model with `"Smooth-spline"`.
 ```{r, message = FALSE, results='hide'}
 lambda_spline_all = c(0.01,0.1,1,10,100,1000)
 # fit.pspline <- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")
-fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline = lambda_spline_all, spline = "Smooth-spline")
+fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda = lambda_spline_all, penalty = "Smooth-spline")
 ```
 
 Then we use the `IC` function to select the tuning parameter.
@@ -446,7 +436,7 @@ The baseline estimation here refers to the baseline hazard at time t when holdin
 
 ```{r}
 data("ExampleData")
-z     <- ExampleData$x
+z     <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 time2  <- round(time, digits = 1)

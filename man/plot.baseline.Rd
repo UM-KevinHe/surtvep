@@ -4,10 +4,10 @@
 \alias{plot.baseline}
 \title{plotting the baseline hazard}
 \usage{
-\method{plot}{baseline}(fit, xlab, ylab, xlim, ylim, title)
+\method{plot}{baseline}(x, xlab, ylab, xlim, ylim, title, ...)
 }
 \arguments{
-\item{fit}{fitted object from \code{baseline} function.}
+\item{x}{fitted object from \code{baseline} function.}
 
 \item{xlab}{the title for the x axis.}
 
@@ -18,19 +18,19 @@
 \item{ylim}{the limits of the y axis.}
 
 \item{title}{the title for the plot.}
+
+\item{\dots}{Other graphical parameters to plot}
 }
 \description{
 Plotting the baseline hazard from a fitted \code{baseline} object.
 }
 \examples{
-\dontrun{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 
 fit   <- coxtv(event = event, z = z, time = time)
 base.est <- baseline(fit)
 plot(base.est)
-}
 }

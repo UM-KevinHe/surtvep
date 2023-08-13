@@ -53,44 +53,12 @@
       <a href="../articles/plotting.html">Plotting</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"><li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Appendix
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
-    <span class="caret"></span>
   </a>
-  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
-    <li>
-      <a href="../articles/Appendix.html">B-spline construction</a>
-    </li>
-    <li>
-      <a href="../articles/a2.html">Title A2</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Category B</li>
-    <li>
-      <a href="../articles/plotting.html">Plotting</a>
-    </li>
-  </ul></li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Appendix2
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
-    <li>
-      <a href="../articles/Appendix.html">B-spline construction</a>
-    </li>
-    <li>
-      <a href="../articles/a2.html">Title A2</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Category B</li>
-    <li>
-      <a href="../articles/plotting.html">Plotting</a>
-    </li>
-  </ul></li>
+</li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -121,7 +89,7 @@
 <span>  degree <span class="op">=</span> <span class="fl">3L</span>,</span>
 <span>  knots <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ties <span class="op">=</span> <span class="st">"Breslow"</span>,</span>
-<span>  tol <span class="op">=</span> <span class="fl">1e-09</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">1e-06</span>,</span>
 <span>  iter.max <span class="op">=</span> <span class="fl">20L</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"ProxN"</span>,</span>
 <span>  gamma <span class="op">=</span> <span class="fl">1e+08</span>,</span>
@@ -130,8 +98,7 @@
 <span>  stop <span class="op">=</span> <span class="st">"ratch"</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  threads <span class="op">=</span> <span class="fl">2L</span>,</span>
-<span>  fixedstep <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  fixedstep <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -146,7 +113,7 @@
 
 
 <dt>time</dt>
-<dd><p>observed event time, which should be a vector with non-negative values.</p></dd>
+<dd><p>observed event times, which should be a vector with non-negative values.</p></dd>
 
 
 <dt>strata</dt>
@@ -165,12 +132,12 @@ will be set as 0.</p>
 When <code>lambda</code> goes to infinity, the time-varying effects are reduced to be constant.</p>
 <p><code>Smooth-spline</code> refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See <code>degree</code> for different choices.
 When <code>degree=3</code>, we use the cubic B-spline penalizing the second-order derivative, which reduces the time-varying effect to a linear term when <code>lambda</code> goes to infinity.
-When <code>degree=2</code>, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.</p>
+When <code>degree=2</code>, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when <code>lambda</code> goes to infinity. See Wood (2017) for details.</p>
 <p>If <code>P-spline</code> or <code>Smooth-spline</code>, then <code>lambda</code> is initialized as a sequence (0.1, 1, 10). Users can modify <code>lambda</code>. See details in <code>lambda</code>.</p></dd>
 
 
 <dt>nsplines</dt>
-<dd><p>number of basis functions in the splines to span the time-varying effects, whose default value is 8.
+<dd><p>number of basis functions in the splines to span the time-varying effects. The default value is 8.
 We use the R function <code><a href="https://rdrr.io/r/splines/bs.html" class="external-link">splines::bs</a></code> to generate the B-splines.</p></dd>
 
 
@@ -178,8 +145,7 @@ We use the R function <code><a href="https://rdrr.io/r/splines/bs.html" class="e
 <dd><p>a user-specified <code>lambda</code> sequence as the penalization coefficients in front of the spline term specified by <code>penalty</code>.
 This is the tuning parameter for penalization. The function <code>IC</code> can be used to select the best tuning parameter based on the information criteria.
 Alternatively, cross-validation can be used via the <code>cv.coxtp</code> function.
-Users can specify larger values when the estimated time-varying effects are too high.
-Default is <code>0</code>, which refers to Newton method without penalization.</p></dd>
+When <code>lambda</code> is <code>0</code>, Newton method without penalization is fitted.</p></dd>
 
 
 <dt>degree</dt>
@@ -210,7 +176,7 @@ The default value is  <code>1e-6</code>.</p></dd>
 
 
 <dt>iter.max</dt>
-<dd><p>maximum iteration number if the stopping criterion specified by <code>stop</code> is not satisfied. Default value is  20.</p></dd>
+<dd><p>maximum iteration number if the stopping criterion specified by <code>stop</code> is not satisfied. The default value is  20.</p></dd>
 
 
 <dt>method</dt>
@@ -228,21 +194,21 @@ See details in Wu et al. (2022).</p></dd>
 See details in Convex Optimization by Boyd and Vandenberghe (2004).
 <code>"static"</code> limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
 which usually occurs when some predictors are categorical with low frequency for some categories.
-Users should be careful with <code>static</code> as this may lead to under-fitting.</p></dd>
+Users should be careful with <code>static</code>, as this may lead to under-fitting.</p></dd>
 
 
 <dt>tau</dt>
-<dd><p>a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is 0.5.</p></dd>
+<dd><p>a positive scalar used to control the step size inside the backtracking line-search. The default value is 0.5.</p></dd>
 
 
 <dt>stop</dt>
 <dd><p>a character string specifying the stopping rule to determine convergence.
-<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
 <code>"relch"</code> means we stop the algorithm when the \((loglik(m)-loglik(m-1))/(loglik(m))\) is less than the <code>tol</code>,
 where \(loglik(m)\) denotes the log-partial likelihood at iteration step m.
 <code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
-<code>"all"</code> means we stop the algorithm when all the stopping rules <code>"incre"</code>, <code>"relch"</code> and <code>"ratch"</code> are met.
-Default value is <code>ratch</code>.
+<code>"all"</code> means we stop the algorithm when all the stopping rules (<code>"incre"</code>, <code>"relch"</code>, <code>"ratch"</code>) are met.
+The default value is <code>ratch</code>.
 If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm termination.</p></dd>
 
 
@@ -251,7 +217,7 @@ If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm t
 
 
 <dt>threads</dt>
-<dd><p>an integer indicating the number of threads to be used for parallel computation. Default is <code>2</code>. If <code>parallel</code> is false, then the value of <code>threads</code> has no effect.</p></dd>
+<dd><p>an integer indicating the number of threads to be used for parallel computation. The default value is <code>2</code>. If <code>parallel</code> is false, then the value of <code>threads</code> has no effect.</p></dd>
 
 
 <dt>fixedstep</dt>
@@ -293,7 +259,7 @@ Each row represents a covariate's coefficient on the <code>nsplines</code>-dimen
 <dd><p>the spline term <code>penalty</code> specified by user.</p></dd>
 
 <dt>theta.list</dt>
-<dd><p>the history of <code>ctrl.pts</code> of length <code>m</code>, including <code>ctrl.pts</code> for each algorithm iteration.</p></dd>
+<dd><p>the history of <code>ctrl.pts</code> of length <code>m</code> (the length of algorithm iterations), including <code>ctrl.pts</code> for each algorithm iteration.</p></dd>
 
 <dt>VarianceMatrix</dt>
 <dd><p>the variance matrix of the estimated coefficients of the basis matrix,
@@ -305,12 +271,15 @@ which is the inverse of the negative Hessian matrix.</p></dd>
     <p>The sequence of models implied by <code>lambda.spline</code> is fit by the (proximal) Newton method.
 The objective function is $$loglik - P_{\lambda},$$
 where \(P_{\lambda}\) is a penalty matrix for <code>P-spline</code> or <code>Smooth-spline</code>.
-The \(\lambda\) is the tuning  parameter. Users can define the initial sequence.
+The \(\lambda\) is the tuning  parameter (See details in <code>lambda</code>). Users can define the initial sequence.
 The function <code>IC</code> below provides different information criteria to choose the tuning parameter \(\lambda\). Another function <code>cv.coxtp</code> uses the cross-validation to choose the tuning parameter.</p>
     </div>
     <div id="references">
     <h2>References</h2>
-    <p>Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
+    <p>Boyd, S., and Vandenberghe, L. (2004) Convex optimization.
+<em>Cambridge University Press</em>.
+<br></p>
+<p>Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
 <em>Journal of the American Statistical Association</em>, <strong>87(420)</strong>: 942-951.
 <br></p>
 <p>Gray, R. J. (1994) Spline-based tests in survival analysis.
@@ -319,17 +288,14 @@ The function <code>IC</code> below provides different information criteria to ch
 <p>Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 <em>Statistical Methods in Medical Research</em>, <strong>in press</strong>.
 <br></p>
+<p>Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+<em>Computer Methods and Programs in Biomedicine</em>, <strong>81(2)</strong>: 154-161.
+<br></p>
 <p>Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
 <em>Lifetime Data Analysis</em>, <strong>28(2)</strong>: 194-218.
 <br></p>
 <p>Wood, S. N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
 <em>Statistics and Computing</em>, <strong>27(4)</strong>: 985-989.
-<br></p>
-<p>Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
-<em>Computer Methods and Programs in Biomedicine</em>, <strong>81(2)</strong>: 154-161.
-<br></p>
-<p>Boyd, S., Vandenberghe, L. (2004) Convex optimization.
-<em>Cambridge university press</em>.
 <br></p>
     </div>
     <div id="see-also">
@@ -340,23 +306,49 @@ The function <code>IC</code> below provides different information criteria to ch
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">lambda</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span>   <span class="op">&lt;-</span> <span class="fu">coxtp</span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda<span class="op">=</span><span class="va">lambda</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "start fitting:"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dynamic"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ratch"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2982771; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2916285; Stopping crit = 2.1424865e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2916034; Stopping crit = 8.0884492e-05;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2916034; Stopping crit = 1.8232153e-09;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2916034; Stopping crit = 2.2895367e-14;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lambda 0 is done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "start fitting:"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dynamic"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ratch"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2954100; Stopping crit = 2.0664261e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lambda 1 is done.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -371,7 +363,7 @@ The function <code>IC</code> below provides different information criteria to ch
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
+  <p></p><p>Developed by Lingfeng Luo, <a href="https://www.wenbowu.me/" class="external-link">Wenbo Wu</a>, <a href="https://www.um-kevinhe-group.org/" class="external-link">Kevin He</a>.</p>
 </div>
 
 <div class="pkgdown">

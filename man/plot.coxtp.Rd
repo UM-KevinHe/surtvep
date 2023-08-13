@@ -5,7 +5,7 @@
 \title{plotting results from a fitted \code{coxtp} object}
 \usage{
 \method{plot}{coxtp}(
-  fit,
+  x,
   parm,
   CI = TRUE,
   level = 0.95,
@@ -19,17 +19,18 @@
   linetype,
   color,
   fill,
-  times
+  time,
+  ...
 )
 }
 \arguments{
-\item{fit}{model obtained from \code{coxtp}.}
+\item{x}{model obtained from \code{coxtp}.}
 
-\item{parm}{covariate name fitted in the model to be plotted. If \code{NULL}, all covariates are plotted.}
+\item{parm}{covariate names fitted in the model to be plotted. If \code{NULL}, all covariates are plotted.}
 
-\item{CI}{if \code{TRUE}, confidence intervals are displayed. Default value is \code{TRUE}.}
+\item{CI}{if \code{TRUE}, confidence intervals are displayed. The default value is \code{TRUE}.}
 
-\item{level}{the level of confidence interval. Default value is \code{0.95}.}
+\item{level}{the level of confidence intervals. The default value is \code{0.95}.}
 
 \item{exponentiate}{if \code{TRUE}, exponential scale of the fitted coefficients (hazard ratio) for each covariate is plotted.
 If \code{FALSE}, the fitted time-varying coefficients (log hazard ratio) are plotted.}
@@ -42,7 +43,7 @@ If \code{FALSE}, the fitted time-varying coefficients (log hazard ratio) are plo
 
 \item{ylim}{the limits for the y axis.}
 
-\item{allinone}{if \code{TRUE}, the time-varying trajectories for different covariates are combined into a single plot. Default value is \code{FALSE}.}
+\item{allinone}{if \code{TRUE}, the time-varying trajectories for different covariates are combined into a single plot. The default value is \code{FALSE}.}
 
 \item{title}{the title for the plot.}
 
@@ -52,18 +53,19 @@ If \code{FALSE}, the fitted time-varying coefficients (log hazard ratio) are plo
 
 \item{fill}{the aesthetics parameter for the plot.}
 
-\item{times}{the time points for which the time-varying coefficients to be plotted.
+\item{time}{the time points for which the time-varying coefficients to be plotted.
 The default value is the unique observed event times in the dataset fitting the time-varying effects model.}
+
+\item{\dots}{Other graphical parameters to plot}
 }
 \description{
 This function creates a plot of the time-varying coefficients from a fitted \code{coxtp} model.
 }
 \examples{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time <- ExampleData$time
 event <- ExampleData$event
 fit <- coxtp(event = event, z = z, time = time)
 plot(fit$lambda1)
-
 }

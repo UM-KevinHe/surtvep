@@ -53,44 +53,12 @@
       <a href="../articles/plotting.html">Plotting</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"><li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Appendix
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
-    <span class="caret"></span>
   </a>
-  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
-    <li>
-      <a href="../articles/Appendix.html">B-spline construction</a>
-    </li>
-    <li>
-      <a href="../articles/a2.html">Title A2</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Category B</li>
-    <li>
-      <a href="../articles/plotting.html">Plotting</a>
-    </li>
-  </ul></li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Appendix2
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
-    <li>
-      <a href="../articles/Appendix.html">B-spline construction</a>
-    </li>
-    <li>
-      <a href="../articles/a2.html">Title A2</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Category B</li>
-    <li>
-      <a href="../articles/plotting.html">Plotting</a>
-    </li>
-  </ul></li>
+</li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -101,7 +69,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>get confidence intervals of time-varying coefficients from a fitted object</h1>
-    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/coxtp.base.R" class="external-link"><code>R/coxtp.base.R</code></a>, <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/coxtv.base.R" class="external-link"><code>R/coxtv.base.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/confint.coxtp.R" class="external-link"><code>R/confint.coxtp.R</code></a>, <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/confint.coxtv.R" class="external-link"><code>R/confint.coxtv.R</code></a></small>
     <div class="hidden name"><code>confint.coxtv.Rd</code></div>
     </div>
 
@@ -111,10 +79,10 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for coxtp</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">times</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for coxtv</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">times</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -123,7 +91,7 @@
 <dd><p>fitted <code>"coxtv"</code> model.</p></dd>
 
 
-<dt>times</dt>
+<dt>time</dt>
 <dd><p>the time points for which the confidence intervals to be estimated.
 The default value is the unique observed event times in the dataset fitting the time-varying effects model.</p></dd>
 
@@ -133,7 +101,7 @@ The default value is the unique observed event times in the dataset fitting the 
 
 
 <dt>level</dt>
-<dd><p>the confidence level. Default is 0.95.</p></dd>
+<dd><p>the confidence level. The default value is 0.95.</p></dd>
 
 </dl></div>
 
@@ -141,16 +109,17 @@ The default value is the unique observed event times in the dataset fitting the 
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">lambda1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">IC</span>  <span class="op">&lt;-</span> <span class="fu"><a href="IC.html">IC</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">IC</span><span class="op">$</span><span class="va">model.mAIC</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
@@ -167,7 +136,7 @@ The default value is the unique observed event times in the dataset fitting the 
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
+  <p></p><p>Developed by Lingfeng Luo, <a href="https://www.wenbowu.me/" class="external-link">Wenbo Wu</a>, <a href="https://www.um-kevinhe-group.org/" class="external-link">Kevin He</a>.</p>
 </div>
 
 <div class="pkgdown">

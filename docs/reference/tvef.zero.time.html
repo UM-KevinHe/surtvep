@@ -53,44 +53,12 @@
       <a href="../articles/plotting.html">Plotting</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"><li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Appendix
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
-    <span class="caret"></span>
   </a>
-  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
-    <li>
-      <a href="../articles/Appendix.html">B-spline construction</a>
-    </li>
-    <li>
-      <a href="../articles/a2.html">Title A2</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Category B</li>
-    <li>
-      <a href="../articles/plotting.html">Plotting</a>
-    </li>
-  </ul></li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Appendix2
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
-    <li>
-      <a href="../articles/Appendix.html">B-spline construction</a>
-    </li>
-    <li>
-      <a href="../articles/a2.html">Title A2</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Category B</li>
-    <li>
-      <a href="../articles/plotting.html">Plotting</a>
-    </li>
-  </ul></li>
+</li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -110,7 +78,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tvef.zero.time</span><span class="op">(</span><span class="va">fit</span>, <span class="va">times</span>, <span class="va">parm</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tvef.zero.time</span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -119,7 +87,7 @@
 <dd><p>fitted <code>coxtv</code> or <code>coxtp</code>  model.</p></dd>
 
 
-<dt>times</dt>
+<dt>time</dt>
 <dd><p>the time points to test if the covariate is significant or not.</p></dd>
 
 
@@ -134,7 +102,7 @@
 <p><code>tvef.zero.time</code> produces a list of length <code>nvars</code>. Each element of the list is a matrix with respect to a
 covariate. The matrix is of dimension <code>len_unique_t</code> by 4, where <code>len_unique_t</code> is the length of unique observed event time.
 Each row corresponds to the testing result at that time.  The four
-columns give the estimations, standard error, z-statistic and  P-value.</p>
+columns give the estimations, standard error, test-statistic and  P-value.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -144,14 +112,15 @@ columns give the estimations, standard error, z-statistic and  P-value.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span>   <span class="op">&lt;-</span> <span class="fu"><a href="coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2982771; Stopping crit = 2.8599513e-01;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2916285; Stopping crit = 6.4033714e-03;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2916034; Stopping crit = 2.5024973e-05;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2916034; Stopping crit = 5.6581492e-10;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2982771; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2916285; Stopping crit = 2.1424865e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2916034; Stopping crit = 8.0884492e-05;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2916034; Stopping crit = 1.8232153e-09;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-in"><span><span class="va">test</span>  <span class="op">&lt;-</span> <span class="fu">tvef.zero.time</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -164,7 +133,7 @@ columns give the estimations, standard error, z-statistic and  P-value.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
+  <p></p><p>Developed by Lingfeng Luo, <a href="https://www.wenbowu.me/" class="external-link">Wenbo Wu</a>, <a href="https://www.um-kevinhe-group.org/" class="external-link">Kevin He</a>.</p>
 </div>
 
 <div class="pkgdown">

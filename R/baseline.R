@@ -8,13 +8,13 @@
 #' @export
 #' 
 #' @return A list with three components:
-#' \item{time}{the unique observed failure time.} 
+#' \item{time}{the unique observed failure times.} 
 #' \item{hazard}{the baseline hazard corresponding to each unique failure time point.}
 #' \item{cumulHaz}{the cumulative baseline hazard corresponding to each unique failure time point.}
 #'
 #' @examples
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' 
@@ -22,10 +22,10 @@
 #' base.est <- baseline(fit)
 #' 
 #' 
-baseline <-  function(fit, ...){
+baseline <-  function(fit){
 
   if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="coxtp" & class(fit)!="coxtv") stop("Object fit is not of class 'coxtv' or 'coxtp'!")
+  if (!inherits(fit,"coxtp") & !inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv' or 'coxtp'!")
   
   data       <- attr(fit, "data")
   event  <- data$event
@@ -40,14 +40,20 @@ baseline <-  function(fit, ...){
   
   base2 <- attr(fit, "basehazard")
   base2 <- as.numeric(base2[[1]])
-  lambda <- rep(0, length(time))
-  lambda[event==1] <- base2
+  unique_time_event = unique(time[event==1])
+  unique_time <- unique(time)
   
-  time2 <- unique(time)
+  lambda <- rep(0, length(unique_time))
+  for (i in 1:length(unique_time_event)) {
+    time_tmp <- unique_time_event[i]
+    lambda[unique_time==time_tmp] <- base2[i]
+  }
+
   Lambda <- cumsum(lambda)
   
-  baselinedata <- data.frame(unique(time),lambda,Lambda)
-
+  
+  baselinedata <- data.frame(unique_time,lambda,Lambda)
+  
   res <- list("time" = unique(time),
               "hazard" = as.numeric(lambda),
               "cumulHaz" = Lambda)
@@ -55,55 +61,6 @@ baseline <-  function(fit, ...){
   class(res) <- "baseline"
   
   return(res)
-  
-  # if (missing(fit)) stop ("Argument fit is required!")
-  # if (class(fit)!="coxtp" & class(fit)!="coxtv") stop("Object fit is not of class 'coxtv' or 'coxtp'!")
-  # 
-  # data       <- attr(fit, "data")
-  # event  <- data$event
-  # strata <- data$strata
-  # time   <- data$time
-  # z      <- subset(data, select = -c(event, strata, time))
-  # 
-  # event  <- event[time_order <- order(time)]
-  # z      <- z[time_order,]
-  # strata <- strata[time_order]
-  # time   <- time[time_order]
-  # stratum <- if (length(strata) == 0) rep(1, length(time)) else strata
-  # 
-  # # if(length(strata)==0){
-  # #Calculated unique time and ties for the baseline calculation:
-  # unique_time   <- unique(time)
-  # 
-  # tieseq <- NULL
-  # index  <- NULL
-  # for (i in 1:length(unique(time))) {
-  #   tieseq[i] <- length(which(time==unique(time)[i]))
-  #   index[[i]]  <- (which(time==unique(time)[i]))
-  # }
-  # 
-  # #call Rcpp
-  # theta_IC <- fit$ctrl.pts
-  # B.spline=splines::bs(unique_time,knots=fit$internal.knots,intercept=TRUE,degree=3)
-  # k=ncol(fit$bases)
-  # result1 <- Lambda_estimate_ties2(knot = k, delta = event,
-  #                                  z = as.matrix(z), b_spline = as.matrix(B.spline),
-  #                                  theta = theta_IC, tieseq = tieseq)
-  # lambda   <- result1$lambda
-  # time2 <- unique(time)
-  # Lambda <- cumsum(lambda)
-  # 
-  # baselinedata <- data.frame(unique(time),lambda,Lambda)
-  # # colnames(baselinedata) <- c("time", "hazard", "Lambda")
-  # 
-  # res <- list("time" = unique(time),
-  #             "hazard" = as.numeric(lambda),
-  #             "cumulHaz" = Lambda)
-  # 
-  # class(res) <- "baseline"
-  # 
-  # return(res)
-  
 }
 
 
@@ -115,45 +72,48 @@ baseline <-  function(fit, ...){
 #' 
 #' Plotting the baseline hazard from a fitted `baseline` object.
 #'
-#' @param fit fitted object from `baseline` function.
+#' @param x fitted object from `baseline` function.
 #' @param xlab the title for the x axis.
 #' @param ylab the title for the y axis.
 #' @param xlim the limits of the x axis.
 #' @param ylim the limits of the y axis.
 #' @param title the title for the plot.
-
-#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle
-#'
+#' @param \dots Other graphical parameters to plot
+#' 
+#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle theme_classic
+#' @importFrom tibble tibble
+#' @importFrom rlang .data
 #' @exportS3Method plot baseline
 #'
 #' @examples
-#' \dontrun{
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' 
 #' fit   <- coxtv(event = event, z = z, time = time)
 #' base.est <- baseline(fit)
 #' plot(base.est)
-#' }
-plot.baseline <- function(fit, xlab, ylab, xlim, ylim, title){
+plot.baseline <- function(x, xlab, ylab, xlim, ylim, title, ...){
   
   
   if (missing(xlab)) xlab <- "time"
   if (missing(ylab)) ylab <- "cumulative hazard"
   
-  if (missing(fit)) stop ("Argument fit is required!")
-  if (class(fit)!="baseline") stop("Object fit is not of class 'baseline'!")
+  if (missing(x)) stop ("Argument x is required!")
+  fit <- x
+  if (!inherits(fit,"baseline")) stop("Object fit is not of class 'baseline'!")
   
   missingxlim <- missing(xlim); missingylim <- missing(ylim); 
   missingtitle <- missing(title);
   
-  plot_data <- data.frame(fit$time, fit$cumulHaz)
-  colnames(plot_data) <- c("time", "cumulHaz")
+  plot_data <- tibble(
+    time = fit$time,
+    cumulHaz = fit$cumulHaz
+  )
   
-  plt <- ggplot(data = plot_data, aes(x = time, y = cumulHaz)) +
-    geom_line( size = 0.9)+
+  plt <- ggplot(data = plot_data, aes(x = .data$time, y = .data$cumulHaz)) +
+    geom_line(size = 0.9)+
     labs(x="time", y = "cumulative hazard")+
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5))

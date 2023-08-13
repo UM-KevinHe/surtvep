@@ -4,14 +4,14 @@
 \alias{baseline}
 \title{calculating baseline hazard and baseline cumulative hazard using the result from a \code{coxtv} or \code{coxtp} object}
 \usage{
-baseline(fit, ...)
+baseline(fit)
 }
 \arguments{
 \item{fit}{model from \code{coxtv} or \code{coxtp}.}
 }
 \value{
 A list with three components:
-\item{time}{the unique observed failure time.}
+\item{time}{the unique observed failure times.}
 \item{hazard}{the baseline hazard corresponding to each unique failure time point.}
 \item{cumulHaz}{the cumulative baseline hazard corresponding to each unique failure time point.}
 }
@@ -21,7 +21,7 @@ holding all the covariates to be zero.
 }
 \examples{
 data(ExampleData)
-z <- ExampleData$x
+z <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 

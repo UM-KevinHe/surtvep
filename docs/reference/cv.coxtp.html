@@ -53,44 +53,12 @@
       <a href="../articles/plotting.html">Plotting</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"><li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Appendix
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/UM-KevinHe/surtvep/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
-    <span class="caret"></span>
   </a>
-  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
-    <li>
-      <a href="../articles/Appendix.html">B-spline construction</a>
-    </li>
-    <li>
-      <a href="../articles/a2.html">Title A2</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Category B</li>
-    <li>
-      <a href="../articles/plotting.html">Plotting</a>
-    </li>
-  </ul></li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Appendix2
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu"><li class="dropdown-header">Category A</li>
-    <li>
-      <a href="../articles/Appendix.html">B-spline construction</a>
-    </li>
-    <li>
-      <a href="../articles/a2.html">Title A2</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Category B</li>
-    <li>
-      <a href="../articles/plotting.html">Plotting</a>
-    </li>
-  </ul></li>
+</li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -101,7 +69,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>fit a cross-validated Cox non-proportional hazards model with P-spline or Smoothing-spline where penalization tuning parameter is provided by cross-validation</h1>
-    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/cv.coxtp.R" class="external-link"><code>R/cv.coxtp.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/cv.coxtp.r" class="external-link"><code>R/cv.coxtp.r</code></a></small>
     <div class="hidden name"><code>cv.coxtp.Rd</code></div>
     </div>
 
@@ -118,10 +86,11 @@
 <span>  lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  nfolds <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  foldid <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  knots <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  penalty <span class="op">=</span> <span class="st">"Smooth-spline"</span>,</span>
 <span>  nsplines <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  ties <span class="op">=</span> <span class="st">"Breslow"</span>,</span>
-<span>  tol <span class="op">=</span> <span class="fl">1e-09</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">1e-06</span>,</span>
 <span>  iter.max <span class="op">=</span> <span class="fl">20L</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"ProxN"</span>,</span>
 <span>  gamma <span class="op">=</span> <span class="fl">1e+08</span>,</span>
@@ -146,7 +115,7 @@
 
 
 <dt>time</dt>
-<dd><p>observed event time, which should be a vector with non-negative values.</p></dd>
+<dd><p>observed event times, which should be a vector with non-negative values.</p></dd>
 
 
 <dt>strata</dt>
@@ -158,15 +127,23 @@ Default = <code>NULL</code> (i.e. no stratification group in the data), an unstr
 <dd><p>a user specified sequence as the penalization coefficients in front of the spline term specified by <code>penalty</code>.
 This is the tuning parameter for penalization.  The function <code>IC</code> can be used to select the best tuning parameter based on the information criteria.
 Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
-Default is <code>0</code> which refers to Newton method without penalization.</p></dd>
+When <code>lambda</code> is <code>0</code>, Newton method without penalization is fitted.</p></dd>
 
 
 <dt>nfolds</dt>
-<dd><p>number of folds for cross-validation, default is 5. The smallest value allowable is <code>nfolds</code>=3.</p></dd>
+<dd><p>number of folds for cross-validation, the default value is 5. The smallest value allowable is <code>nfolds</code>=3.</p></dd>
 
 
 <dt>foldid</dt>
 <dd><p>an optional vector of values between 1 and <code>nfolds</code> identifying what fold each observation is in. If supplied, <code>nfolds</code> can be missing.</p></dd>
+
+
+<dt>knots</dt>
+<dd><p>the internal knot locations (breakpoints) that define the B-splines.
+The number of the internal knots should be <code>nsplines</code>-<code>degree</code>-1.
+If <code>NULL</code>, the locations of knots are chosen as quantiles of distinct failure time points.
+This choice leads to more stable results in most cases.
+Users can specify the internal knot locations by themselves.</p></dd>
 
 
 <dt>penalty</dt>
@@ -180,12 +157,12 @@ will be set as 0.</p>
 When <code>lambda</code> goes to infinity, the time-varying effects are reduced to be constant.</p>
 <p><code>Smooth-spline</code> refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See <code>degree</code> for different choices.
 When <code>degree=3</code>, we use the cubic B-spline penalizing the second-order derivative, which reduces the time-varying effect to a linear term when <code>lambda</code> goes to infinity.
-When <code>degree=2</code>, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.</p>
+When <code>degree=2</code>, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when <code>lambda</code> goes to infinity. See Wood (2017) for details.</p>
 <p>If <code>P-spline</code> or <code>Smooth-spline</code>, then <code>lambda</code> is initialized as a sequence (0.1, 1, 10). Users can modify <code>lambda</code>. See details in <code>lambda</code>.</p></dd>
 
 
 <dt>nsplines</dt>
-<dd><p>number of basis functions in the splines to span the time-varying effects, whose default value is 8.
+<dd><p>number of basis functions in the splines to span the time-varying effects. The default value is 8.
 We use the R function <code><a href="https://rdrr.io/r/splines/bs.html" class="external-link">splines::bs</a></code> to generate the B-splines.</p></dd>
 
 
@@ -202,7 +179,7 @@ The default value is  <code>1e-6</code>.</p></dd>
 
 
 <dt>iter.max</dt>
-<dd><p>maximum iteration number if the stopping criterion specified by <code>stop</code> is not satisfied. Default value is  <code>20</code>.</p></dd>
+<dd><p>maximum iteration number if the stopping criterion specified by <code>stop</code> is not satisfied. The default value is  <code>20</code>.</p></dd>
 
 
 <dt>method</dt>
@@ -220,21 +197,21 @@ See details in Wu et al. (2022).</p></dd>
 See details in Convex Optimization by Boyd and Vandenberghe (2004).
 <code>"static"</code> limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood,
 which usually occurs when some predictors are categorical with low frequency for some categories.
-Users should be careful with <code>static</code> as this may lead to under-fitting.</p></dd>
+Users should be careful with <code>static</code>, as this may lead to under-fitting.</p></dd>
 
 
 <dt>tau</dt>
-<dd><p>a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is <code>0.5</code>.</p></dd>
+<dd><p>a positive scalar used to control the step size inside the backtracking line-search. The default value is <code>0.5</code>.</p></dd>
 
 
 <dt>stop</dt>
 <dd><p>a character string specifying the stopping rule to determine convergence.
-<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+<code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
 <code>"relch"</code> means we stop the algorithm when the \((loglik(m)-loglik(m-1))/(loglik(m))\) is less than the <code>tol</code>,
 where \(loglik(m)\) denotes the log-partial likelihood at iteration step m.
 <code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
-<code>"all"</code> means we stop the algorithm when all the stopping rules <code>"incre"</code>, <code>"relch"</code> and <code>"ratch"</code> are met.
-Default value is <code>ratch</code>.
+<code>"all"</code> means we stop the algorithm when all the stopping rules (<code>"incre"</code>, <code>"relch"</code>, <code>"ratch"</code>) are met.
+The default value is <code>ratch</code>.
 If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm termination.</p></dd>
 
 
@@ -243,7 +220,7 @@ If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm t
 
 
 <dt>threads</dt>
-<dd><p>an integer indicating the number of threads to be used for parallel computation. Default is <code>2</code>. If <code>parallel</code> is false, then the value of <code>threads</code> has no effect.</p></dd>
+<dd><p>an integer indicating the number of threads to be used for parallel computation. The default value is <code>2</code>. If <code>parallel</code> is false, then the value of <code>threads</code> has no effect.</p></dd>
 
 
 <dt>degree</dt>
@@ -256,14 +233,6 @@ If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm t
 <dt>fixedstep</dt>
 <dd><p>if <code>TRUE</code>, the algorithm will be forced to run <code>iter.max</code> steps regardless of the stopping criterion specified.</p></dd>
 
-
-<dt>knots</dt>
-<dd><p>the internal knot locations (breakpoints) that define the B-splines.
-The number of the internal knots should be <code>nsplines</code>-<code>degree</code>-1.
-If <code>NULL</code>, the locations of knots are chosen as quantiles of distinct failure time points.
-This choice leads to more stable results in most cases.
-Users can specify the internal knot locations by themselves.</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -271,7 +240,7 @@ Users can specify the internal knot locations by themselves.</p></dd>
 
 <p>An object of class <code>"cv.coxtp"</code> is returned, which is a list with the ingredients of the cross-validation fit.</p>
 <dl><dt>model.cv</dt>
-<dd><p>a <code>"coxtp"</code> object with tuning parameter chosen based on cross validation.</p></dd>
+<dd><p>a <code>"coxtp"</code> object with tuning parameter chosen based on cross-validation.</p></dd>
 
 <dt>lambda</dt>
 <dd><p>the values of <code>lambda</code> used in the fits.</p></dd>
@@ -280,7 +249,7 @@ Users can specify the internal knot locations by themselves.</p></dd>
 <dd><p>the mean cross-validated error - a vector having the same length as lambda.
 For the k-th testing fold (k = 1, ..., <code>nfolds</code>), we take the remaining folds as the training folds.
 Based on the model trained on the training folds, we calculate the log-partial likelihood on all the folds \(loglik0\) and training folds  \(loglik1\).
-The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.</p></dd>
+The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). See details in Verweij (1993). This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.</p></dd>
 
 <dt>lambda.min</dt>
 <dd><p>the value of <code>lambda</code> that gives minimum <code>cve</code>.</p></dd>
@@ -292,13 +261,20 @@ The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). This approach avoid
     </div>
     <div id="references">
     <h2>References</h2>
-    <p>Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
+    <p>Boyd, S., and Vandenberghe, L. (2004) Convex optimization.
+<em>Cambridge University Press</em>.
+<br></p>
+<p>Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
 <em>Journal of the American Statistical Association</em>, <strong>87(420)</strong>: 942-951.
 <br></p>
 <p>Gray, R. J. (1994) Spline-based tests in survival analysis.
 <em>Biometrics</em>, <strong>50(3)</strong>: 640-652.
 <br></p>
 <p>Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
+<em>Statistical Methods in Medical Research</em>, <strong>in press</strong>.
+<br></p>
+<p>Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
+<em>Computer Methods and Programs in Biomedicine</em>, <strong>81(2)</strong>: 154-161.
 <br></p>
 <p>Verweij, P. J., and Van Houwelingen, H. C. (1993) Cross‐validation in survival analysis.
 <em>Statistics in Medicine</em>, <strong>12(24)</strong>: 2305-2314.
@@ -309,78 +285,18 @@ The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). This approach avoid
 <p>Wood, S. N. (2017) P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data.
 <em>Statistics and Computing</em>, <strong>27(4)</strong>: 985-989.
 <br></p>
-<p>Perperoglou, A., le Cessie, S., and van Houwelingen, H. C. (2006) A fast routine for fitting Cox models with time varying effects of the covariates.
-<em>Computer Methods and Programs in Biomedicine</em>, <strong>81(2)</strong>: 154-161.
-<br></p>
-<p>Boyd, S., Vandenberghe, L. (2004) Convex optimization.
-<em>Cambridge university press</em>.
-<br></p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">x</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">lambda</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span>  <span class="op">&lt;-</span> <span class="fu">cv.coxtp</span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda<span class="op">=</span><span class="va">lambda</span>, nfolds <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1777797; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1708780; Stopping crit = 2.1964894e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1708042; Stopping crit = 2.3475873e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1708040; Stopping crit = 9.0687953e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1708040; Stopping crit = 2.8804161e-11;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1823944; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1761364; Stopping crit = 2.0255433e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1760690; Stopping crit = 2.1812659e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1760689; Stopping crit = 3.2164241e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1760689; Stopping crit = 8.3638150e-13;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1857565; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1778186; Stopping crit = 2.5569945e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1777223; Stopping crit = 3.1015713e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1777219; Stopping crit = 1.2914203e-06;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1777219; Stopping crit = 4.6689575e-11;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1892283; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1816955; Stopping crit = 2.4571946e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1815890; Stopping crit = 3.4742009e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1815887; Stopping crit = 8.1474724e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1815887; Stopping crit = 5.4869354e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1735561; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1676753; Stopping crit = 1.8597851e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1676273; Stopping crit = 1.5186200e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1676271; Stopping crit = 3.5459731e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1676271; Stopping crit = 3.8657721e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1769891; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1712778; Stopping crit = 1.8269794e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1712091; Stopping crit = 2.1990555e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1712090; Stopping crit = 2.9854552e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1712090; Stopping crit = 6.4907219e-13;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1753472; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1689877; Stopping crit = 2.0303323e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1689540; Stopping crit = 1.0744834e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1689540; Stopping crit = 1.6368091e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1689540; Stopping crit = 1.6161017e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1789816; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1726908; Stopping crit = 2.0324319e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1726278; Stopping crit = 2.0321322e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1726277; Stopping crit = 3.8183070e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1726277; Stopping crit = 1.8289309e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2018099; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1955068; Stopping crit = 2.1125744e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1954518; Stopping crit = 1.8420352e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1954517; Stopping crit = 4.8734331e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1954517; Stopping crit = 6.6356435e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2052360; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1992132; Stopping crit = 2.0440248e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1991356; Stopping crit = 2.6338799e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1991354; Stopping crit = 4.4390229e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1991354; Stopping crit = 1.3741523e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2954100; Stopping crit = 2.0664261e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2953321; Stopping crit = 1.7771403e-12;</span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -392,7 +308,7 @@ The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). This approach avoid
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Lingfeng Luo, Wenbo Wu, Kevin He.</p>
+  <p></p><p>Developed by Lingfeng Luo, <a href="https://www.wenbowu.me/" class="external-link">Wenbo Wu</a>, <a href="https://www.um-kevinhe-group.org/" class="external-link">Kevin He</a>.</p>
 </div>
 
 <div class="pkgdown">

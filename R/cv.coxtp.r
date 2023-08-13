@@ -4,7 +4,7 @@
 #' 
 #' @param event failure event response variable of length `nobs`, where `nobs` denotes the number of observations. It should be a vector containing 0 or 1.
 #' @param z input covariate matrix, with `nobs` rows and `nvars` columns; each row is an observation. 
-#' @param time observed event time, which should be a vector with non-negative values.
+#' @param time observed event times, which should be a vector with non-negative values.
 #' @param strata a vector of indicators for stratification. 
 #' Default = `NULL` (i.e. no stratification group in the data), an unstratified model is implemented.
 #' 
@@ -20,19 +20,19 @@
 #' 
 #' `Smooth-spline` refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See `degree` for different choices.
 #' When `degree=3`, we use the cubic B-spline penalizing the second-order derivative, which reduces the time-varying effect to a linear term when `lambda` goes to infinity.
-#' When `degree=2`, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when `lambda` goes to infinity. See Wood (2016) for details.
+#' When `degree=2`, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when `lambda` goes to infinity. See Wood (2017) for details.
 #' 
 #' If `P-spline` or `Smooth-spline`, then `lambda` is initialized as a sequence (0.1, 1, 10). Users can modify `lambda`. See details in `lambda`.
 #' 
 #' @param lambda a user specified sequence as the penalization coefficients in front of the spline term specified by `penalty`. 
 #' This is the tuning parameter for penalization.  The function `IC` can be used to select the best tuning parameter based on the information criteria. 
 #' Users can specify larger values when the absolute values of the estimated time-varying effects are too large.
-#' Default is `0` which refers to Newton method without penalization. 
+#' When `lambda` is `0`, Newton method without penalization is fitted. 
 #' 
-#' @param nfolds number of folds for cross-validation, default is 5. The smallest value allowable is `nfolds`=3.
+#' @param nfolds number of folds for cross-validation, the default value is 5. The smallest value allowable is `nfolds`=3.
 #' @param foldid an optional vector of values between 1 and `nfolds` identifying what fold each observation is in. If supplied, `nfolds` can be missing.
 #'
-#' @param nsplines number of basis functions in the splines to span the time-varying effects, whose default value is 8. 
+#' @param nsplines number of basis functions in the splines to span the time-varying effects. The default value is 8. 
 #' We use the R function `splines::bs` to generate the B-splines. 
 #' @param knots the internal knot locations (breakpoints) that define the B-splines.
 #' The number of the internal knots should be `nsplines`-`degree`-1.
@@ -53,17 +53,17 @@
 #' If `ties = "none"`, no approximation will be used to handle ties.
 #' 
 #' @param stop a character string specifying the stopping rule to determine convergence.  
-#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`, See details in Convex Optimization Chapter 10 by Boyd and Vandenberghe (2004)..
+#' `"incre"` means we stop the algorithm when Newton's increment is less than the `tol`. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
 #' `"relch"` means we stop the algorithm when the \eqn{(loglik(m)-loglik(m-1))/(loglik(m))} is less than the `tol`,
 #'  where \eqn{loglik(m)} denotes the log-partial likelihood at iteration step m.
 #' `"ratch"` means we stop the algorithm when \eqn{(loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))} is less than the `tol`.
-#' `"all"` means we stop the algorithm when all the stopping rules `"incre"`, `"relch"` and `"ratch"` are met. 
-#' Default value is `ratch`. 
+#' `"all"` means we stop the algorithm when all the stopping rules (`"incre"`, `"relch"`, `"ratch"`) are met. 
+#' The default value is `ratch`. 
 #' If `iter.max` is achieved, it overrides any stop rule for algorithm termination.
 #' 
 #' @param tol tolerance used for stopping the algorithm. See details in `stop` below.
 #'  The default value is  `1e-6`.
-#' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. Default value is  `20`. 
+#' @param iter.max maximum iteration number if the stopping criterion specified by `stop` is not satisfied. The default value is  `20`. 
 #' @param method a character string specifying whether to use Newton method or proximal Newton method.  If `"Newton"` then Hessian is used, 
 #' while the default method `"ProxN"` implements the proximal Newton which can be faster and more stable when there exists ill-conditioned second-order information of the log-partial likelihood.
 #' See details in Wu et al. (2022).
@@ -73,37 +73,38 @@
 #' See details in Convex Optimization by Boyd and Vandenberghe (2004).
 #' `"static"` limits Newton's increment and can achieve more stable results in some extreme cases, such as ill-conditioned second-order information of the log-partial likelihood, 
 #' which usually occurs when some predictors are categorical with low frequency for some categories. 
-#' Users should be careful with `static` as this may lead to under-fitting.
-#' @param tau a scalar in (0,1) used to control the step size inside the backtracking line-search. The default value is `0.5`.
+#' Users should be careful with `static`, as this may lead to under-fitting.
+#' @param tau a positive scalar used to control the step size inside the backtracking line-search. The default value is `0.5`.
 #' @param parallel if `TRUE`, then the parallel computation is enabled. The number of threads in use is determined by `threads`.
-#' @param threads an integer indicating the number of threads to be used for parallel computation. Default is `2`. If `parallel` is false, then the value of `threads` has no effect.
+#' @param threads an integer indicating the number of threads to be used for parallel computation. The default value is `2`. If `parallel` is false, then the value of `threads` has no effect.
 #' @param fixedstep if `TRUE`, the algorithm will be forced to run `iter.max` steps regardless of the stopping criterion specified.
 #' 
 #' @return An object of class `"cv.coxtp"` is returned, which is a list with the ingredients of the cross-validation fit.
-#' \item{model.cv}{a \code{"coxtp"} object with tuning parameter chosen based on cross validation.} 
+#' \item{model.cv}{a \code{"coxtp"} object with tuning parameter chosen based on cross-validation.} 
 #' \item{lambda}{the values of `lambda` used in the fits.}
 #' \item{cve}{the mean cross-validated error - a vector having the same length as lambda.
 #' For the k-th testing fold (k = 1, ..., `nfolds`), we take the remaining folds as the training folds. 
 #' Based on the model trained on the training folds, we calculate the log-partial likelihood on all the folds \eqn{loglik0} and training folds  \eqn{loglik1}. 
-#' The `cve` is equal to \eqn{-2*(loglik0 - loglik1)}. This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.}
+#' The `cve` is equal to \eqn{-2*(loglik0 - loglik1)}. See details in Verweij (1993). This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.}
 #' \item{lambda.min}{the value of `lambda` that gives minimum `cve`.}
 #' 
 #' @export
 #' 
 #'
 #' @examples 
+#' \dontrun{
 #' data(ExampleData)
-#' z <- ExampleData$x
+#' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' lambda  = c(0.1, 1)
 #' fit  <- cv.coxtp(event = event, z = z, time = time, lambda=lambda, nfolds = 5)
-#' 
+#' }
 #' 
 #' @details The function runs `coxtp` length of `lambda` by `nfolds` times; each is to compute the fit with each of the folds omitted.
 #' 
 #' @references 
-#' Boyd, S., Vandenberghe, L. (2004) Convex optimization. 
+#' Boyd, S., and Vandenberghe, L. (2004) Convex optimization. 
 #' \emph{Cambridge University Press}.
 #' \cr
 #' 
@@ -139,9 +140,11 @@
 #'
 cv.coxtp <- function(event , z, time, strata=NULL, 
                      lambda = c(0.1, 1, 10),
-                     nfolds = 5, foldid = NULL, 
+                     nfolds = 5, 
+                     foldid = NULL, 
+                     knots = NULL,
                      penalty="Smooth-spline", nsplines=8, ties="Breslow",
-                     tol=1e-9, iter.max=20L, method="ProxN", gamma=1e8,
+                     tol=1e-6, iter.max=20L, method="ProxN", gamma=1e8,
                      btr="dynamic", tau=0.5,
                      stop="ratch", parallel=FALSE, threads=1L, degree=3L, 
                      fixedstep = FALSE){
@@ -212,7 +215,8 @@ cv.coxtp <- function(event , z, time, strata=NULL,
     model <- list()
     for(lambda_index in 1:length(lambda)){
       
-      model1 <- coxtp.base(fmla, data_NR, nsplines=nsplines, spline = spline, ties= ties, stop=stop,
+      model1 <- coxtp.base(fmla, data_NR, knots = knots, nsplines=nsplines, 
+                           spline = spline, ties= ties, stop=stop,
                            TIC_prox = TIC_prox, ord = ord, degree = degree,
                            method = method, btr = btr, iter.max = 15, threads = 3, parallel = TRUE,
                            lambda_spline = lambda[lambda_index], 
@@ -240,7 +244,7 @@ cv.coxtp <- function(event , z, time, strata=NULL,
   Z.char <- paste0("X", 1:p)
   fmla <- formula(paste0("Surv(time, event)~",
                          paste(c(paste0("tv(", Z.char, ")"), "strata(strata)"), collapse="+")))
-  model.cv = coxtp.base(fmla, data_NR, nsplines=nsplines, spline = spline, ties= ties, stop=stop,
+  model.cv = coxtp.base(fmla, data_NR, knots = knots, nsplines=nsplines, spline = spline, ties= ties, stop=stop,
                         TIC_prox = TIC_prox, ord = ord, degree = degree,
                         method = method, btr = btr, iter.max = 15, threads = 3, parallel = TRUE,
                         lambda_spline = lambda.min, 
