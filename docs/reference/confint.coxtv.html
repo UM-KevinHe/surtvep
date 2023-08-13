@@ -101,7 +101,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>get confidence intervals of time-varying coefficients from a fitted object</h1>
-    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/coxtp.base.R" class="external-link"><code>R/coxtp.base.R</code></a>, <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/coxtv.base.R" class="external-link"><code>R/coxtv.base.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/confint.coxtp.R" class="external-link"><code>R/confint.coxtp.R</code></a>, <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/confint.coxtv.R" class="external-link"><code>R/confint.coxtv.R</code></a></small>
     <div class="hidden name"><code>confint.coxtv.Rd</code></div>
     </div>
 
@@ -114,7 +114,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for coxtv</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -133,7 +133,7 @@ The default value is the unique observed event times in the dataset fitting the 
 
 
 <dt>level</dt>
-<dd><p>the confidence level. Default is 0.95.</p></dd>
+<dd><p>the confidence level. The default value is 0.95.</p></dd>
 
 </dl></div>
 

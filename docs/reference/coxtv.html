@@ -101,7 +101,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>fit a Cox non-proportional hazards model</h1>
-    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/coxtv.base.R" class="external-link"><code>R/coxtv.base.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/UM-KevinHe/surtvep/blob/HEAD/R/coxtv.R" class="external-link"><code>R/coxtv.R</code></a></small>
     <div class="hidden name"><code>coxtv.Rd</code></div>
     </div>
 
@@ -116,9 +116,9 @@
 <span>  <span class="va">time</span>,</span>
 <span>  strata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nsplines <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>  ties <span class="op">=</span> <span class="st">"Breslow"</span>,</span>
 <span>  knots <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  degree <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  ties <span class="op">=</span> <span class="st">"Breslow"</span>,</span>
 <span>  stop <span class="op">=</span> <span class="st">"ratch"</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">1e-06</span>,</span>
 <span>  iter.max <span class="op">=</span> <span class="fl">20</span>,</span>
@@ -128,7 +128,7 @@
 <span>  tau <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  threads <span class="op">=</span> <span class="fl">2L</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  fixedstep <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -143,7 +143,7 @@
 
 
 <dt>time</dt>
-<dd><p>observed event time, which should be a vector with non-negative values.</p></dd>
+<dd><p>observed event times, which should be a vector with non-negative values.</p></dd>
 
 
 <dt>strata</dt>
@@ -152,15 +152,8 @@ Default = <code>NULL</code> (i.e. no stratification group in the data), an unstr
 
 
 <dt>nsplines</dt>
-<dd><p>number of basis functions in the splines to span the time-varying effects, whose default value is 8.
+<dd><p>number of basis functions in the splines to span the time-varying effects. The default value is 8.
 We use the R function <code><a href="https://rdrr.io/r/splines/bs.html" class="external-link">splines::bs</a></code> to generate the B-splines.</p></dd>
-
-
-<dt>ties</dt>
-<dd><p>a character string specifying the method for tie handling. If there are no tied events,
-the methods are equivalent.
-By default <code>"Breslow"</code> uses the Breslow approximation, which can be faster when many ties are present.
-If <code>ties = "none"</code>, no approximation will be used to handle ties.</p></dd>
 
 
 <dt>knots</dt>
@@ -176,6 +169,13 @@ Users can specify the internal knot locations by themselves.</p></dd>
 <code>degree = 2</code> results in the quadratic B-spline basis functions.</p></dd>
 
 
+<dt>ties</dt>
+<dd><p>a character string specifying the method for tie handling. If there are no tied events,
+the methods are equivalent.
+By default <code>"Breslow"</code> uses the Breslow approximation, which can be faster when many ties are present.
+If <code>ties = "none"</code>, no approximation will be used to handle ties.</p></dd>
+
+
 <dt>stop</dt>
 <dd><p>a character string specifying the stopping rule to determine convergence.
 <code>"incre"</code> means we stop the algorithm when Newton's increment is less than the <code>tol</code>. See details in Convex Optimization (Chapter 10) by Boyd and Vandenberghe (2004).
@@ -183,7 +183,7 @@ Users can specify the internal knot locations by themselves.</p></dd>
 where \(loglik(m)\) denotes the log-partial likelihood at iteration step m.
 <code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
 <code>"all"</code> means we stop the algorithm when all the stopping rules (<code>"incre"</code>, <code>"relch"</code>, <code>"ratch"</code>) are met.
-Default value is <code>ratch</code>.
+The default value is <code>ratch</code>.
 If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm termination.</p></dd>
 
 
@@ -193,7 +193,7 @@ The default value is  <code>1e-6</code>.</p></dd>
 
 
 <dt>iter.max</dt>
-<dd><p>maximum iteration number if the stopping criterion specified by <code>stop</code> is not satisfied. Default value is  20.</p></dd>
+<dd><p>maximum iteration number if the stopping criterion specified by <code>stop</code> is not satisfied. The default value is  20.</p></dd>
 
 
 <dt>method</dt>
@@ -203,7 +203,7 @@ See details in Wu et al. (2022).</p></dd>
 
 
 <dt>gamma</dt>
-<dd><p>parameter for proximal Newton method <code>"ProxN"</code>. Default value is <code>1e8</code>.</p></dd>
+<dd><p>parameter for proximal Newton method <code>"ProxN"</code>. The default value is <code>1e8</code>.</p></dd>
 
 
 <dt>btr</dt>
@@ -223,7 +223,7 @@ Users should be careful with <code>static</code>, as this may lead to under-fitt
 
 
 <dt>threads</dt>
-<dd><p>an integer indicating the number of threads to be used for parallel computation. Default is <code>2</code>. If <code>parallel</code> is false, then the value of <code>threads</code> has no effect.</p></dd>
+<dd><p>an integer indicating the number of threads to be used for parallel computation. The default value is <code>2</code>. If <code>parallel</code> is false, then the value of <code>threads</code> has no effect.</p></dd>
 
 
 <dt>fixedstep</dt>
@@ -275,7 +275,7 @@ which is the inverse of the negative Hessian matrix.</p></dd>
     </div>
     <div id="references">
     <h2>References</h2>
-    <p>Boyd, S., Vandenberghe, L. (2004) Convex optimization.
+    <p>Boyd, S., and Vandenberghe, L. (2004) Convex optimization.
 <em>Cambridge University Press</em>.
 <br></p>
 <p>Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
@@ -305,10 +305,11 @@ which is the inverse of the negative Hessian matrix.</p></dd>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">coxtv</span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2982771; Stopping crit = 2.8599513e-01;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2916285; Stopping crit = 6.4033714e-03;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2916034; Stopping crit = 2.5024973e-05;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2916034; Stopping crit = 5.6581492e-10;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2982771; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2916285; Stopping crit = 2.1424865e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2916034; Stopping crit = 8.0884492e-05;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2916034; Stopping crit = 1.8232153e-09;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

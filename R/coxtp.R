@@ -121,7 +121,7 @@
 #' 
 #' 
 #' @references 
-#' Boyd, S., Vandenberghe, L. (2004) Convex optimization. 
+#' Boyd, S., and Vandenberghe, L. (2004) Convex optimization. 
 #' \emph{Cambridge University Press}.
 #' \cr
 #' 
@@ -160,12 +160,21 @@ coxtp <- function(event , z , time ,strata=NULL, penalty="Smooth-spline", nsplin
                   stop="ratch", parallel=FALSE, threads=2L, 
                   fixedstep = FALSE){
   
+  #check the input data:
+  if (!is.null(strata) && (length(event) != length(time) || length(event) != length(strata))) {
+    stop("The vectors 'event', 'time', and 'strata' must have the same length!")
+  }
+  if (nrow(z) != length(event)) {
+    stop("The number of rows in 'z' must match the length of 'event'!")
+  }
+  if (!all(event %in% c(0, 1))) {
+    stop("'event' should only contain values 0 and 1!")
+  }
+  
   lambda.spline = lambda
   spline = penalty
   ord = degree + 1
-  TIC_prox = FALSE
-  ICLastOnly = FALSE
-  
+
   # order the data by time
   event  <- event[time_order <- order(time)]
   z      <- z[time_order,]
@@ -185,10 +194,10 @@ coxtp <- function(event , z , time ,strata=NULL, penalty="Smooth-spline", nsplin
   for(lambda_i in c(1:length(lambda))) {
     res[[lambda_i]] <- coxtp.base(fmla, data_NR, knots=knots, nsplines=nsplines, spline=spline, ties=ties, stop=stop,
                                method = method, btr = btr,
-                               lambda_spline = lambda[lambda_i], TIC_prox = TIC_prox, ord = ord, degree = degree,
+                               lambda_spline = lambda[lambda_i], TIC_prox = FALSE, ord = ord, degree = degree,
                                tol = tol, iter.max = iter.max, tau= tau, parallel = parallel, threads = threads,
                                fixedstep = fixedstep,
-                               ICLastOnly = InfoCrit)
+                               ICLastOnly = FALSE)
     
     names(res)[lambda_i] <- paste0("lambda",lambda_i)
     
@@ -206,7 +215,6 @@ coxtp <- function(event , z , time ,strata=NULL, penalty="Smooth-spline", nsplin
   attr(res, "stop") <- stop
   attr(res, "method") <- method
   attr(res, "btr") <- btr
-  attr(res, "TIC_prox") <- TIC_prox
   attr(res, "ord") <- ord
   attr(res, "degree") <- degree
   attr(res, "tol") <- tol

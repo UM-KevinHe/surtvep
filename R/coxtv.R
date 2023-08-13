@@ -91,7 +91,7 @@
 #' The model is fit by Newton method (proximal Newton method).
 #' 
 #' @references 
-#' Boyd, S., Vandenberghe, L. (2004) Convex optimization. 
+#' Boyd, S., and Vandenberghe, L. (2004) Convex optimization. 
 #' \emph{Cambridge University Press}.
 #' \cr
 #' 
@@ -124,6 +124,17 @@ coxtv <- function(event , z , time ,strata=NULL,  nsplines=8,
                   gamma = 1e8, btr = "dynamic",
                   tau = 0.5,
                   parallel=FALSE, threads=2L,fixedstep = FALSE){
+  
+  #check the input data:
+  if (!is.null(strata) && (length(event) != length(time) || length(event) != length(strata))) {
+    stop("The vectors 'event', 'time', and 'strata' must have the same length!")
+  }
+  if (nrow(z) != length(event)) {
+    stop("The number of rows in 'z' must match the length of 'event'!")
+  }
+  if (!all(event %in% c(0, 1))) {
+    stop("'event' should only contain values 0 and 1!")
+  }
   
   # order the data by time
   event  <- event[time_order <- order(time)]

@@ -112,7 +112,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for coxtp</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
-<span>  <span class="va">fit</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  <span class="va">parm</span>,</span>
 <span>  CI <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  level <span class="op">=</span> <span class="fl">0.95</span>,</span>
@@ -126,26 +126,27 @@
 <span>  <span class="va">linetype</span>,</span>
 <span>  <span class="va">color</span>,</span>
 <span>  <span class="va">fill</span>,</span>
-<span>  <span class="va">time</span></span>
+<span>  <span class="va">time</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>fit</dt>
+    <dl><dt>x</dt>
 <dd><p>model obtained from <code>coxtp</code>.</p></dd>
 
 
 <dt>parm</dt>
-<dd><p>covariate name fitted in the model to be plotted. If <code>NULL</code>, all covariates are plotted.</p></dd>
+<dd><p>covariate names fitted in the model to be plotted. If <code>NULL</code>, all covariates are plotted.</p></dd>
 
 
 <dt>CI</dt>
-<dd><p>if <code>TRUE</code>, confidence intervals are displayed. Default value is <code>TRUE</code>.</p></dd>
+<dd><p>if <code>TRUE</code>, confidence intervals are displayed. The default value is <code>TRUE</code>.</p></dd>
 
 
 <dt>level</dt>
-<dd><p>the level of confidence interval. Default value is <code>0.95</code>.</p></dd>
+<dd><p>the level of confidence intervals. The default value is <code>0.95</code>.</p></dd>
 
 
 <dt>exponentiate</dt>
@@ -170,7 +171,7 @@ If <code>FALSE</code>, the fitted time-varying coefficients (log hazard ratio) a
 
 
 <dt>allinone</dt>
-<dd><p>if <code>TRUE</code>, the time-varying trajectories for different covariates are combined into a single plot. Default value is <code>FALSE</code>.</p></dd>
+<dd><p>if <code>TRUE</code>, the time-varying trajectories for different covariates are combined into a single plot. The default value is <code>FALSE</code>.</p></dd>
 
 
 <dt>title</dt>
@@ -193,6 +194,10 @@ If <code>FALSE</code>, the fitted time-varying coefficients (log hazard ratio) a
 <dd><p>the time points for which the time-varying coefficients to be plotted.
 The default value is the unique observed event times in the dataset fitting the time-varying effects model.</p></dd>
 
+
+<dt>...</dt>
+<dd><p>Other graphical parameters to plot</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
@@ -202,27 +207,65 @@ The default value is the unique observed event times in the dataset fitting the 
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "start fitting:"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dynamic"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ratch"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2986480; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2920862; Stopping crit = 2.1176619e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2920355; Stopping crit = 1.6361107e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2920353; Stopping crit = 3.7757230e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2920353; Stopping crit = 5.0225062e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lambda 0.1 is done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "start fitting:"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dynamic"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ratch"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2954100; Stopping crit = 2.0664261e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lambda 1 is done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "start fitting:"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dynamic"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ratch"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3094946; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.3042222; Stopping crit = 1.7708812e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.3041817; Stopping crit = 1.3597425e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.3041817; Stopping crit = 6.0903557e-08;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.3041817; Stopping crit = 2.9828152e-15;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lambda 10 is done.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">lambda1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.coxtp-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

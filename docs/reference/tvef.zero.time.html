@@ -134,7 +134,7 @@
 <p><code>tvef.zero.time</code> produces a list of length <code>nvars</code>. Each element of the list is a matrix with respect to a
 covariate. The matrix is of dimension <code>len_unique_t</code> by 4, where <code>len_unique_t</code> is the length of unique observed event time.
 Each row corresponds to the testing result at that time.  The four
-columns give the estimations, standard error, z-statistic and  P-value.</p>
+columns give the estimations, standard error, test-statistic and  P-value.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -148,12 +148,12 @@ columns give the estimations, standard error, z-statistic and  P-value.</p>
 <span class="r-in"><span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span>   <span class="op">&lt;-</span> <span class="fu"><a href="coxtv.html">coxtv</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2982771; Stopping crit = 2.8599513e-01;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2916285; Stopping crit = 6.4033714e-03;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2916034; Stopping crit = 2.5024973e-05;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2916034; Stopping crit = 5.6581492e-10;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2982771; Stopping crit = 1.0000000e+00;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2916285; Stopping crit = 2.1424865e-02;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2916034; Stopping crit = 8.0884492e-05;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2916034; Stopping crit = 1.8232153e-09;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-in"><span><span class="va">test</span>  <span class="op">&lt;-</span> <span class="fu">tvef.zero.time</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in missing(times):</span> 'missing' can only be used for arguments</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

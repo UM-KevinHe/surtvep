@@ -155,7 +155,7 @@ fit   <- coxtp(event = event, z = z, time = time, lambda=lambda)
 
 }
 \references{
-Boyd, S., Vandenberghe, L. (2004) Convex optimization.
+Boyd, S., and Vandenberghe, L. (2004) Convex optimization.
 \emph{Cambridge University Press}.
 \cr
 

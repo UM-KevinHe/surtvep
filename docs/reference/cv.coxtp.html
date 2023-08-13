@@ -118,10 +118,11 @@
 <span>  lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  nfolds <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  foldid <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  knots <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  penalty <span class="op">=</span> <span class="st">"Smooth-spline"</span>,</span>
 <span>  nsplines <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  ties <span class="op">=</span> <span class="st">"Breslow"</span>,</span>
-<span>  tol <span class="op">=</span> <span class="fl">1e-09</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">1e-06</span>,</span>
 <span>  iter.max <span class="op">=</span> <span class="fl">20L</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"ProxN"</span>,</span>
 <span>  gamma <span class="op">=</span> <span class="fl">1e+08</span>,</span>
@@ -146,7 +147,7 @@
 
 
 <dt>time</dt>
-<dd><p>observed event time, which should be a vector with non-negative values.</p></dd>
+<dd><p>observed event times, which should be a vector with non-negative values.</p></dd>
 
 
 <dt>strata</dt>
@@ -162,11 +163,19 @@ When <code>lambda</code> is <code>0</code>, Newton method without penalization i
 
 
 <dt>nfolds</dt>
-<dd><p>number of folds for cross-validation, default is 5. The smallest value allowable is <code>nfolds</code>=3.</p></dd>
+<dd><p>number of folds for cross-validation, the default value is 5. The smallest value allowable is <code>nfolds</code>=3.</p></dd>
 
 
 <dt>foldid</dt>
 <dd><p>an optional vector of values between 1 and <code>nfolds</code> identifying what fold each observation is in. If supplied, <code>nfolds</code> can be missing.</p></dd>
+
+
+<dt>knots</dt>
+<dd><p>the internal knot locations (breakpoints) that define the B-splines.
+The number of the internal knots should be <code>nsplines</code>-<code>degree</code>-1.
+If <code>NULL</code>, the locations of knots are chosen as quantiles of distinct failure time points.
+This choice leads to more stable results in most cases.
+Users can specify the internal knot locations by themselves.</p></dd>
 
 
 <dt>penalty</dt>
@@ -180,12 +189,12 @@ will be set as 0.</p>
 When <code>lambda</code> goes to infinity, the time-varying effects are reduced to be constant.</p>
 <p><code>Smooth-spline</code> refers to the Smoothing-spline, the derivative-based penalties combined with B-splines. See <code>degree</code> for different choices.
 When <code>degree=3</code>, we use the cubic B-spline penalizing the second-order derivative, which reduces the time-varying effect to a linear term when <code>lambda</code> goes to infinity.
-When <code>degree=2</code>, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when <code>lambda</code> goes to infinity. See Wood (2016) for details.</p>
+When <code>degree=2</code>, we use the quadratic B-spline penalizing first-order derivative, which reduces the time-varying effect to a constant when <code>lambda</code> goes to infinity. See Wood (2017) for details.</p>
 <p>If <code>P-spline</code> or <code>Smooth-spline</code>, then <code>lambda</code> is initialized as a sequence (0.1, 1, 10). Users can modify <code>lambda</code>. See details in <code>lambda</code>.</p></dd>
 
 
 <dt>nsplines</dt>
-<dd><p>number of basis functions in the splines to span the time-varying effects, whose default value is 8.
+<dd><p>number of basis functions in the splines to span the time-varying effects. The default value is 8.
 We use the R function <code><a href="https://rdrr.io/r/splines/bs.html" class="external-link">splines::bs</a></code> to generate the B-splines.</p></dd>
 
 
@@ -202,7 +211,7 @@ The default value is  <code>1e-6</code>.</p></dd>
 
 
 <dt>iter.max</dt>
-<dd><p>maximum iteration number if the stopping criterion specified by <code>stop</code> is not satisfied. Default value is  <code>20</code>.</p></dd>
+<dd><p>maximum iteration number if the stopping criterion specified by <code>stop</code> is not satisfied. The default value is  <code>20</code>.</p></dd>
 
 
 <dt>method</dt>
@@ -234,7 +243,7 @@ Users should be careful with <code>static</code>, as this may lead to under-fitt
 where \(loglik(m)\) denotes the log-partial likelihood at iteration step m.
 <code>"ratch"</code> means we stop the algorithm when \((loglik(m)-loglik(m-1))/(loglik(m)-loglik(0))\) is less than the <code>tol</code>.
 <code>"all"</code> means we stop the algorithm when all the stopping rules (<code>"incre"</code>, <code>"relch"</code>, <code>"ratch"</code>) are met.
-Default value is <code>ratch</code>.
+The default value is <code>ratch</code>.
 If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm termination.</p></dd>
 
 
@@ -243,7 +252,7 @@ If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm t
 
 
 <dt>threads</dt>
-<dd><p>an integer indicating the number of threads to be used for parallel computation. Default is <code>2</code>. If <code>parallel</code> is false, then the value of <code>threads</code> has no effect.</p></dd>
+<dd><p>an integer indicating the number of threads to be used for parallel computation. The default value is <code>2</code>. If <code>parallel</code> is false, then the value of <code>threads</code> has no effect.</p></dd>
 
 
 <dt>degree</dt>
@@ -255,14 +264,6 @@ If <code>iter.max</code> is achieved, it overrides any stop rule for algorithm t
 
 <dt>fixedstep</dt>
 <dd><p>if <code>TRUE</code>, the algorithm will be forced to run <code>iter.max</code> steps regardless of the stopping criterion specified.</p></dd>
-
-
-<dt>knots</dt>
-<dd><p>the internal knot locations (breakpoints) that define the B-splines.
-The number of the internal knots should be <code>nsplines</code>-<code>degree</code>-1.
-If <code>NULL</code>, the locations of knots are chosen as quantiles of distinct failure time points.
-This choice leads to more stable results in most cases.
-Users can specify the internal knot locations by themselves.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -280,7 +281,7 @@ Users can specify the internal knot locations by themselves.</p></dd>
 <dd><p>the mean cross-validated error - a vector having the same length as lambda.
 For the k-th testing fold (k = 1, ..., <code>nfolds</code>), we take the remaining folds as the training folds.
 Based on the model trained on the training folds, we calculate the log-partial likelihood on all the folds \(loglik0\) and training folds  \(loglik1\).
-The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.</p></dd>
+The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). See details in Verweij (1993). This approach avoids the construction of a partial likelihood on the test set so that the risk set is always sufficiently large.</p></dd>
 
 <dt>lambda.min</dt>
 <dd><p>the value of <code>lambda</code> that gives minimum <code>cve</code>.</p></dd>
@@ -292,7 +293,7 @@ The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). This approach avoid
     </div>
     <div id="references">
     <h2>References</h2>
-    <p>Boyd, S., Vandenberghe, L. (2004) Convex optimization.
+    <p>Boyd, S., and Vandenberghe, L. (2004) Convex optimization.
 <em>Cambridge University Press</em>.
 <br></p>
 <p>Gray, R. J. (1992) Flexible methods for analyzing survival data using splines, with applications to breast cancer prognosis.
@@ -320,68 +321,14 @@ The <code>cve</code> is equal to \(-2*(loglik0 - loglik1)\). This approach avoid
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">z</span></span></span>
 <span class="r-in"><span><span class="va">time</span>  <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">lambda</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span>  <span class="op">&lt;-</span> <span class="fu">cv.coxtp</span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span>, lambda<span class="op">=</span><span class="va">lambda</span>, nfolds <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1810488; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1748406; Stopping crit = 2.0344255e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1747835; Stopping crit = 1.8716800e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1747833; Stopping crit = 6.4798040e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1747833; Stopping crit = 1.6962605e-11;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1851169; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1793478; Stopping crit = 1.9188894e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1792836; Stopping crit = 2.1348188e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1792835; Stopping crit = 3.1683809e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1792835; Stopping crit = 8.0928260e-13;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1829549; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1763348; Stopping crit = 2.0918331e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1762905; Stopping crit = 1.3970958e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1762904; Stopping crit = 3.0141586e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1762904; Stopping crit = 3.6956295e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1854354; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1790345; Stopping crit = 2.0399833e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1789718; Stopping crit = 1.9987421e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1789717; Stopping crit = 3.4037884e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1789717; Stopping crit = 1.2806069e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1900883; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1847652; Stopping crit = 1.7814275e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1847252; Stopping crit = 1.3390877e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1847251; Stopping crit = 3.1234532e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1847251; Stopping crit = 2.8902406e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1930712; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1879716; Stopping crit = 1.7251546e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1879203; Stopping crit = 1.7332505e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1879203; Stopping crit = 2.3274915e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1879203; Stopping crit = 5.1970719e-13;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1785812; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1703070; Stopping crit = 2.6350754e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1701902; Stopping crit = 3.7198571e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1701896; Stopping crit = 1.6787705e-06;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1701896; Stopping crit = 6.1887597e-11;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1831722; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1754648; Stopping crit = 2.4955630e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1753317; Stopping crit = 4.3087164e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1753314; Stopping crit = 9.9436885e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1753314; Stopping crit = 6.1674218e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1810983; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1737849; Stopping crit = 2.2924054e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1737198; Stopping crit = 2.0407842e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1737196; Stopping crit = 5.2030504e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1737196; Stopping crit = 8.4213388e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.1852879; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.1782096; Stopping crit = 2.2499038e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.1781140; Stopping crit = 3.0405738e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.1781138; Stopping crit = 5.5015405e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.1781138; Stopping crit = 2.0193696e-12;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2986480; Stopping crit = 1.0000000e+00;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2920862; Stopping crit = 2.1176619e-02;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2920355; Stopping crit = 1.6361107e-04;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2920353; Stopping crit = 3.7757230e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2920353; Stopping crit = 5.0210733e-12;</span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

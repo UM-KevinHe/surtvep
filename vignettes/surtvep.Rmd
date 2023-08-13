@@ -138,16 +138,6 @@ To learn more, move on to later section.
 
 This section gives the flowchart for the `surtvep` package. Generally, `coxtv` utilizes proximal Newton's method to estimate the time-varying coefficients. `coxtp` combines the Newton's approach with penalization. `IC` calculates different information criteria to select the best tuning parameter in front of the penalty term. `cv.coxtp` uses cross-validation for tuning parameter selection.. `tvef.ph`, `tvef.ph.time` and `tvef.ph.zero` provides hypothesis testing for the fitted model. `get.tvef` retrieves the time-varying coefficients for the fitted model. `confint` provides confidence intervals for these coefficients.  `baseline` offers the baseline estimations. `plot` visualizes the estimated time-varying coefficients. Other functions and details are provided in later sections.
 
-# ```{r, out.width="700px", out.height = "800px", include=TRUE, fig.align="center", fig.cap=c("your caption"), echo=FALSE}
-# knitr::include_graphics("Flowchart.pdf")
-# ```
-```{r label, out.height = "100%", fig.cap = "caption"}
-knitr::include_graphics("Flowchart.pdf") 
-```
-
-<!-- ![Flowchart](Flowchart.pdf) -->
-![Alt](Flowchart.pdf){width=80% height=700}
-
 ![Alt](Flowchart.png)
 
 
@@ -406,7 +396,7 @@ First we fit the penalized model with `"Smooth-spline"`.
 ```{r, message = FALSE, results='hide'}
 lambda_spline_all = c(0.01,0.1,1,10,100,1000)
 # fit.pspline <- coxtp(event = event, z = z, time = time, lambda=lambda_spline_all, spline = "P-spline")
-fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda_spline = lambda_spline_all, spline = "Smooth-spline")
+fit.smoothspline <- coxtp(event = event, z = z, time = time, lambda = lambda_spline_all, penalty = "Smooth-spline")
 ```
 
 Then we use the `IC` function to select the tuning parameter.

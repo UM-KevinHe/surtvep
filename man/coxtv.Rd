@@ -119,7 +119,7 @@ fit <- coxtv(event = event, z = z, time = time)
 
 }
 \references{
-Boyd, S., Vandenberghe, L. (2004) Convex optimization.
+Boyd, S., and Vandenberghe, L. (2004) Convex optimization.
 \emph{Cambridge University Press}.
 \cr
 

@@ -123,7 +123,7 @@
 <dd><p>when calculating information criteria, there might be numerical issues (e.g. the Hessian matrix is close to be singular).
 In such cases, warnings will be given.
 If <code>IC.prox = TRUE</code>, we modify the diagonal of the Hessian matrix following the same approach as the proximal method detailed in Wu et al. (2022), which can lead to more stable estimates.
-Default is <code>FALSE</code>.</p></dd>
+The default value is <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -152,18 +152,18 @@ Default is <code>FALSE</code>.</p></dd>
     <p>In order to select the proper smoothing parameter, we utilize the idea of information criteria.
 We provide four different information criteria to select the optimal smoothing parameter \(\lambda\).
 Generally, mAIC, TIC and GIC select similar parameters and the difference of resulting estimates are barely noticeable.
-See details in the references. (2023).</p>
+See details in the Luo et al. (2023).</p>
     </div>
     <div id="references">
     <h2>References</h2>
-    <p>Akaike H. (1998) Information theory and an extension of the maximum likelihood principle.
-<em>In Selected Papers of Hirotugu Akaike</em>, pp. 199–213.
+    <p>Akaike, H. (1998) Information theory and an extension of the maximum likelihood principle.
+<em>In Selected Papers of Hirotugu Akaike</em>. 199–213.
 <br></p>
 <p>Luo, L., He, K., Wu, W., and Taylor, J. M. (2023) Using information criteria to select smoothing parameters when analyzing survival data with time-varying coefficient hazard models.
 <em>Statistical Methods in Medical Research</em>, <strong>in press</strong>.
 <br></p>
-<p>Takeuchi K. (1976) Distribution of information statistics and criteria for adequacy of models.
-<em>Math Sci</em>, <strong>153</strong>: 12–18.
+<p>Takeuchi, K. (1976) Distribution of information statistics and criteria for adequacy of models.
+<em>Mathematical Sciences</em>, <strong>153</strong>: 12–18.
 <br></p>
 <p>Wu, W., Taylor, J. M., Brouwer, A. F., Luo, L., Kang, J., Jiang, H., and He, K. (2022) Scalable proximal methods for cause-specific hazard modeling with time-varying coefficients.
 <em>Lifetime Data Analysis</em>, <strong>28(2)</strong>: 194-218.
@@ -177,23 +177,62 @@ See details in the references. (2023).</p>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="va">ExampleData</span><span class="op">$</span><span class="va">event</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="coxtp.html">coxtp</a></span><span class="op">(</span>event <span class="op">=</span> <span class="va">event</span>, z <span class="op">=</span> <span class="va">z</span>, time <span class="op">=</span> <span class="va">time</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "start fitting:"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dynamic"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ratch"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.2986480; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2920862; Stopping crit = 2.1176619e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2920355; Stopping crit = 1.6361107e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2920353; Stopping crit = 3.7757230e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2920353; Stopping crit = 5.0225062e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lambda 0.1 is done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "start fitting:"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dynamic"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ratch"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3017443; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.2954100; Stopping crit = 2.0664261e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.2953323; Stopping crit = 2.5346890e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.2953321; Stopping crit = 4.6097119e-07;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.2953321; Stopping crit = 1.7713469e-12;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lambda 1 is done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "start fitting:"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dynamic"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ratch"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 1: Obj fun = -3.3094946; Stopping crit = 1.0000000e+00;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 2: Obj fun = -3.3042222; Stopping crit = 1.7708812e-02;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 3: Obj fun = -3.3041817; Stopping crit = 1.3597425e-04;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Iter 4: Obj fun = -3.3041817; Stopping crit = 6.0903557e-08;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iter 5: Obj fun = -3.3041817; Stopping crit = 2.9828152e-15;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Algorithm converged after 4 iterations!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lambda 10 is done.</span>
 <span class="r-in"><span><span class="va">IC</span>  <span class="op">&lt;-</span> <span class="fu">IC</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
