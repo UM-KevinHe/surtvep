@@ -19,7 +19,7 @@
 #' @param time the time points for which the time-varying coefficients to be plotted. 
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. The default value is `FALSE`.
-#' @param \dots Other graphical parameters to plot
+#' @param \dots other graphical parameters to plot
 #' 
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank element_line margin labs ggtitle geom_hline scale_x_continuous scale_y_continuous scale_linetype_manual scale_color_manual guides guide_legend scale_fill_manual 
 #' @importFrom rlang .data

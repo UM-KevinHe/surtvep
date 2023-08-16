@@ -1,9 +1,10 @@
 #' @rdname confint.coxtv
 #' 
-#' @param fit fitted \code{"coxtp"} model.
+#' @param object fitted \code{"coxtp"} model.
 #' @param time the time interval to be estamtied. The default value is the time of the fitted model.
 #' @param parm the names of parameter.
 #' @param level the confidence level. The default value is 0.95.
+#' @param \dots other parameters to function
 #' 
 #' @examples 
 #' \dontrun{
@@ -17,10 +18,11 @@
 #' }
 #' 
 #' @exportS3Method confint coxtp
-confint.coxtp <- function(fit, time, parm, level=0.95) {
+confint.coxtp <- function(object, parm, time, level=0.95, ...) {
   
-  if (missing(fit)) stop ("Argument fit is required!")
-  if (!inherits(fit,"coxtp")) stop("Object fit is not of class 'coxtp'!")
+  if (missing(object)) stop ("Argument object is required!")
+  if (!inherits(object,"coxtp")) stop("object is not of class 'coxtp'!")
+  fit <- object
   if (missing(time)) {
     time <- fit$times
   } else {

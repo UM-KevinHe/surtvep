@@ -5,19 +5,21 @@
 \alias{confint.coxtv}
 \title{get confidence intervals of time-varying coefficients from a fitted object}
 \usage{
-\method{confint}{coxtp}(fit, time, parm, level = 0.95)
+\method{confint}{coxtp}(object, parm, time, level = 0.95, ...)
 
-\method{confint}{coxtv}(fit, time, parm, level = 0.95)
+\method{confint}{coxtv}(object, time, parm, level = 0.95, ...)
 }
 \arguments{
-\item{fit}{fitted \code{"coxtv"} model.}
+\item{object}{fitted \code{"coxtv"} model.}
+
+\item{parm}{the names of parameters.}
 
 \item{time}{the time points for which the confidence intervals to be estimated.
 The default value is the unique observed event times in the dataset fitting the time-varying effects model.}
 
-\item{parm}{the names of parameters.}
-
 \item{level}{the confidence level. The default value is 0.95.}
+
+\item{\dots}{other parameters to function}
 }
 \description{
 Get confidence intervals of time-varying coefficients from a fitted \code{coxtv} or \code{coxtp} object.
