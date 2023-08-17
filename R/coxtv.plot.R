@@ -19,7 +19,7 @@
 #' @param time the time points for which the time-varying coefficients to be plotted. 
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. The default value is `FALSE`.
-#' @param \dots Other graphical parameters to plot
+#' @param \dots other graphical parameters to plot
 #' 
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank element_line margin labs ggtitle geom_hline scale_x_continuous scale_y_continuous scale_linetype_manual scale_fill_manual 
 #' @importFrom ggpubr annotate_figure ggarrange text_grob
@@ -54,7 +54,7 @@ plot.coxtv <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
   defaultltys <- c("solid", "dashed", "dotted", "dotdash", "longdash")
   # if (missing(expand)) expand <- c(1,1)/100
   expand <- c(1,1)/100
-  ls.tvef <- confint.coxtv(fit, time, parm, level)$tvef
+  ls.tvef <- confint.coxtv(object = fit, parm = parm, level = level, time = time)$tvef
   if (length(ls.tvef)==0) stop("No time-varying effect chosen!")
   # if (missing(labels)) labels <- names(ls.tvef)
   labels <- names(ls.tvef)

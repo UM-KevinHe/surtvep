@@ -19,7 +19,7 @@
 
 \item{title}{the title for the plot.}
 
-\item{\dots}{Other graphical parameters to plot}
+\item{\dots}{other graphical parameters to plot}
 }
 \description{
 Plotting the baseline hazard from a fitted \code{baseline} object.

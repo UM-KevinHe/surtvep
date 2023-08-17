@@ -181,19 +181,6 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", ties="Breslow",
         }
       }
       SmoothMatrix  <- t(G_matrix)%*%W_matrix%*%G_matrix
-      print("start fitting:")
-      print(control$factor)
-      print(control$parallel)
-      print(control$threads)
-      print(control$iter.max)
-      print(control$tol)
-      print(control$s)
-      print(control$tau)
-      print(control$btr)
-      print(control$stop)
-      print(control$fixedstep)
-      print(control$gamma)
-      print(control$difflambda)
       fit <- 
         surtiver_fixtra_fit_penalizestop_bresties(data[,term.event], data[,term.time], 
                                                   count.strata, 

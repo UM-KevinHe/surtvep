@@ -78,7 +78,7 @@ baseline <-  function(fit){
 #' @param xlim the limits of the x axis.
 #' @param ylim the limits of the y axis.
 #' @param title the title for the plot.
-#' @param \dots Other graphical parameters to plot
+#' @param \dots other graphical parameters to plot
 #' 
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle theme_classic
 #' @importFrom tibble tibble
