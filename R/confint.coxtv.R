@@ -3,10 +3,10 @@
 #' Get confidence intervals of time-varying coefficients from a fitted `coxtv` or `coxtp` object. 
 #' 
 #' @param object fitted \code{"coxtv"} model.
-#' @param time the time points for which the confidence intervals to be estimated. 
-#' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param parm the names of parameters.
 #' @param level the confidence level. The default value is 0.95.
+#' @param time the time points for which the confidence intervals to be estimated. 
+#' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param \dots other parameters to function
 #' 
 #' @examples 
@@ -20,7 +20,7 @@
 #' }
 #' 
 #' @exportS3Method confint coxtv
-confint.coxtv <- function(object, time, parm, level=0.95, ...) {
+confint.coxtv <- function(object, parm, level=0.95, time, ...) {
   if (missing(object)) stop ("Argument object is required!")
   if (!inherits(object,"coxtv")) stop("object is not of class 'coxtv'!")
   fit <- object

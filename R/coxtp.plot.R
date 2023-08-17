@@ -52,7 +52,7 @@ plot.coxtp <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
   defaultcols <- c("#F8766D","#A3A500","#00BF7D","#00B0F6","#E76BF3")
   defaultltys <- c("solid", "dashed", "dotted", "dotdash", "longdash")
   expand <- c(1,1)/100
-  ls.tvef <- confint.coxtp(fit, time, parm, level)$tvef
+  ls.tvef <- confint.coxtp(object = fit, parm = parm, level = level, time = time)$tvef
   if (length(ls.tvef)==0) stop("No time-varying effect chosen!")
   # if (missing(labels)) labels <- names(ls.tvef)
   labels <- names(ls.tvef)

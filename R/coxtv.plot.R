@@ -54,7 +54,7 @@ plot.coxtv <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
   defaultltys <- c("solid", "dashed", "dotted", "dotdash", "longdash")
   # if (missing(expand)) expand <- c(1,1)/100
   expand <- c(1,1)/100
-  ls.tvef <- confint.coxtv(fit, time, parm, level)$tvef
+  ls.tvef <- confint.coxtv(object = fit, parm = parm, level = level, time = time)$tvef
   if (length(ls.tvef)==0) stop("No time-varying effect chosen!")
   # if (missing(labels)) labels <- names(ls.tvef)
   labels <- names(ls.tvef)

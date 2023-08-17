@@ -1,8 +1,9 @@
 #' @rdname confint.coxtv
 #' 
 #' @param object fitted \code{"coxtp"} model.
-#' @param time the time interval to be estamtied. The default value is the time of the fitted model.
 #' @param parm the names of parameter.
+#' @param time the time points for which the confidence intervals to be estimated. 
+#' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param level the confidence level. The default value is 0.95.
 #' @param \dots other parameters to function
 #' 
@@ -18,7 +19,7 @@
 #' }
 #' 
 #' @exportS3Method confint coxtp
-confint.coxtp <- function(object, parm, time, level=0.95, ...) {
+confint.coxtp <- function(object, parm, level=0.95, time, ...) {
   
   if (missing(object)) stop ("Argument object is required!")
   if (!inherits(object,"coxtp")) stop("object is not of class 'coxtp'!")
