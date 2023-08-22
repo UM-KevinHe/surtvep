@@ -117,7 +117,7 @@ In utilizing the `coxtv` and `coxtp` functions, users have the flexibility to ch
 
 # Data Example 
 
-We demonstrate the effectiveness of `surtvep` by applying it to a real-world dataset from the National Cancer Institute Surveillance, Epidemiology, and End Results (SEER) Program [@SEER]. We estimate the cancer stage of kidney, lung, and breast, as shown in \autoref{fig:example}. Our analysis highlights the dynamic nature of hazard ratios for cancer death among patients with metastatic stage compared to those with localized stage.
+We demonstrate the effectiveness of `surtvep` by applying it to a real-world dataset from the National Cancer Institute Surveillance, Epidemiology, and End Results (SEER) Program [@SEER]. We estimate the hazard ratios of the cancer stage of kidney, lung, and breast, as shown in \autoref{fig:example}. Our analysis highlights the dynamic nature of hazard ratios for cancer death among patients with metastatic stage compared to those with localized stage.
 
 In the first year after diagnosis, the hazard ratio is strikingly high, indicating a significant difference in survival outcomes between metastatic and localized stage patients. However, this disparity shrinks considerably by the eighth year, reflecting the diminishing relevance of the initial cancer stage in the prognosis of long-term survivors. This example illustrates the importance of accounting for time-varying effects, which has been effectively addressed by `surtvep` through its flexible and efficient approach to modeling these dynamics. By providing accurate and efficient modeling of time-varying effects in large-scale datasets, `surtvep` serves as a valuable tool for researchers working with complex survival data.
 
