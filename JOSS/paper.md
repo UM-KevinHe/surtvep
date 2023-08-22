@@ -64,6 +64,7 @@ Once we have established the basis functions for the time-varying coefficients, 
 
 Finally, `surtvep` offers a comprehensive suite of hypothesis testing capabilities, allowing researchers to assess the validity and significance of their models. Specifically, `surtvep` can perform the following hypothesis tests: (1) testing the proportional hazards assumption to verify the model's suitability for the given data; and (2) examining the pointwise significance of covariates effects at different event times to assess the impact of each covariate on the outcome of interest. To conduct these hypothesis tests, `surtvep` employs the Wald test statistic, a widely-used method for inference.
 
+
 # Quick Start 
 
 The purpose of this section is to introduce the basics of `surtvep`. Interested users are referred to the online tutorial at [*https://um-kevinhe.github.io/surtvep/index.html*](https://um-kevinhe.github.io/surtvep/index.html) for detailed instructions.
@@ -104,11 +105,14 @@ Various methods are provided for the objects such as plotting and hypothesis tes
 We can visualize the time-varying coefficients through the plot method:
 
 ```r
-plot(fit.tv, ylim = c(-2,2))
-plot(fit.ic$mAIC, ylim = c(-2,2))
+plot(fit.tv, ylim = c(-3,10))
+plot(fit.ic$mAIC, ylim = c(-3,10))
 ```
 
-![The estimated time-varying coefficients from `coxtv` and `coxtp`. The tuning parameter for `coxtp` is selected using mAIC.  \label{fig:coxtv}](coxtv_tp.png)
+![The estimated time-varying coefficients (log hazard ratio) from `coxtv` and `coxtp`. The tuning parameter for `coxtp` is selected using mAIC.  \label{fig:coxtv}](coxtv_tp.png)
+
+
+In utilizing the `coxtv` and `coxtp` functions, users have the flexibility to choose based on their dataset's specifications. Numerical instabilities are commonly encountered when analyzing survival data of a small sample size or when the data includes some binary covariates with proportions that approach either zero or one. In these scenarios, the second-order information matrix can become ill-conditioned. See discussion in [@wu2022scalable; @lfluo2023smmr]. In these intricacies, we recommend the use of the penalized method, `coxtp`. When determining the number of basis functions, a typical range is between 5-10. Though the choice is somewhat flexible, it has limited impact on results unless set too small [@gray1992flexible]. Users might consider increasing this number when applying the penalized method.
 
 
 # Data Example 
