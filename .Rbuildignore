@@ -5,4 +5,3 @@
 ^pkgdown$
 ^\.github$
 ^README.Rmd
-^vignettes

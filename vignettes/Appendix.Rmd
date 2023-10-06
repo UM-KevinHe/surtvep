@@ -3,8 +3,8 @@ title: "Appendix"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Appendix}
-  %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 editor_options: 
   markdown: 
     wrap: sentence

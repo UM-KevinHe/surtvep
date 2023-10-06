@@ -3,8 +3,8 @@ title: "surtvep"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{surtvep}
-  %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 editor_options: 
   markdown: 
     wrap: sentence
