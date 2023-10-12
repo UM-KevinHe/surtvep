@@ -37,7 +37,8 @@
 plot.coxtp <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, allinone=FALSE, 
                        title, linetype, color, fill, time, ...) {
-  
+  old <- options()
+  on.exit(options(old))
   if (missing(x)) stop ("Argument x is required!")
   fit <- x
   if (!inherits(fit,"coxtp")) stop("Object fit is not of class 'coxtp'!")
@@ -185,7 +186,6 @@ plot.coxtp <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE,
       # plt
     # }
   }
-  
 }
 
 
