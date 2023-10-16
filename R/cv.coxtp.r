@@ -92,14 +92,12 @@
 #' 
 #'
 #' @examples 
-#' \dontrun{
 #' data(ExampleData)
 #' z <- ExampleData$z
 #' time  <- ExampleData$time
 #' event <- ExampleData$event
 #' lambda  = c(0.1, 1)
 #' fit  <- cv.coxtp(event = event, z = z, time = time, lambda=lambda, nfolds = 5)
-#' }
 #' 
 #' @details The function runs `coxtp` length of `lambda` by `nfolds` times; each is to compute the fit with each of the folds omitted.
 #' 
@@ -218,7 +216,7 @@ cv.coxtp <- function(event , z, time, strata=NULL,
       model1 <- coxtp.base(fmla, data_NR, knots = knots, nsplines=nsplines, 
                            spline = spline, ties= ties, stop=stop,
                            TIC_prox = TIC_prox, ord = ord, degree = degree,
-                           method = method, btr = btr, iter.max = 15, threads = 3, parallel = TRUE,
+                           method = method, btr = btr, iter.max = 15, threads = threads, parallel = parallel,
                            lambda_spline = lambda[lambda_index], 
                            fixedstep = fixedstep)
       
@@ -239,14 +237,13 @@ cv.coxtp <- function(event , z, time, strata=NULL,
   
   lambda.min = lambda[which.min(cve)]
   
-  
   data_NR <- data.frame(event=event, time=time, z, strata=stratum, stringsAsFactors=F)
   Z.char <- paste0("X", 1:p)
   fmla <- formula(paste0("Surv(time, event)~",
                          paste(c(paste0("tv(", Z.char, ")"), "strata(strata)"), collapse="+")))
   model.cv = coxtp.base(fmla, data_NR, knots = knots, nsplines=nsplines, spline = spline, ties= ties, stop=stop,
                         TIC_prox = TIC_prox, ord = ord, degree = degree,
-                        method = method, btr = btr, iter.max = 15, threads = 3, parallel = TRUE,
+                        method = method, btr = btr, iter.max = 15, threads = threads, parallel = parallel,
                         lambda_spline = lambda.min, 
                         fixedstep = fixedstep)
   

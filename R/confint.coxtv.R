@@ -9,15 +9,19 @@
 #' The default value is the unique observed event times in the dataset fitting the time-varying effects model.
 #' @param \dots other parameters to function
 #' 
+#' @return A list where each element corresponds to one of the parameters specified in `parm`. Each element in the 
+#' list is a matrix, with rows corresponding to the specified `time` points and three columns representing the 
+#' estimated values of the parameter, and the lower and upper bounds of the confidence interval at the specified 
+#' confidence `level`. The length of the list is determined by the number of parameters in `parm`, and each matrix 
+#' has rows equal to the number of specified `time` points.
+#' 
 #' @examples 
-#' \dontrun{
 #' data(ExampleData)
 #' z <- ExampleData$z
 #' time <- ExampleData$time
 #' event <- ExampleData$event
 #' fit <- coxtv(event = event, z = z, time = time)
-#' confint(fit)
-#' }
+#' confint <- confint(fit)
 #' 
 #' @exportS3Method confint coxtv
 confint.coxtv <- function(object, parm, level=0.95, time, ...) {

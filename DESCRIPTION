@@ -16,6 +16,8 @@ Description: Fit Cox non-proportional hazards models with time-varying coefficie
     mAIC, TIC or GIC are implemented to select tuning parameters. Utilities for 
     carrying out post-estimation visualization, summarization, point-wise confidence 
     interval and hypothesis testing are also provided.
+    For more information, see Wu et al. (2022) <doi:10.1214/10-AOAS388> and 
+    Luo et al. (2023) <doi:10.1177/09622802231181471>.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -33,8 +35,7 @@ Imports:
     tibble,
     rlang
 Depends:
-    R (>= 3.5)
+    R (>= 4.0)
 Suggests:
     knitr,
     rmarkdown
-VignetteBuilder: knitr

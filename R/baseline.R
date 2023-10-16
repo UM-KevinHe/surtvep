@@ -80,6 +80,8 @@ baseline <-  function(fit){
 #' @param title the title for the plot.
 #' @param \dots other graphical parameters to plot
 #' 
+#' @return A plot is produced, and nothing is returned.
+#'
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank margin labs ggtitle theme_classic
 #' @importFrom tibble tibble
 #' @importFrom rlang .data
@@ -96,6 +98,8 @@ baseline <-  function(fit){
 #' plot(base.est)
 plot.baseline <- function(x, xlab, ylab, xlim, ylim, title, ...){
   
+  old <- options()
+  on.exit(options(old))
   
   if (missing(xlab)) xlab <- "time"
   if (missing(ylab)) ylab <- "cumulative hazard"

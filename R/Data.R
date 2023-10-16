@@ -144,7 +144,6 @@
 #' 
 #' 
 #' @examples
-#' \dontrun{
 #' data(support)
 #' 
 #' support <- support[support$ca %in% c("metastatic"),]
@@ -169,13 +168,6 @@
 #' z <- data.frame(z_age, sex, diabetes)
 #' colnames(z) <- c("age_50", "age_50_59", "age_70", "diabetes", "male")
 #' 
-#' library(survminer)
-#' library(survival)
 #' data <- data.frame(time, death, z)
-#' fit1 <- survfit(Surv(time, death) ~ diabetes, data = data)
-#' fit2 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data)
-#' ggsurvplot(fit1, data = data)
-#' ggsurvplot(fit2, data = data, legend.labs = c("60-69", "70+", "50-59", "<50"))
 #' fit.coxtv <- coxtv(event = death, z = z, time = time)
-#' }
 "support"
