@@ -72,8 +72,7 @@ The purpose of this section is to introduce the basics of `surtvep`. Interested 
 `surtvep` can be easily installed by launching an R prompt and running the following commands:
 
 ```r
-require("remotes")
-remotes::install_github("UM-KevinHe/surtvep")
+install.packages('surtvep')
 ```
 
 Next, we load an example data set that includes two columns `z` of continuous covariates, a column `time` indicating the time to an event, and a column "event" of event indicators.
