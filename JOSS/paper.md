@@ -15,6 +15,8 @@ authors:
     affiliation: 1
   - name: Jian Kang
     affiliation: 1
+  - name: Michael Kleinsasser
+    affiliation: 1
   - name: Kevin He
     corresponding: true #
     affiliation: 1
@@ -73,6 +75,7 @@ The purpose of this section is to introduce the basics of `surtvep`. Interested 
 
 ```r
 install.packages('surtvep')
+library(surtvep)
 ```
 
 Next, we load an example data set that includes two columns `z` of continuous covariates, a column `time` indicating the time to an event, and a column "event" of event indicators.
@@ -94,7 +97,7 @@ fit.penalize <- coxtp(z = z, event = event, time = time)
 We use `IC` to calculate the information criteria and select the best tuning parameter:
 
 ```r
-fit.ic <- ic(fit.penalize)
+fit.ic <- IC(fit.penalize)
 ```
 
 `fit.tv` is an object of class `coxtv` that contains all the relevant information of the fitted model for further use.
@@ -105,7 +108,7 @@ We can visualize the time-varying coefficients through the plot method:
 
 ```r
 plot(fit.tv, ylim = c(-3,10))
-plot(fit.ic$mAIC, ylim = c(-3,10))
+plot(fit.ic$model.mAIC, ylim = c(-3,10))
 ```
 
 ![The estimated time-varying coefficients (log hazard ratio) from `coxtv` and `coxtp`. The tuning parameter for `coxtp` is selected using mAIC.  \label{fig:coxtv}](coxtv_tp.png)
