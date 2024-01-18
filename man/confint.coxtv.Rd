@@ -21,11 +21,24 @@ The default value is the unique observed event times in the dataset fitting the 
 
 \item{\dots}{other parameters to function}
 }
+\value{
+A list where each element corresponds to one of the parameters specified in \code{parm}. Each element in the
+list is a matrix, with rows corresponding to the specified \code{time} points and three columns representing the
+estimated values of the parameter, and the lower and upper bounds of the confidence interval at the specified
+confidence \code{level}. The length of the list is determined by the number of parameters in \code{parm}, and each matrix
+has rows equal to the number of specified \code{time} points.
+
+A list where each element corresponds to one of the parameters specified in \code{parm}. Each element in the
+list is a matrix, with rows corresponding to the specified \code{time} points and three columns representing the
+estimated values of the parameter, and the lower and upper bounds of the confidence interval at the specified
+confidence \code{level}. The length of the list is determined by the number of parameters in \code{parm}, and each matrix
+has rows equal to the number of specified \code{time} points.
+}
 \description{
 Get confidence intervals of time-varying coefficients from a fitted \code{coxtv} or \code{coxtp} object.
 }
 \examples{
-\dontrun{
+\donttest{
 data(ExampleData)
 z <- ExampleData$z
 time <- ExampleData$time
@@ -35,13 +48,11 @@ IC  <- IC(fit)
 confint(IC$model.mAIC)
 }
 
-\dontrun{
 data(ExampleData)
 z <- ExampleData$z
 time <- ExampleData$time
 event <- ExampleData$event
 fit <- coxtv(event = event, z = z, time = time)
-confint(fit)
-}
+confint <- confint(fit)
 
 }

@@ -21,6 +21,9 @@
 
 \item{\dots}{other graphical parameters to plot}
 }
+\value{
+A plot is produced, and nothing is returned.
+}
 \description{
 Plotting the baseline hazard from a fitted \code{baseline} object.
 }

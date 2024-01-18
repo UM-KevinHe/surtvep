@@ -58,6 +58,9 @@ The default value is the unique observed event times in the dataset fitting the 
 
 \item{\dots}{other graphical parameters to plot}
 }
+\value{
+A plot is produced, and nothing is returned.
+}
 \description{
 This function creates a plot of the time-varying coefficients from a fitted \code{coxtp} model.
 }

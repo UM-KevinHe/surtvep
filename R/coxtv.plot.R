@@ -21,6 +21,8 @@
 #' @param allinone if `TRUE`, the time-varying trajectories for different covariates are combined into a single plot. The default value is `FALSE`.
 #' @param \dots other graphical parameters to plot
 #' 
+#' @return A plot is produced, and nothing is returned.
+#' 
 #' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_bw theme element_text element_blank element_line margin labs ggtitle geom_hline scale_x_continuous scale_y_continuous scale_linetype_manual scale_fill_manual 
 #' @importFrom ggpubr annotate_figure ggarrange text_grob
 #' @importFrom rlang .data
@@ -38,7 +40,8 @@
 plot.coxtv <- function(x, parm, CI=TRUE, level=0.95, exponentiate=FALSE, 
                        xlab, ylab, xlim, ylim, allinone=FALSE, 
                        title, linetype, color, fill, time, ...) {
-  
+  old <- options()
+  on.exit(options(old))
   if (missing(x)) stop ("Argument x is required!")
   fit <- x
   if (!inherits(fit,"coxtv")) stop("Object fit is not of class 'coxtv'!")
