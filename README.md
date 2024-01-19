@@ -41,7 +41,7 @@ For detailed tutorial and model paramter explaination, please go to <a href="htt
 
 ## Getting Help:
 
-If you encounter any problems or bugs, please contact us at: [lfluo@umich.edu](mailto:lfluo@umich.edu), [kevinhe\@umich.edu](mailto:kevinhe@umich.edu){.email}, [Wenbo.Wu\@nyulangone.org](mailto:Wenbo.Wu@nyulangone.org){.email}
+If you encounter any problems or bugs, please contact us at: [lfluo@umich.edu](mailto:lfluo@umich.edu), [kevinhe@umich.edu](mailto:kevinhe@umich.edu), [Wenbo.Wu@nyulangone.org](mailto:Wenbo.Wu@nyulangone.org)
 
 ## Contributing
 
