@@ -4,3 +4,5 @@
 ^pkgdown$
 ^\.github$
 ^README.Rmd
+^NEWS.md
+^LICENSE
