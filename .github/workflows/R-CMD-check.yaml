@@ -22,4 +22,4 @@ jobs:
       - name: Check package
         run: |
           R CMD build .
-          R CMD check *tar.gz
+          R CMD check *tar.gz --no-manual
