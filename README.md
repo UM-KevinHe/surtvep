@@ -39,11 +39,11 @@ We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/article
 
 For detailed tutorial and model paramter explaination, please go to <a href="https://um-kevinhe.github.io/surtvep/index.html" target="_blank">here</a>.
 
-## Getting Help:
+## Getting Help
 
 If you encounter any problems or bugs, please contact us at: [lfluo@umich.edu](mailto:lfluo@umich.edu), [kevinhe@umich.edu](mailto:kevinhe@umich.edu), [Wenbo.Wu@nyulangone.org](mailto:Wenbo.Wu@nyulangone.org)
 
-## Contributing:
+## Contributing
 
 We welcome contributions to the **surtvep** package. Please see our [CONTRIBUTING.md](https://github.com/UM-KevinHe/surtvep/blob/main/.github/CONTRIBUTING.md) file for detailed guidelines of how to contribute.
 
