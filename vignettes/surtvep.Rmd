@@ -511,217 +511,217 @@ For the following plot, the knot was set as default, which is `knot=8`.
 
 
 
-<!-- ## Real Data Example `SUPPORT` -->
+## Real Data Example `SUPPORT`
 
-<!-- In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment). -->
-<!-- We use the processed `SUPPORT` data set included in the R package [@casebase]. -->
+In this section, we illustrate the usage of our package by analyzing the time-varying effects on the real data `SUPPORT` (Study to Understand Prognoses Preferences Outcomes and Risks of Treatment).
+We use the processed `SUPPORT` data set included in the R package [@casebase].
 
-<!-- We study the time-varying effects of metastatic cancer as the illustration example and include -->
+We study the time-varying effects of metastatic cancer as the illustration example and include
 
-<!-- First we load the data and get the survival outcome: -->
+First we load the data and get the survival outcome:
 
-<!-- ```{r, message = FALSE} -->
-<!-- data(support) -->
+```{r, message = FALSE}
+data(support)
 
-<!-- time <- support$d.time -->
-<!-- death <- support$death -->
-<!-- ``` -->
+time <- support$d.time
+death <- support$death
+```
 
-<!-- Age, cancer status and diabetes status are included as covariates and considered as categorical variables. -->
-<!-- Age has 4 levels, cancer status has 3 levels and diabetes has 2 levels. -->
-<!-- The following codes processed the covariates for model fitting. -->
+Age, cancer status and diabetes status are included as covariates and considered as categorical variables.
+Age has 4 levels, cancer status has 3 levels and diabetes has 2 levels.
+The following codes processed the covariates for model fitting.
 
-<!-- ```{r, message = FALSE} -->
-<!-- #diabetes: -->
-<!-- diabetes <-  model.matrix(~factor(support$diabetes))[,-1] -->
+```{r, message = FALSE}
+#diabetes:
+diabetes <-  model.matrix(~factor(support$diabetes))[,-1]
 
-<!-- #sex: female as the reference group -->
-<!-- sex <- model.matrix(~support$sex)[,-1] -->
+#sex: female as the reference group
+sex <- model.matrix(~support$sex)[,-1]
 
-<!-- #age: continuous variable -->
-<!-- age <-support$age -->
-<!-- age[support$age<=50] <- "<50" -->
-<!-- age[support$age>50 & support$age<=60] <- "50-59" -->
-<!-- age[support$age>60 & support$age<70] <- "60-69" -->
-<!-- age[support$age>=70] <- "70+" -->
-<!-- age <- factor(age, levels = c("60-69", "<50", "50-59", "70+")) -->
-<!-- z_age <- model.matrix(~age)[,-1] -->
+#age: continuous variable
+age <-support$age
+age[support$age<=50] <- "<50"
+age[support$age>50 & support$age<=60] <- "50-59"
+age[support$age>60 & support$age<70] <- "60-69"
+age[support$age>=70] <- "70+"
+age <- factor(age, levels = c("60-69", "<50", "50-59", "70+"))
+z_age <- model.matrix(~age)[,-1]
 
-<!-- # cancer status: metastatic, yes, no -->
-<!-- ca <- factor(support$ca) -->
-<!-- z_ca_mets <- as.numeric(support$ca == "metastatic") -->
-<!-- z_ca_non_mets <- as.numeric(support$ca == "yes") -->
+# cancer status: metastatic, yes, no
+ca <- factor(support$ca)
+z_ca_mets <- as.numeric(support$ca == "metastatic")
+z_ca_non_mets <- as.numeric(support$ca == "yes")
 
-<!-- z <- data.frame(z_age, z_ca_mets, z_ca_non_mets, sex, diabetes) -->
-<!-- # colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male") -->
-<!-- colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "non_metastatic", "diabetes", "male") -->
-<!-- ``` -->
+z <- data.frame(z_age, z_ca_mets, z_ca_non_mets, sex, diabetes)
+# colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "diabetes", "male")
+colnames(z) <- c("age_50", "age_50_59", "age_70", "metastatic", "non_metastatic", "diabetes", "male")
+```
 
-<!-- The Kaplan-Meier (KM) plots were generated using the following codes to visualize the survival probability over time for three categorical variables. Analysis of the KM plot for cancer status revealed a crossover point at approximately day 200, where the survival probability of the non-metastatic cancer group surpassed that of the cancer group, suggesting a violation of the non-proportional hazards assumption. -->
+The Kaplan-Meier (KM) plots were generated using the following codes to visualize the survival probability over time for three categorical variables. Analysis of the KM plot for cancer status revealed a crossover point at approximately day 200, where the survival probability of the non-metastatic cancer group surpassed that of the cancer group, suggesting a violation of the non-proportional hazards assumption.
 
-<!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- library(survminer) -->
-<!-- library(survival) -->
-<!-- data <- data.frame(time, death, z) -->
-<!-- fit1 <- survfit(Surv(time, death) ~ metastatic + non_metastatic, data = data) -->
-<!-- fit2 <- survfit(Surv(time, death) ~ diabetes, data = data) -->
-<!-- fit3 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data) -->
-<!-- ggsurvplot(fit1, data = data, legend.labs = c("non-cancer", "non-metastatic cancer", "metastatic cancer")) -->
-<!-- ggsurvplot(fit2, data = data, legend.labs = c("diabetes", "non-diabetes")) -->
-<!-- ggsurvplot(fit3, data = data, legend.labs = c("60-69", "70+", "50-59", "<50")) -->
-<!-- ``` -->
+```{r, fig = TRUE, message = FALSE}
+library(survminer)
+library(survival)
+data <- data.frame(time, death, z)
+fit1 <- survfit(Surv(time, death) ~ metastatic + non_metastatic, data = data)
+fit2 <- survfit(Surv(time, death) ~ diabetes, data = data)
+fit3 <- survfit(Surv(time, death) ~ age_50 + age_50_59 + age_70, data = data)
+ggsurvplot(fit1, data = data, legend.labs = c("non-cancer", "non-metastatic cancer", "metastatic cancer"))
+ggsurvplot(fit2, data = data, legend.labs = c("diabetes", "non-diabetes"))
+ggsurvplot(fit3, data = data, legend.labs = c("60-69", "70+", "50-59", "<50"))
+```
 
 
-<!-- Fit the Newtons' Method using `coxtv`: -->
+Fit the Newtons' Method using `coxtv`:
 
-<!-- ```{r} -->
-<!-- fit.coxtv <- coxtv(event = death, z = z, time = time, nsplines = 10) -->
-<!-- ``` -->
+```{r}
+fit.coxtv <- coxtv(event = death, z = z, time = time, nsplines = 10)
+```
 
-<!-- We take a look at the estimation plots of cancer status using the `plot` function: -->
+We take a look at the estimation plots of cancer status using the `plot` function:
 
-<!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio") -->
-<!-- ``` -->
+```{r, fig = TRUE, message = FALSE}
+plot(fit.coxtv, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio")
+```
 
-<!-- Conditioned on the diabetes status and age, we can observe a violation of the proportional hazards assumption. A significant difference in the hazard of death was observed between the metastatic cancer, non-metastatic cancer, and non-cancer groups. Specifically, patients with metastatic cancer exhibited a higher hazard of death during the initial 1500 days compared with non-cancer patients. -->
+Conditioned on the diabetes status and age, we can observe a violation of the proportional hazards assumption. A significant difference in the hazard of death was observed between the metastatic cancer, non-metastatic cancer, and non-cancer groups. Specifically, patients with metastatic cancer exhibited a higher hazard of death during the initial 1500 days compared with non-cancer patients.
 
-<!-- However, upon examination of the estimation plot for non-metastatic cancer, a decrease at the beginning followed by an increase can be observed. The fluctuation in the plot is not deemed reliable, primarily due to the instability of the estimation. To address this issue, a penalty term was added to improve the estimation. -->
+However, upon examination of the estimation plot for non-metastatic cancer, a decrease at the beginning followed by an increase can be observed. The fluctuation in the plot is not deemed reliable, primarily due to the instability of the estimation. To address this issue, a penalty term was added to improve the estimation.
 
-<!-- ```{r, message = FALSE} -->
-<!-- fit.coxtp <- coxtp(event = death, z = z, time = time, lambda = c(1,10,100,1000)) -->
-<!-- IC.support <- IC(fit.coxtp) -->
-<!-- ``` -->
+```{r, message = FALSE}
+fit.coxtp <- coxtp(event = death, z = z, time = time, lambda = c(1,10,100,1000))
+IC.support <- IC(fit.coxtp)
+```
 
-<!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio") -->
-<!-- ``` -->
+```{r, fig = TRUE, message = FALSE}
+plot(IC.support$model.mAIC, parm = c("metastatic", "non_metastatic"), ylim = c(-2,2), ylab = "log hazard ratio")
+```
 
 
 
-<!-- Then we provide the hypothesis testing for each covariate. -->
+Then we provide the hypothesis testing for each covariate.
 
-<!-- ```{r} -->
-<!-- #test the proportional hazards assumption -->
-<!-- test.ph <- tvef.ph(fit.coxtv) -->
-<!-- print(test.ph) -->
+```{r}
+#test the proportional hazards assumption
+test.ph <- tvef.ph(fit.coxtv)
+print(test.ph)
 
-<!-- #test the significance of each covariate -->
-<!-- test.zero <- tvef.zero(fit.coxtv) -->
-<!-- print(test.zero) -->
+#test the significance of each covariate
+test.zero <- tvef.zero(fit.coxtv)
+print(test.zero)
 
-<!-- ``` -->
+```
 
-<!-- When testing for the proportional hazards assumption, age_50, non_cancer, non_metastatic, diabetes and male has p-value < 0.05. We reject the null hypothesis and claim that these covariates have violated the proportional hazards assumption. -->
+When testing for the proportional hazards assumption, age_50, non_cancer, non_metastatic, diabetes and male has p-value < 0.05. We reject the null hypothesis and claim that these covariates have violated the proportional hazards assumption.
 
-<!-- All these covariates are significant based on the Wald test. -->
+All these covariates are significant based on the Wald test.
 
 
-<!-- Then we can use the following codes to get the baseline estimation and the baseline plot. -->
+Then we can use the following codes to get the baseline estimation and the baseline plot.
 
-<!-- ```{r} -->
-<!-- base <- baseline(IC.support$model.TIC) -->
-<!-- ``` -->
+```{r}
+base <- baseline(IC.support$model.TIC)
+```
 
-<!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- plot(base) -->
-<!-- ``` -->
+```{r, fig = TRUE, message = FALSE}
+plot(base)
+```
 
 
 
-<!-- When dealing with data where ties are presented, we can also give baseline hazard and absolute hazard for each covariate. -->
+When dealing with data where ties are presented, we can also give baseline hazard and absolute hazard for each covariate.
 
-<!-- We utilized the Breslow's approximation to estimate the baseline hazard at each event time. We round the unique event time first. -->
+We utilized the Breslow's approximation to estimate the baseline hazard at each event time. We round the unique event time first.
 
-<!-- ```{r, message = FALSE} -->
-<!-- time.discrete <- round(support$d.time, digits = -2) -->
+```{r, message = FALSE}
+time.discrete <- round(support$d.time, digits = -2)
 
-<!-- fit.discrete <- coxtv(event = death, z = z, time = time.discrete, nsplines = 10) -->
+fit.discrete <- coxtv(event = death, z = z, time = time.discrete, nsplines = 10)
 
-<!-- base.discrete <- baseline(fit.discrete) -->
-<!-- ``` -->
+base.discrete <- baseline(fit.discrete)
+```
 
 
-<!-- The following codes provide the absolute hazards plot. -->
+The following codes provide the absolute hazards plot.
 
-<!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- beta.abso <- data.frame(get.tvcoef(fit.discrete)) -->
+```{r, fig = TRUE, message = FALSE}
+beta.abso <- data.frame(get.tvcoef(fit.discrete))
 
-<!-- time_unique<- unique(time.discrete) -->
+time_unique<- unique(time.discrete)
 
-<!-- haz_j      <- base.discrete$hazard -->
+haz_j      <- base.discrete$hazard
 
-<!-- smooth_data <- data.frame(time_unique, haz_j) -->
+smooth_data <- data.frame(time_unique, haz_j)
 
-<!-- loessMod30 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing -->
+loessMod30 <- loess(haz_j ~ time_unique, data=smooth_data, span=0.30) # 30% smoothing
 
-<!-- haz_j_smooth30 <- predict(loessMod30) -->
+haz_j_smooth30 <- predict(loessMod30)
 
-<!-- exp_betax<- matrix(0,length(unique(time.discrete)),dim(z)[2]) -->
-<!-- beta2                   <- beta.abso -->
-<!-- beta2$cancer         <- 0 -->
+exp_betax<- matrix(0,length(unique(time.discrete)),dim(z)[2])
+beta2                   <- beta.abso
+beta2$cancer         <- 0
 
-<!-- exp_betax               <- exp(beta2) -->
+exp_betax               <- exp(beta2)
 
-<!-- haz_0_betax             <- haz_j_smooth30 * exp_betax -->
-<!-- ``` -->
+haz_0_betax             <- haz_j_smooth30 * exp_betax
+```
 
 
-<!-- ```{r, fig = TRUE, message = FALSE} -->
-<!-- library(ggplot2) -->
-<!-- plot_age <- ggplot(haz_0_betax, aes(x=time_unique)) + -->
-<!--   geom_line(aes(y=metastatic,  color = "metastatic-cancer"),size = 0.6) + -->
-<!--   geom_line(aes(y=non_metastatic,    color = "non-metastatic"),size = 0.6) + -->
-<!--   geom_line(aes(y=cancer,  color = "non-cancer"),size = 0.6) + -->
-<!--   scale_color_manual(name='Age at diagnosis', -->
-<!--                      breaks = c('non-cancer', 'non-metastatic', 'metastatic-cancer'), -->
-<!--                      values = c('non-cancer'='dark green', 'non-metastatic'='red', 'metastatic-cancer' = 'black')) + -->
-<!--   theme(plot.title = element_text(hjust = 0.2)) -->
-<!-- plot_age -->
-<!-- ``` -->
+```{r, fig = TRUE, message = FALSE}
+library(ggplot2)
+plot_age <- ggplot(haz_0_betax, aes(x=time_unique)) +
+  geom_line(aes(y=metastatic,  color = "metastatic-cancer"),size = 0.6) +
+  geom_line(aes(y=non_metastatic,    color = "non-metastatic"),size = 0.6) +
+  geom_line(aes(y=cancer,  color = "non-cancer"),size = 0.6) +
+  scale_color_manual(name='Age at diagnosis',
+                     breaks = c('non-cancer', 'non-metastatic', 'metastatic-cancer'),
+                     values = c('non-cancer'='dark green', 'non-metastatic'='red', 'metastatic-cancer' = 'black')) +
+  theme(plot.title = element_text(hjust = 0.2))
+plot_age
+```
 
 
 
 
-<!-- ## References -->
+## References
 
 
-<!-- ## Appendix: -->
+## Appendix:
 
-<!-- ## B-spline basis to represent time-varying effects -->
-<!-- To model time-varying coefficients $\beta(t)$, we use a set of B-spline basis functions, providing a flexible and accurate way to capture the nonlinear relationships between predictor variables and the time-to-event outcome over time. B-splines are piecewise polynomial functions that can be smoothly connected at a set of points called knots. The smoothness of the spline function makes it a suitable choice for modeling time-varying effects in survival analysis, as it allows for the estimation of smooth and continuous relationships between predictor variables and the time-to-event outcome. -->
+## B-spline basis to represent time-varying effects
+To model time-varying coefficients $\beta(t)$, we use a set of B-spline basis functions, providing a flexible and accurate way to capture the nonlinear relationships between predictor variables and the time-to-event outcome over time. B-splines are piecewise polynomial functions that can be smoothly connected at a set of points called knots. The smoothness of the spline function makes it a suitable choice for modeling time-varying effects in survival analysis, as it allows for the estimation of smooth and continuous relationships between predictor variables and the time-to-event outcome.
 
-<!-- These B-spline basis functions are generated using the splines R package with a fixed number of basis functions. The number of knots and the degree of the B-spline (typically, cubic B-splines are used) can be adjusted to control the smoothness and complexity of the resulting model. Increasing the number of knots results in a more flexible model that can capture more complex relationships, whereas reducing the number of knots leads to a smoother and simpler model. However, it is essential to strike a balance between flexibility and over-fitting the data when choosing the number of knots and the degree of the B-spline. We introduced the usage of a penalty term in later sections to control the smoothness with a larger number of knots. -->
+These B-spline basis functions are generated using the splines R package with a fixed number of basis functions. The number of knots and the degree of the B-spline (typically, cubic B-splines are used) can be adjusted to control the smoothness and complexity of the resulting model. Increasing the number of knots results in a more flexible model that can capture more complex relationships, whereas reducing the number of knots leads to a smoother and simpler model. However, it is essential to strike a balance between flexibility and over-fitting the data when choosing the number of knots and the degree of the B-spline. We introduced the usage of a penalty term in later sections to control the smoothness with a larger number of knots.
 
 
-<!-- To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots, \beta_{P}(t)\}$, we span $\boldsymbol\beta(\cdot)$ by a set of cubic B-splines defined on a given number of knots: \begin{eqnarray} -->
-<!--    \beta_{p}(t)=\boldsymbol\theta_{p}^\top\boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber -->
-<!-- \end{eqnarray} where $\boldsymbol{B} (t)=\{B_1(t), \ldots, B_K(t)\}^T$ forms a basis, $K$ is the number of basis functions, and $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th covariate. -->
+To estimate the time-varying coefficients ${\boldsymbol\beta}(t)=\{\beta_{1}(t),\ldots, \beta_{P}(t)\}$, we span $\boldsymbol\beta(\cdot)$ by a set of cubic B-splines defined on a given number of knots: \begin{eqnarray}
+   \beta_{p}(t)=\boldsymbol\theta_{p}^\top\boldsymbol{B}(t)=\sum_{k=1}^K \theta_{pk} B_k(t), ~~ p=1, \ldots, P,   \nonumber
+\end{eqnarray} where $\boldsymbol{B} (t)=\{B_1(t), \ldots, B_K(t)\}^T$ forms a basis, $K$ is the number of basis functions, and $\boldsymbol\theta_{p}=(\theta_{p1}, \ldots, \theta_{pK})^T$ is a vector of coefficients with $\theta_{pk}$ being the coefficient for the $k$-th basis of the $p$-th covariate.
 
-<!-- The following plot gives a illustration of the construction of B-spline basis functions.  -->
-<!-- ```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE} -->
-<!-- # Use the example data for illustration: -->
-<!-- time.point <- seq(0, 1, length.out = 100) -->
+The following plot gives a illustration of the construction of B-spline basis functions.
+```{r, fig = TRUE, fig.width=7, fig.height=3.5, warning = FALSE}
+# Use the example data for illustration:
+time.point <- seq(0, 1, length.out = 100)
 
-<!-- # Load splines packages -->
-<!-- library(splines) -->
+# Load splines packages
+library(splines)
 
-<!-- # Set the number of knots and the degree of the B-spline basis functions -->
-<!-- nsplines <- 8 -->
-<!-- degree <- 3 -->
+# Set the number of knots and the degree of the B-spline basis functions
+nsplines <- 8
+degree <- 3
 
-<!-- # Set the knot location  -->
-<!-- knots = quantile(time.point,  (1:(nsplines-degree-1))/(nsplines-degree)) -->
+# Set the knot location
+knots = quantile(time.point,  (1:(nsplines-degree-1))/(nsplines-degree))
 
-<!-- # Generate B-spline basis functions using the bs() function -->
-<!-- basis_functions <- splines::bs(time.point, knots = knots, degree = degree, intercept=T) -->
+# Generate B-spline basis functions using the bs() function
+basis_functions <- splines::bs(time.point, knots = knots, degree = degree, intercept=T)
 
-<!-- # Plot the B-spline basis functions -->
-<!-- plot(time.point, basis_functions[,1], type = "l", ylim = c(0, 1), xlab = "Time", ylab = "B-spline basis functions", main = "B-spline basis functions with degree = 3") -->
-<!-- for (i in 2:ncol(basis_functions)) { -->
-<!--   lines(time.point, basis_functions[,i], col = i) -->
-<!-- } -->
+# Plot the B-spline basis functions
+plot(time.point, basis_functions[,1], type = "l", ylim = c(0, 1), xlab = "Time", ylab = "B-spline basis functions", main = "B-spline basis functions with degree = 3")
+for (i in 2:ncol(basis_functions)) {
+  lines(time.point, basis_functions[,i], col = i)
+}
 
-<!-- # Add a legend to the plot -->
-<!-- legend("topleft", legend = paste("B-spline", 1:ncol(basis_functions)), col = 1:ncol(basis_functions), lty = 1, cex = 0.7) -->
-<!-- ``` -->
+# Add a legend to the plot
+legend("topleft", legend = paste("B-spline", 1:ncol(basis_functions)), col = 1:ncol(basis_functions), lty = 1, cex = 0.7)
+```
