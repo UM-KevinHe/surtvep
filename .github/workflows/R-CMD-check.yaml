@@ -16,8 +16,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          install2.r --error --deps TRUE testthat
-          install2.r --error --deps TRUE devtools
+          install2.r --error --deps TRUE remotes
+          Rscript -e 'remotes::install_deps(dependencies = TRUE)'
+          Rscript -e 'install.packages(c("ggplot2", "ggpubr", "RcppArmadillo"))'
       - name: Check package
         run: |
           R CMD build .
