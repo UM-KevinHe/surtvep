@@ -23,10 +23,13 @@ In our statistical software tutorial, we address a common issue encountered when
 
 The package only works for R 4.1.0+.
 
-You can install 'surtvep' via:
+You can install 'surtvep' via CRAN or github:
 
-    install.packages("devtools")
-    install.packages("remotes")
+    install.packages("surtvep")
+
+    #or
+    require("devtools")
+    require("remotes")
     remotes::install_github("UM-KevinHe/surtvep")
 
 We recommand to start with <a href="https://um-kevinhe.github.io/surtvep/articles/surtvep.html#quick-start" target="_blank">tutorial</a>, as it provides an overview of the package's usage, including preprocessing, model training, selection of penalization parameters, and post-estimation procedures.
@@ -38,7 +41,11 @@ For detailed tutorial and model paramter explaination, please go to <a href="htt
 
 ## Getting Help:
 
-If you encounter any problems or bugs, please contact us at: [lfluo\@umich.edu](mailto:lfluo@umich.edu){.email}, [kevinhe\@umich.edu](mailto:kevinhe@umich.edu){.email}, [Wenbo.Wu\@nyulangone.org](mailto:Wenbo.Wu@nyulangone.org){.email}
+If you encounter any problems or bugs, please contact us at: [lfluo@umich.edu](mailto:lfluo@umich.edu), [kevinhe@umich.edu](mailto:kevinhe@umich.edu), [Wenbo.Wu@nyulangone.org](mailto:Wenbo.Wu@nyulangone.org)
+
+## Contributing
+
+We welcome contributions to the **surtvep** package. Please see our [CONTRIBUTING.md](https://github.com/UM-KevinHe/surtvep/blob/main/.github/CONTRIBUTING.md) file for detailed guidelines of how to contribute.
 
 # References
 
