@@ -18,7 +18,7 @@ Description: Fit Cox non-proportional hazards models with time-varying coefficie
     interval and hypothesis testing are also provided.
     For more information, see Wu et al. (2022) <doi: 10.1007/s10985-021-09544-2> and 
     Luo et al. (2023) <doi:10.1177/09622802231181471>.
-License: GPL-3 | file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -38,4 +38,6 @@ Depends:
     R (>= 4.0)
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
