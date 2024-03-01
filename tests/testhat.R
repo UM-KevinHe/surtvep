@@ -1,6 +1,6 @@
 library(surtvep)
 library(testthat)
-test_that("", code = {
+test_that("The location of the self-specified knots", code = {
   data(ExampleData)
   z     <- ExampleData$z
   time  <- ExampleData$time
