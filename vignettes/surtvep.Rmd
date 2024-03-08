@@ -34,9 +34,7 @@ Throughout the tutorial, we will cover the key features and capabilities of the 
 
 ```{r ,include=TRUE,eval=FALSE}
 #Install the package, need to install the devtools packages:
-require("devtools")
-require("remotes")
-remotes::install_github("UM-KevinHe/surtvep", ref = "Lingfeng_test")
+install.packages("surtvep")
 ```
 
 ## Quick Start
@@ -56,7 +54,7 @@ We load a set of data created beforehand for illustration:
 
 ```{r}
 data("ExampleData")
-z     <- ExampleData$x
+z     <- ExampleData$z
 time  <- ExampleData$time
 event <- ExampleData$event
 ```
@@ -251,8 +249,8 @@ Let's check the data first:
 
 ```{r}
 data("ExampleDataBinary")
-table(ExampleDataBinary$x[,1])
-table(ExampleDataBinary$x[,2])
+table(ExampleDataBinary$z[,1])
+table(ExampleDataBinary$z[,2])
 
 z     <- ExampleDataBinary$x
 time  <- ExampleDataBinary$time
@@ -276,7 +274,7 @@ fit.proxN <- coxtv(z = z, event = event, time=time, method = 'ProxN')
 
 Then we plot the fitted methods with all the curves on the same plot.
 No obvious change can be oberserved here.
-However, we do recommand using
+However, we do recommand using "ProxN".
 
 ```{r,  fig.ncol = 1, fig.show="hold", out.width="40%",out.height="44%", message = FALSE, warning=FALSE}
 plot(fit.newton, ylim = c(-2,2), allinone = TRUE)
@@ -304,7 +302,7 @@ In our simulation, we vary the baseline for different stratums by adding a small
 
 ```{r}
 data("StrataExample")
-z     <- StrataExample$x
+z     <- StrataExample$z
 time  <- StrataExample$time
 event <- StrataExample$event
 strata <- StrataExample$strata
