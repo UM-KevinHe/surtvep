@@ -252,7 +252,7 @@ data("ExampleDataBinary")
 table(ExampleDataBinary$z[,1])
 table(ExampleDataBinary$z[,2])
 
-z     <- ExampleDataBinary$x
+z     <- ExampleDataBinary$z
 time  <- ExampleDataBinary$time
 event <- ExampleDataBinary$event
 ```
