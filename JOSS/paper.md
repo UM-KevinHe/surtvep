@@ -120,7 +120,7 @@ Currently, both `coxtv` and `coxtp` assume time-varying effects for all covariat
 
 # Data Example 
 
-We demonstrate the effectiveness of `surtvep` by applying it to a real-world dataset from the National Cancer Institute Surveillance, Epidemiology, and End Results (SEER) Program [@SEER]. We estimate the hazard ratios of the cancer stage of kidney, lung, and breast, as shown in \autoref{fig:example}. Our analysis highlights the dynamic nature of hazard ratios for cancer death among patients with metastatic stage compared to those with localized stage.
+We demonstrate the effectiveness of `surtvep` by applying it to a real-world dataset from the National Cancer Institute Surveillance, Epidemiology, and End Results (SEER) Program [@SEER]. We estimate the hazard ratios of the cancer stage of kidney, lung, and breast, as shown in \autoref{fig:example}. Our analysis highlights the dynamic nature of hazard ratios for cancer death among patients with metastatic stage compared to those with localized stage. Access to SEER data can be requested at https://seer.cancer.gov/data/access.html for those interested.
 
 In the first year after diagnosis, the hazard ratio is strikingly high, indicating a significant difference in survival outcomes between metastatic and localized stage patients. However, this disparity shrinks considerably by the eighth year, reflecting the diminishing relevance of the initial cancer stage in the prognosis of long-term survivors. This example illustrates the importance of accounting for time-varying effects, which has been effectively addressed by `surtvep` through its flexible and efficient approach to modeling these dynamics. By providing accurate and efficient modeling of time-varying effects in large-scale datasets, `surtvep` serves as a valuable tool for researchers working with complex survival data.
 
@@ -128,7 +128,8 @@ In the first year after diagnosis, the hazard ratio is strikingly high, indicati
 
 # Availability
 
-Stable releases of the `surtvep` package will be made available via the Comprehensive R Archive Network. Alternatively, the `surtvep` package is available on GitHub [(*https://github.com/UM-KevinHe/surtvep*)](https://github.com/UM-KevinHe/surtvep). Use of the `surtvep` package has been extensively documented in the package documentation and on the tutorial website [(*https://um-kevinhe.github.io/surtvep/index.html*)](https://um-kevinhe.github.io/surtvep/index.html).
+Stable releases of the `surtvep` package will be made available via the Comprehensive R Archive Network. Alternatively, the `surtvep` package is available on GitHub [(*https://github.com/UM-KevinHe/surtvep*)](https://github.com/UM-KevinHe/surtvep). Use of the `surtvep` package has been extensively documented in the package documentation and on the tutorial website [(*https://um-kevinhe.github.io/surtvep/index.html*)](https://um-kevinhe.github.io/surtvep/index.html). 
+
 
 # Funding
 
