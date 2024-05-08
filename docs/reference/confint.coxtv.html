@@ -79,21 +79,16 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for coxtp</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span>, <span class="va">time</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for coxtv</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">time</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">parm</span>, level <span class="op">=</span> <span class="fl">0.95</span>, <span class="va">time</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>fit</dt>
+    <dl><dt>object</dt>
 <dd><p>fitted <code>"coxtv"</code> model.</p></dd>
-
-
-<dt>time</dt>
-<dd><p>the time points for which the confidence intervals to be estimated.
-The default value is the unique observed event times in the dataset fitting the time-varying effects model.</p></dd>
 
 
 <dt>parm</dt>
@@ -102,6 +97,15 @@ The default value is the unique observed event times in the dataset fitting the 
 
 <dt>level</dt>
 <dd><p>the confidence level. The default value is 0.95.</p></dd>
+
+
+<dt>time</dt>
+<dd><p>the time points for which the confidence intervals to be estimated.
+The default value is the unique observed event times in the dataset fitting the time-varying effects model.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>other parameters to function</p></dd>
 
 </dl></div>
 
