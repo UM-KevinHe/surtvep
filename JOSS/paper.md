@@ -11,7 +11,7 @@ authors:
     affiliation: 1
   - name: Wenbo Wu
     affiliation: 2
-  - name: Jeremy M.G. Taylor
+  - name: Jeremy Taylor
     affiliation: 1
   - name: Jian Kang
     affiliation: 1
