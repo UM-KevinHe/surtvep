@@ -15,7 +15,7 @@ authors:
     affiliation: 1
   - name: Jian Kang
     affiliation: 1
-  - name: Michael Kleinsasser
+  - name: Michael J. Kleinsasser
     affiliation: 1
   - name: Kevin He
     corresponding: true #
