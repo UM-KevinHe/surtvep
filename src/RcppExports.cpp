@@ -11,6 +11,29 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// obj_fixtra_bresties_penalized_new
+List obj_fixtra_bresties_penalized_new(const arma::vec& event, const arma::vec& time, const IntegerVector& count_strata, const arma::mat& Z_tv, const arma::mat& B_spline, const arma::mat& theta_init, const arma::mat& Z_ti, const arma::vec& beta_ti_init, const arma::mat& SmoothMatrix, const double& lambda_i, const std::string& SplineType, const bool& parallel, const unsigned int& threads);
+RcppExport SEXP _surtvep_obj_fixtra_bresties_penalized_new(SEXP eventSEXP, SEXP timeSEXP, SEXP count_strataSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP theta_initSEXP, SEXP Z_tiSEXP, SEXP beta_ti_initSEXP, SEXP SmoothMatrixSEXP, SEXP lambda_iSEXP, SEXP SplineTypeSEXP, SEXP parallelSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type event(eventSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type count_strata(count_strataSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Z_tv(Z_tvSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B_spline(B_splineSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type theta_init(theta_initSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Z_ti(Z_tiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type beta_ti_init(beta_ti_initSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type SmoothMatrix(SmoothMatrixSEXP);
+    Rcpp::traits::input_parameter< const double& >::type lambda_i(lambda_iSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type SplineType(SplineTypeSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type parallel(parallelSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(obj_fixtra_bresties_penalized_new(event, time, count_strata, Z_tv, B_spline, theta_init, Z_ti, beta_ti_init, SmoothMatrix, lambda_i, SplineType, parallel, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // surtiver_fixtra_fit_penalizestop
 List surtiver_fixtra_fit_penalizestop(const arma::vec& event, const IntegerVector& count_strata, const arma::mat& Z_tv, const arma::mat& B_spline, const arma::mat& theta_init, const arma::mat& Z_ti, const arma::vec& beta_ti_init, const arma::vec& lambda_spline, const arma::mat& SmoothMatrix, const arma::vec& effectsize, const std::string& SplineType, const std::string& method, const double lambda, const double& factor, const bool& parallel, const unsigned int& threads, const double& tol, const unsigned int& iter_max, const double& s, const double& t, const std::string& btr, const std::string& stop, const bool& TIC_prox, const bool& fixedstep, const bool& difflambda, const bool& ICLastOnly);
 RcppExport SEXP _surtvep_surtiver_fixtra_fit_penalizestop(SEXP eventSEXP, SEXP count_strataSEXP, SEXP Z_tvSEXP, SEXP B_splineSEXP, SEXP theta_initSEXP, SEXP Z_tiSEXP, SEXP beta_ti_initSEXP, SEXP lambda_splineSEXP, SEXP SmoothMatrixSEXP, SEXP effectsizeSEXP, SEXP SplineTypeSEXP, SEXP methodSEXP, SEXP lambdaSEXP, SEXP factorSEXP, SEXP parallelSEXP, SEXP threadsSEXP, SEXP tolSEXP, SEXP iter_maxSEXP, SEXP sSEXP, SEXP tSEXP, SEXP btrSEXP, SEXP stopSEXP, SEXP TIC_proxSEXP, SEXP fixedstepSEXP, SEXP difflambdaSEXP, SEXP ICLastOnlySEXP) {
@@ -214,6 +237,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_surtvep_obj_fixtra_bresties_penalized_new", (DL_FUNC) &_surtvep_obj_fixtra_bresties_penalized_new, 13},
     {"_surtvep_surtiver_fixtra_fit_penalizestop", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop, 26},
     {"_surtvep_surtiver_fixtra_fit_penalizestop_bresties", (DL_FUNC) &_surtvep_surtiver_fixtra_fit_penalizestop_bresties, 27},
     {"_surtvep_LogPartialTest", (DL_FUNC) &_surtvep_LogPartialTest, 10},

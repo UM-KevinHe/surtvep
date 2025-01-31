@@ -13,6 +13,44 @@ using namespace Rcpp;
 // using namespace arma;
 using namespace std;
 
+arma::mat spline_construct(const int knot,
+                           const int p,
+                           const std::string SplineType = "pspline"){
+  
+  arma::mat S_matrix     = arma::zeros<arma::mat>(p*knot, p*knot);
+  
+  arma::mat P_pre  = arma::zeros<arma::mat>(knot,knot);
+  P_pre.diag().ones();
+  P_pre      = diff(P_pre);
+  arma::mat S_pre  = P_pre.t()*P_pre;
+  
+  S_matrix     = arma::zeros<arma::mat>(p*knot, p*knot);
+  for (int i = 0; i < p; ++i)
+  {
+    S_matrix.submat(i*knot,i*knot,i*knot+knot-1, i*knot+knot-1) = S_pre;
+  }
+  
+  return S_matrix;
+}
+
+
+arma::mat spline_construct2(const int knot,
+                            const int p,
+                            const std::string SplineType,
+                            const arma::mat &SmoothMatrix){
+  
+  arma::mat S_matrix     = arma::zeros<arma::mat>(p*knot, p*knot);
+  
+  arma::mat S_pre    = SmoothMatrix;
+  S_matrix     = arma::zeros<arma::mat>(p*knot, p*knot);
+  for (int i = 0; i < p; ++i)
+  {
+    S_matrix.submat(i*knot,i*knot,i*knot+knot-1, i*knot+knot-1) = S_pre;
+  }
+  
+  
+  return S_matrix;
+}
 
 List objfun_fixtra(const arma::mat &Z_tv, const arma::mat &B_spline, const arma::mat &theta,
                    const arma::mat &Z_ti, const arma::vec &beta_ti, const bool &ti,
@@ -397,44 +435,328 @@ List obj_fixtra_bresties(const arma::mat &Z_tv, const arma::mat &B_spline, const
   return List::create(_["logplkd"]=logplkd, _["hazard"]=hazard);
 }
 
-arma::mat spline_construct(const int knot,
-                     const int p,
-                     const std::string SplineType = "pspline"){
 
-  arma::mat S_matrix     = arma::zeros<arma::mat>(p*knot, p*knot);
+List obj_fixtra_bresties_penalized(const arma::mat &Z_tv, const arma::mat &B_spline, const arma::mat &theta,
+                         const arma::mat &Z_ti, const arma::vec &beta_ti, const bool &ti,
+                         const unsigned int n_strata,
+                         vector<arma::uvec> &idx_B_sp, vector<vector<arma::uvec>> &idx_fail,
+                         vector<unsigned int> n_Z_strata,
+                         vector<vector<unsigned int>> &idx_Z_strata,
+                         vector<vector<unsigned int>> &istart,
+                         vector<vector<unsigned int>> &iend,
+                         const arma::mat &S_matrix,
+                         const double &lambda_i,
+                         const bool &parallel=false, const unsigned int &threads=1) {
 
-    arma::mat P_pre  = arma::zeros<arma::mat>(knot,knot);
-    P_pre.diag().ones();
-    P_pre      = diff(P_pre);
-    arma::mat S_pre  = P_pre.t()*P_pre;
-
-    S_matrix     = arma::zeros<arma::mat>(p*knot, p*knot);
-    for (int i = 0; i < p; ++i)
-    {
-      S_matrix.submat(i*knot,i*knot,i*knot+knot-1, i*knot+knot-1) = S_pre;
+  double norm_parm;
+  vector<arma::vec>  hazard;
+  if (ti) {
+    norm_parm = max(arma::norm(theta, "inf"), arma::norm(beta_ti, "inf"));
+  } else {
+    norm_parm = arma::norm(theta, "inf");
+  }
+  double logplkd = 0.0;
+  if (norm_parm < sqrt(arma::datum::eps)) { // theta and beta_ti are 0
+    if (parallel) {
+      for (unsigned int i = 0; i < n_strata; ++i) {
+        arma::vec hazard_tmp(idx_fail[i].size());
+        omp_set_num_threads(threads);
+        #pragma omp parallel
+        {
+          unsigned int id, j;
+          id = omp_get_thread_num();
+          double val_tmp = 0;
+          for (j = istart[i][id]; j < iend[i][id]; ++j) {
+            double tmp = n_Z_strata[i]-idx_fail[i][j](0);
+            hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+            val_tmp += idx_fail[i][j].n_elem*log(tmp);
+          }
+        #pragma omp atomic
+          logplkd -= val_tmp;
+        }
+        hazard.push_back(hazard_tmp);
+              }
+            } else {
+              for (unsigned int i = 0; i < n_strata; ++i) {
+                arma::vec hazard_tmp(idx_fail[i].size());
+                for (unsigned int j = 0; j < idx_fail[i].size(); ++j) {
+                  double tmp = n_Z_strata[i]-idx_fail[i][j](0);
+                  hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+                  logplkd -= idx_fail[i][j].n_elem*log(tmp);
+                }
+                hazard.push_back(hazard_tmp);
+              }
+            }
+          } else if (max(var(theta, 0, 1)) < sqrt(arma::datum::eps)) { // each row of theta is const
+            for (unsigned int i = 0; i < n_strata; ++i) {
+              arma::vec Z_tv_theta =
+                Z_tv.rows(idx_Z_strata[i][0], idx_Z_strata[i][1]) * theta.col(0);
+              arma::vec Z_ti_beta_ti;
+              if (ti) {
+                Z_ti_beta_ti =
+                  Z_ti.rows(idx_Z_strata[i][0], idx_Z_strata[i][1]) * beta_ti;
+              }
+              arma::mat B_sp = B_spline.rows(idx_B_sp[i]);
+              unsigned int n_Z_tv_theta = Z_tv_theta.n_rows;
+              arma::vec lincomb_fail(idx_fail[i].size()), hazard_tmp(idx_fail[i].size());
+              if (parallel) {
+                omp_set_num_threads(threads);
+        #pragma omp parallel
+        {
+          unsigned int id, j;
+          id = omp_get_thread_num();
+          double val_tmp = 0;
+          if (ti) {
+            for (j = istart[i][id]; j < iend[i][id]; ++j) {
+              arma::vec lincomb =
+                Z_tv_theta.subvec(idx_fail[i][j](0), n_Z_tv_theta-1) *
+                accu(B_sp.row(j)) +
+                Z_ti_beta_ti.subvec(idx_fail[i][j](0),n_Z_tv_theta-1);
+              lincomb_fail(j) = sum(lincomb.head(idx_fail[i][j].n_elem));
+              double tmp = sum(exp(lincomb));
+              hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+              val_tmp += idx_fail[i][j].n_elem*log(tmp);
+            }
+          } else {
+            for (j = istart[i][id]; j < iend[i][id]; ++j) {
+              arma::vec lincomb =
+                Z_tv_theta.subvec(idx_fail[i][j](0), n_Z_tv_theta-1) *
+                accu(B_sp.row(j));
+              lincomb_fail(j) = sum(lincomb.head(idx_fail[i][j].n_elem));
+              double tmp = sum(exp(lincomb));
+              hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+              val_tmp += idx_fail[i][j].n_elem*log(tmp);
+            }
+          }
+        #pragma omp atomic
+          logplkd -= val_tmp;
+        }
+      } else {
+        if (ti) {
+          for (unsigned int j = 0; j < idx_fail[i].size(); ++j) {
+            arma::vec lincomb =
+              Z_tv_theta.subvec(idx_fail[i][j](0),n_Z_tv_theta-1) *
+              accu(B_sp.row(j)) +
+              Z_ti_beta_ti.subvec(idx_fail[i][j](0),n_Z_tv_theta-1);
+            lincomb_fail(j) = sum(lincomb.head(idx_fail[i][j].n_elem));
+            double tmp = sum(exp(lincomb));
+            hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+            logplkd -= idx_fail[i][j].n_elem*log(tmp);
+          }
+        } else {
+          for (unsigned int j = 0; j < idx_fail[i].size(); ++j) {
+            arma::vec lincomb =
+              Z_tv_theta.subvec(idx_fail[i][j](0), n_Z_tv_theta-1) *
+              accu(B_sp.row(j));
+            lincomb_fail(j) = sum(lincomb.head(idx_fail[i][j].n_elem));
+            double tmp = sum(exp(lincomb));
+            hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+            logplkd -= idx_fail[i][j].n_elem*log(tmp);
+          }
+        }
+      }
+      logplkd += accu(lincomb_fail);
+      hazard.push_back(hazard_tmp);
     }
+  } else { // general theta
+    for (unsigned int i = 0; i < n_strata; ++i) {
+      arma::mat Z_tv_theta =
+        Z_tv.rows(idx_Z_strata[i][0], idx_Z_strata[i][1]) * theta;
+      arma::vec Z_ti_beta_ti;
+      if (ti) {
+        Z_ti_beta_ti =
+          Z_ti.rows(idx_Z_strata[i][0], idx_Z_strata[i][1]) * beta_ti;
+      }
+      arma::mat B_sp = B_spline.rows(idx_B_sp[i]);
+      unsigned int n_Z_tv_theta = Z_tv_theta.n_rows;
+      arma::vec lincomb_fail(idx_fail[i].size()), hazard_tmp(idx_fail[i].size());
+      if (parallel) {
+        omp_set_num_threads(threads);
+        #pragma omp parallel
+        {
+          unsigned int id, j;
+          id = omp_get_thread_num();
+          double val_tmp = 0;
+          if (ti) {
+            for (j = istart[i][id]; j < iend[i][id]; ++j) {
+              arma::vec lincomb =
+                Z_tv_theta.rows(idx_fail[i][j](0), n_Z_tv_theta-1) *
+                B_sp.row(j).t() +
+                Z_ti_beta_ti.subvec(idx_fail[i][j](0),n_Z_tv_theta-1);
+              lincomb_fail(j) = sum(lincomb.head(idx_fail[i][j].n_elem));
+              double tmp = sum(exp(lincomb));
+              hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+              val_tmp += idx_fail[i][j].n_elem*log(tmp);
+            }
+          } else {
+            for (j = istart[i][id]; j < iend[i][id]; ++j) {
+              arma::vec lincomb =
+                Z_tv_theta.rows(idx_fail[i][j](0), n_Z_tv_theta-1) *
+                B_sp.row(j).t();
+              lincomb_fail(j) = sum(lincomb.head(idx_fail[i][j].n_elem));
+              double tmp = sum(exp(lincomb));
+              hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+              val_tmp += idx_fail[i][j].n_elem*log(tmp);
+            }
+          }
+        #pragma omp atomic
+          logplkd -= val_tmp;
+        }
+      } else {
+        if (ti) {
+          for (unsigned int j = 0; j < idx_fail[i].size(); ++j) {
+            arma::vec lincomb =
+              Z_tv_theta.rows(idx_fail[i][j](0), n_Z_tv_theta-1) *
+              B_sp.row(j).t() +
+              Z_ti_beta_ti.subvec(idx_fail[i][j](0),n_Z_tv_theta-1);
+            lincomb_fail(j) = sum(lincomb.head(idx_fail[i][j].n_elem));
+            double tmp = sum(exp(lincomb));
+            hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+            logplkd -= idx_fail[i][j].n_elem*log(tmp);
+          }
+        } else {
+          for (unsigned int j = 0; j < idx_fail[i].size(); ++j) {
+            arma::vec lincomb =
+              Z_tv_theta.rows(idx_fail[i][j](0), n_Z_tv_theta-1) *
+              B_sp.row(j).t();
+            lincomb_fail(j) = sum(lincomb.head(idx_fail[i][j].n_elem));
+            double tmp = sum(exp(lincomb));
+            hazard_tmp(j) = idx_fail[i][j].n_elem/tmp;
+            logplkd -= idx_fail[i][j].n_elem*log(tmp);
+          }
+        }
+      }
+      logplkd += accu(lincomb_fail);
+      hazard.push_back(hazard_tmp);
+    }
+  }
+  logplkd /= Z_tv.n_rows;
 
-  return S_matrix;
+  //add the penalization term:
+  // Rcout << "lambda_i: " << lambda_i << std::endl;
+  // Rcout << "theta: " << theta << std::endl;
+  // Rcout << "S_matrix: " << S_matrix << std::endl;
+  // Rcout << "theta.t(): " << vectorise(theta.t(), 0) << std::endl;
+  // Rcout << "theta.t(): " << vectorise(theta.t(), 0).t() << std::endl;
+  
+  arma::mat logplkd_test = vectorise(theta.t(), 0).t()*S_matrix*vectorise(theta.t(), 0);
+  logplkd -= (1/2.0)*lambda_i*(logplkd_test(0,0));
+  
+  return List::create(_["logplkd"]=logplkd);
 }
 
-
-arma::mat spline_construct2(const int knot,
-                      const int p,
-                      const std::string SplineType,
-                      const arma::mat &SmoothMatrix){
-
-  arma::mat S_matrix     = arma::zeros<arma::mat>(p*knot, p*knot);
-
-  arma::mat S_pre    = SmoothMatrix;
-  S_matrix     = arma::zeros<arma::mat>(p*knot, p*knot);
-  for (int i = 0; i < p; ++i)
-  {
-    S_matrix.submat(i*knot,i*knot,i*knot+knot-1, i*knot+knot-1) = S_pre;
+// [[Rcpp::export]]
+List obj_fixtra_bresties_penalized_new(
+    const arma::vec &event, const arma::vec &time,
+    const IntegerVector &count_strata,
+    const arma::mat &Z_tv, const arma::mat &B_spline,
+    const arma::mat &theta_init,
+    const arma::mat &Z_ti, const arma::vec &beta_ti_init,
+    const arma::mat &SmoothMatrix,
+    const double &lambda_i,
+    const std::string &SplineType = "pspline",
+    const bool &parallel = false, const unsigned int &threads = 1
+) {
+  // Determine if there are time-invariant covariates
+  bool ti = arma::norm(Z_ti, "inf") > sqrt(arma::datum::eps);
+  
+  // Compute cumulative sum of strata counts and number of strata
+  IntegerVector cumsum_strata = cumsum(count_strata);
+  unsigned int n_strata = cumsum_strata.length();
+  cumsum_strata.push_front(0);
+  
+  // Initialize variables for indexing and counts
+  std::vector<std::vector<arma::uvec>> idx_fail;
+  std::vector<std::vector<unsigned int>> idx_fail_1st, idx_Z_strata;
+  std::vector<unsigned int> n_fail_time, n_Z_strata;
+  
+  // Loop over each strata to compute indices and counts
+  for (unsigned int i = 0; i < n_strata; ++i) {
+    arma::vec event_tmp = event.rows(cumsum_strata[i], cumsum_strata[i + 1] - 1);
+    arma::vec time_tmp = time.rows(cumsum_strata[i], cumsum_strata[i + 1] - 1);
+    arma::uvec idx_fail_tmp = find(event_tmp == 1);
+    std::vector<unsigned int> idx_Z_strata_tmp;
+    idx_Z_strata_tmp.push_back(cumsum_strata[i] + idx_fail_tmp(0));
+    idx_Z_strata_tmp.push_back(cumsum_strata[i + 1] - 1);
+    idx_Z_strata.push_back(idx_Z_strata_tmp);
+    n_Z_strata.push_back(cumsum_strata[i + 1] - cumsum_strata[i] - idx_fail_tmp(0));
+    arma::vec time_fail_tmp = time_tmp.elem(idx_fail_tmp);
+    idx_fail_tmp -= idx_fail_tmp(0);
+    arma::vec uniq_t = unique(time_fail_tmp);
+    n_fail_time.push_back(uniq_t.n_elem);
+    std::vector<arma::uvec> idx_fail_tmp_tmp;
+    std::vector<unsigned int> idx_fail_1st_tmp;
+    for (arma::vec::iterator j = uniq_t.begin(); j < uniq_t.end(); ++j) {
+      arma::uvec tmp = idx_fail_tmp.elem(find(time_fail_tmp == *j));
+      idx_fail_tmp_tmp.push_back(tmp);
+      idx_fail_1st_tmp.push_back(tmp[0]);
+    }
+    idx_fail.push_back(idx_fail_tmp_tmp);
+    idx_fail_1st.push_back(idx_fail_1st_tmp);
   }
   
-
-  return S_matrix;
+  // Compute indices for B-splines
+  IntegerVector n_failtime = wrap(n_fail_time);
+  IntegerVector cumsum_failtime = cumsum(n_failtime);
+  cumsum_failtime.push_front(0);
+  std::vector<arma::uvec> idx_B_sp;
+  for (unsigned int i = 0; i < n_strata; ++i) {
+    idx_B_sp.push_back(arma::regspace<arma::uvec>(cumsum_failtime[i], cumsum_failtime[i + 1] - 1));
+  }
+  
+  // Initialize starting and ending indices for parallel processing
+  std::vector<arma::vec> cumsum_ar;
+  std::vector<std::vector<unsigned int>> istart, iend;
+  if (parallel) {
+    for (unsigned int i = 0; i < n_strata; ++i) {
+      double scale_fac = as_scalar(idx_fail[i].back().tail(1));
+      cumsum_ar.push_back(
+        (double)n_Z_strata[i] / scale_fac * arma::regspace(1, idx_fail[i].size()) -
+          arma::cumsum(arma::conv_to<arma::vec>::from(idx_fail_1st[i]) / scale_fac)
+      );
+      std::vector<unsigned int> istart_tmp, iend_tmp;
+      for (unsigned int id = 0; id < threads; ++id) {
+        istart_tmp.push_back(as_scalar(find(
+            cumsum_ar[i] >= cumsum_ar[i](idx_fail[i].size() - 1) / (double)threads * id, 1)));
+        iend_tmp.push_back(as_scalar(find(
+            cumsum_ar[i] >= cumsum_ar[i](idx_fail[i].size() - 1) / (double)threads * (id + 1), 1)));
+        if (id == threads - 1) {
+          iend_tmp.pop_back();
+          iend_tmp.push_back(idx_fail[i].size());
+        }
+      }
+      istart.push_back(istart_tmp);
+      iend.push_back(iend_tmp);
+    }
+  }
+  
+  // Initialize theta and beta_ti
+  arma::mat theta = theta_init;
+  arma::vec beta_ti = beta_ti_init;
+  
+  int p     = theta_init.n_rows; //dimension
+  int K     = theta_init.n_cols; //number of knots   
+  
+  arma::mat S_matrix;
+  if(SplineType == "pspline") {
+    S_matrix        = spline_construct(K, p, SplineType);  
+  }
+  else{
+    S_matrix        = spline_construct2(K, p, SplineType, SmoothMatrix);  
+  }
+  
+  List objfun_list = obj_fixtra_bresties_penalized(
+    Z_tv, B_spline, theta, Z_ti, beta_ti,
+    ti, n_strata, idx_B_sp, idx_fail,
+    n_Z_strata, idx_Z_strata,
+    istart, iend, 
+    S_matrix, lambda_i,
+    parallel, threads);
+  
+  // Return the result
+  return objfun_list;
 }
+
 
 List stepinc_fixtra_spline(const arma::mat &Z_tv, const arma::mat &B_spline, const arma::mat &theta,
                           const arma::mat &Z_ti, const arma::vec &beta_ti, 
@@ -1655,15 +1977,14 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
   arma::mat theta = theta_init; arma::vec beta_ti = beta_ti_init;
   List theta_list = List::create(theta), beta_ti_list = List::create(beta_ti);
 
-  double logplkd;
+  double logplkd, logplkd_p;
   List objfun_list, update_list, hazard_list;;
-  NumericVector logplkd_vec;
+  NumericVector logplkd_vec, logplkd_p_vec;
   objfun_list = obj_fixtra_bresties(Z_tv, B_spline, theta, Z_ti, beta_ti, 
                                     ti, n_strata, idx_B_sp, idx_fail, 
                                     n_Z_strata, idx_Z_strata,
                                     istart, iend, parallel, threads);
-  logplkd = objfun_list["logplkd"];
-  
+
   //for tic:
   int N     = Z_tv.n_rows;    //sample size 
   int p     = theta_init.n_rows; //dimension
@@ -1736,7 +2057,7 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
 
     arma::mat info_tmp              = SplineUdpate["info"];
     arma::vec grad              = SplineUdpate["grad"];
-    double logplkd         = SplineUdpate["logplkd"];
+    logplkd                = SplineUdpate["logplkd"];
     AIC_all                = SplineUdpate["AIC_all"];
     TIC_all                = SplineUdpate["TIC_all"];
     TIC2_all               = SplineUdpate["TIC2_all"];
@@ -1747,18 +2068,25 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
     TIC2_trace             = SplineUdpate["TIC2_trace"];
     GIC_trace              = SplineUdpate["GIC_trace"];
     hazard_list            = SplineUdpate["hazard"];
-
+    
     arma::mat VarianceMatrix_tmp        = SplineUdpate["VarianceMatrix"];
-
+    
+    arma::mat theta_final     = SplineUdpate["theta"];
+    logplkd_p              = logplkd - lambda_i*as_scalar(vectorise(theta_final,1)*S_matrix*vectorise(theta_final,1).t())/(N*1.0);
+    
     theta_all.slice(i)    = theta_ilambda;
     logplkd_vec.push_back(logplkd);
+    logplkd_p_vec.push_back(logplkd_p);
+    
     VarianceMatrix = VarianceMatrix_tmp;
     info = info_tmp;
 
   }
+  
 
   return List::create(_["theta"]=theta,
                       _["logplkd"]=logplkd, 
+                      _["logplkd_p"]=logplkd_p,
                       _["theta_all"]=theta_all,
                       _["theta_list"]=theta_list,
                       _["AIC_all"]=AIC_all,
@@ -1770,6 +2098,7 @@ List surtiver_fixtra_fit_penalizestop_bresties(const arma::vec &event, const arm
                       _["TIC2_trace"]=TIC2_trace,
                       _["GIC_trace"]=GIC_trace,
                       _["logplkd_vec"]=logplkd_vec,
+                      _["logplkd_p_vec"]=logplkd_p_vec,
                       _["SplineType"]=SplineType,
                       _["VarianceMatrix"]=VarianceMatrix,
                       _["info"]=info,
@@ -2892,6 +3221,11 @@ List ICcpp_bresties(const arma::vec &event, const arma::vec &time,
     objfun = obj_fixtra_bresties(Z_tv, B_spline, theta, Z_ti, beta_ti, ti, n_strata,
                                           idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata, 
                                           istart, iend, parallel, threads);
+    
+    // List objfun2;
+    // objfun2 = obj_fixtra_bresties(Z_tv, B_spline, theta, Z_ti, beta_ti, ti, n_strata,
+    //                                       idx_B_sp, idx_fail, n_Z_strata, idx_Z_strata, 
+    //                                       istart, iend, parallel, threads);
     double logplkd = objfun["logplkd"];
 
     List J_tmp;

@@ -276,6 +276,8 @@ coxtp.base <- function(formula, data, spline="Smooth-spline", ties="Breslow",
   
   res <- NULL
   res$theta.list  <- fit$theta_list
+  res$logplkd      <- fit$logplkd
+  res$logplkd_p    <- fit$logplkd_p
   res$VarianceMatrix <- fit$VarianceMatrix
   res$times <- times
   res$ctrl.pts <- fit$theta_list[[length(fit$theta_list)]]
