@@ -43,10 +43,6 @@ For detailed tutorial and model paramter explaination, please go to <a href="htt
 
 If you encounter any problems or bugs, please contact us at: [lfluo@umich.edu](mailto:lfluo@umich.edu), [kevinhe@umich.edu](mailto:kevinhe@umich.edu), [Wenbo.Wu@nyulangone.org](mailto:Wenbo.Wu@nyulangone.org)
 
-## Contributing
-
-We welcome contributions to the **surtvep** package. Please see our [CONTRIBUTING.md](https://github.com/UM-KevinHe/surtvep/blob/main/.github/CONTRIBUTING.md) file for detailed guidelines of how to contribute.
-
 # References
 
   \[1\] Gray, R. J. (1992). Flexible methods for analyzing survival data using splines, with applications to breast
